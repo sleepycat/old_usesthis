@@ -1,10 +1,12 @@
-var assert = require("assert");
-describe('Array', function() {
-  describe('#indexOf()', function () {
-    it('should return -1 when the value is not present', function () {
-      assert.equal(-1, [1,2,3].indexOf(5));
-      assert.equal(-1, [1,2,3].indexOf(0));
-    });
-  });
-});
+var request = require('supertest')
+  , app = require('../app');
 
+
+describe('GET /', function(){
+  it('serves the root route', function(done){
+    request(app)
+      .get('/')
+      .expect(/Welcome to Express/)
+      .end(done);
+  })
+})
