@@ -1,3 +1,4 @@
+require('locus')
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -24,6 +25,42 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+var graphqlHTTP = require('express-graphql');
+
+import {
+  graphql,
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull
+} from 'graphql';
+
+var schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'Root',
+    fields: {
+      test: {
+        type: GraphQLString,
+        args: {
+          who: {
+            type: GraphQLString
+          }
+        },
+        resolve: (root, { who }) => 'Hello ' + (who || 'World')
+      },
+      thrower: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: () => { throw new Error('Throws!'); }
+      }
+    }
+  })
+});
+
+app.use('/graphql', graphqlHTTP(req => {
+  console.log('executed')
+  return { schema: schema , pretty: true}
+}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
