@@ -58,7 +58,6 @@ var schema = new GraphQLSchema({
 });
 
 app.use('/graphql', graphqlHTTP(req => {
-  console.log('executed')
   return { schema: schema , pretty: true}
 }));
 
