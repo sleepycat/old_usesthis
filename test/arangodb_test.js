@@ -9,6 +9,14 @@ var request = require('supertest')
 
 describe('Arangodb', () => {
 
+  before(()=>{
+    db.truncate()
+  })
+
+  after(()=>{
+    db.truncate()
+  })
+
   it('can make a db connection', done => {
      db.collections(function(err, collections){
        expect(err).toBe(null);
@@ -25,5 +33,19 @@ describe('Arangodb', () => {
      });
   })
 
+  it('can query the database with AQL', done => {
+    var collection = db.collection('vertices', (err, vertices)=>{
+      vertices.save({hello: 'world'}, (err, result)=>{
+        db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc', (err, cursor) =>{
+          cursor.next((e, doc)=>{
+            expect(doc.hello).toEqual("world");
+            done();
+          });
+        });
+      });
+    });
+  });
+
 })
+
 
