@@ -1,11 +1,9 @@
-process.env.NODE_ENV = 'test'
 
-let config = require('../arangodb_config')["test"]
 
 var request = require('supertest')
   , expect = require('expect')
-  , db = require('arangojs')(config)
-  , app = require('../app');
+  , config = require('../arangodb_config')[process.env.NODE_ENV]
+  , db = require('arangojs')(config);
 
 describe('Arangodb', () => {
 

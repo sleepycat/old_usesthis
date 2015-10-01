@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node_modules/babel/bin/babel-node.js ./bin/www",
-    "test": "mocha --timeout 2000 --compilers js:babel/register test/*.js"
+    "test": "NODE_ENV=test mocha --timeout 2000 --compilers js:babel/register test/*.js"
   },
   "dependencies": {
     "arangojs": "^3.9.1",
