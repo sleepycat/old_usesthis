@@ -34,18 +34,17 @@ describe('Arangodb', () => {
   })
 
   it('can query the database with AQL', done => {
-    var collection = db.collection('vertices', (err, vertices)=>{
-      vertices.save({hello: 'world'}, (err, result)=>{
-        db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc', (err, cursor) =>{
-          cursor.next((e, doc)=>{
-            expect(doc.hello).toEqual("world");
-            done();
-          });
-        });
-      });
+    var collection = db.collection('vertices')
+    .then((vertices)=>{ return vertices.save({hello: 'world'}) })
+    .then((result)=>{
+      return db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc')})
+    .then((cursor) =>{ return cursor.next() })
+    .then((doc)=>{
+      expect(doc.hello).toEqual("world");
+      done();
     });
   });
+});
 
-})
 
 
