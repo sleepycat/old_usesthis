@@ -1,9 +1,15 @@
-process.env.NODE_ENV = 'test'
-
 import { stringify } from 'querystring';
-var express = require('express');
-var request = require('supertest')
-    , app = require('../app');
+import {
+  graphql,
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull
+} from 'graphql';
+var express = require('express')
+  , request = require('supertest')
+  , app = express()
+  , graphqlHTTP = require('express-graphql');
 
 function urlString(urlParams?: ?Object) {
   var string = '/graphql';
@@ -14,7 +20,26 @@ function urlString(urlParams?: ?Object) {
 }
 
 
-describe('GET /graphql', () => {
+describe('Using graphql middleware', () => {
+
+  before(() => {
+    var testSchema = new GraphQLSchema({
+      query: new GraphQLObjectType({
+        name: 'Root',
+        fields: {
+          test: {
+            type: GraphQLString,
+            resolve: (source, args, root, ast) => {
+              return 'Hello World'
+            }
+          }
+        }
+      })
+    });
+
+    app.use('/graphql', graphqlHTTP({"schema": testSchema}))
+  });
+
 
   it('can hit the graphql endpoint', done => {
     request(app)
