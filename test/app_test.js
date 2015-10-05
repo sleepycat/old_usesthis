@@ -20,21 +20,23 @@ describe('App', () => {
   describe('POST /graphql', function(){
 
     before(()=>{
-      db.collection('vertices')
-      .then((vertices)=>{ return vertices.save({hello: 'arangodb!'}) })
     })
 
     after(()=>{
-      db.truncate()
     })
 
-    it('serves data from arango via graphql', done => {
-      request(app)
-      .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send('{"query": "{hello}"}')
-      .expect('{\n  "data": {\n    "hello": "arangodb!"\n  }\n}')
-      .end(done);
+    it('serves a specified location', done => {
+      db.collection('vertices')
+      .then((vertices)=>{ return vertices.save({type: 'location', address: '1234 main st', lat: 45.5, lng: -75.0}) })
+      .then((doc) => { return doc })
+      .then(doc => {
+        request(app)
+        .post('/graphql')
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .send('{"query": "{ location(id:' + doc._key +'){address} }"}')
+        .expect('{\n  "data": {\n    "location": {\n      "address": "1234 main st"\n    }\n  }\n}')
+        .end(done);
+      })
     })
 
   });
