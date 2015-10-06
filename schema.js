@@ -51,7 +51,14 @@ var query = new GraphQLObjectType({
         .then((cursor) => {
           return cursor.next()
         })
-        .then(record => { return record })
+        .then(record => {
+          return {
+            id: record._key,
+            address: record.address,
+            lat: record.lat,
+            lng: record.lng
+          }
+        })
       },
     },
     hello: {
