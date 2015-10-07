@@ -51,6 +51,15 @@ describe('App', () => {
        })
      });
 
+    it('it shows details of the type', done => {
+        request(app)
+        .post('/graphql')
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .send({"query": "{ __type(name: \"Location\"){ name } }"})
+        .expect('{\n  "data": {\n    "__type": {\n      "name": "Location"\n    }\n  }\n}')
+        .end(done);
+      })
+
      it('it can return a collection of locations', done => {
        db.truncate()
        .then(() => { return db.collection('vertices') })
