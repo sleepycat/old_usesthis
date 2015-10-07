@@ -75,8 +75,33 @@ describe('App', () => {
          .set('Content-Type', 'application/json; charset=utf-8')
          .send('{"query": "{ locations{address} }"}')
          .expect((res) => {
+           if(typeof res.body.errors !== 'undefined') throw new Error(res.body.errors[0].message);
            let locations = res.body.data.locations;
            if(!(locations.length == 2)) throw new Error("Response did not include 2 locations.");
+         })
+         .end(done);
+       })
+     });
+
+     // Nota Bene: This test will fail if there no geo indexes created!
+     it('returns a locations within given bounds', done => {
+       db.truncate()
+       .then(() => { return db.collection('vertices') })
+       .then( vertices => {
+         return vertices.import([
+           {"lat":45.4292652,"lng":-75.6900505,"type":"location","address":"126 York Street, Ottawa, ON K1N, Canada"},
+           {"lat":-41.287723,"lng":174.776344,"type":"location","address":"56 Victoria Street, Wellington, Wellington 6011, New Zealand"}
+         ]);
+       })
+       .then(() => {
+         request(app)
+         .post('/graphql')
+         .set('Content-Type', 'application/json; charset=utf-8')
+         .send({"query": "{ locations_within_bounds(sw_lat:45.41670820924417, sw_lng: -75.75180530548096, ne_lat:45.436104879546555, ne_lng:-75.66940784454347){address} }"})
+         .expect((res) => {
+           if(typeof res.body.errors !== 'undefined') throw new Error(res.body.errors[0].message);
+           let locations = res.body.data.locations_within_bounds;
+           if(!(locations.length == 1)) throw new Error("Response included locations outside bounds.");
          })
          .end(done);
        })

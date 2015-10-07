@@ -64,6 +64,36 @@ var query = new GraphQLObjectType({
         })
       }
     },
+    locations_within_bounds: {
+      type: new GraphQLList(location),
+      args: {
+        sw_lat: {
+          type: GraphQLFloat,
+          description: 'The latitude of the southwest corner of the bounding box.',
+        },
+        sw_lng: {
+          type: GraphQLFloat,
+          description: 'The longitude of the southwest corner of the bounding box.',
+        },
+        ne_lat: {
+          type: GraphQLFloat,
+          description: 'The latitude of the northeast corner of the bounding box.',
+        },
+        ne_lng: {
+          type: GraphQLFloat,
+          description: 'The longitude of the northeast corner of the bounding box.',
+        },
+      },
+      resolve: (source, args, root, ast) => {
+        let aql = `RETURN WITHIN_RECTANGLE(vertices, @sw_lat, @sw_lng, @ne_lat, @ne_lng)`
+        let bindvars = {sw_lat: args.sw_lat, sw_lng: args.sw_lng, ne_lat: args.ne_lat, ne_lng: args.ne_lng}
+        return db.query(aql,bindvars)
+        .then((cursor) => {
+          return cursor.all()
+        })
+        .then(arr => { return arr[0] })
+      }
+    },
     hello: {
       type: GraphQLString,
       resolve: (source, args, root, ast) => {
