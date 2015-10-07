@@ -3,6 +3,7 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLList,
   GraphQLFloat,
   GraphQLInt,
   GraphQLNonNull
@@ -46,20 +47,21 @@ var query = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLInt)
         }
       },
-      resolve: (root, { id }) => {
-        return db.query('FOR v IN vertices FILTER TO_STRING(v._key) == TO_STRING(@_key) RETURN v',{ "_key": id })
-        .then((cursor) => {
-          return cursor.next()
-        })
-        .then(record => {
-          return {
-            id: record._key,
-            address: record.address,
-            lat: record.lat,
-            lng: record.lng
-          }
-        })
+      resolve: (source, args, root, ast) => {
+        let aql = "FOR v IN vertices FILTER TO_STRING(v._key) == TO_STRING(@_key) RETURN {id: v._key, lat: v.lat, lng: v.lng, address: v.address}"
+        let bindvars = { "_key": args.id };
+        return db.query(aql, bindvars )
+        .then( cursor => { return cursor.next() })
       },
+    },
+    locations: {
+      type: new GraphQLList(location),
+      resolve: (source, args, root, ast) => {
+        return db.query('FOR v IN vertices FILTER v.type == "location" RETURN v',{})
+        .then((cursor) => {
+          return cursor.all()
+        })
+      }
     },
     hello: {
       type: GraphQLString,
@@ -99,41 +101,6 @@ module.exports.schema = new GraphQLSchema({ query });
 //            "type" : "organization",
 //            "name" : "FaveQuest",
 //            "url" : "http://favequest.com/"
-//          },
-//          {
-//            "_id" : "vertices/2815959973",
-//            "_rev" : "71397985766",
-//            "_key" : "2815959973",
-//            "name" : "java",
-//            "type" : "technology"
-//          },
-//          {
-//            "_id" : "vertices/2783716261",
-//            "_rev" : "71393332710",
-//            "_key" : "2783716261",
-//            "type" : "technology",
-//            "name" : "android"
-//          },
-//          {
-//            "_id" : "vertices/2821596069",
-//            "_rev" : "71398772198",
-//            "_key" : "2821596069",
-//            "name" : "php",
-//            "type" : "technology"
-//          },
-//          {
-//            "_id" : "vertices/2872386469",
-//            "_rev" : "71405850086",
-//            "_key" : "2872386469",
-//            "type" : "technology",
-//            "name" : "blackberry"
-//          },
-//          {
-//            "_id" : "vertices/2868913061",
-//            "_rev" : "71405325798",
-//            "_key" : "2868913061",
-//            "name" : "ios",
-//            "type" : "technology"
 //          }
 //        ]
 //      }

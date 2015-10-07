@@ -19,42 +19,59 @@ describe('App', () => {
 
   describe('POST /graphql', function(){
 
-    before(()=>{
-    })
-
-    after(()=>{
-    })
-
     it('serves a specified location', done => {
-      db.collection('vertices')
-      .then((vertices)=>{ return vertices.save({type: 'location', address: '1234 main st', lat: 45.5, lng: -75.0}) })
-      .then((doc) => { return doc })
-      .then(doc => {
+      let vertex = {type: 'location', address: '1234 Main St', lat: 45.5, lng: -75.0}
+      db.truncate()
+      .then(() => { return db.collection('vertices') })
+      .then( vertices => { return vertices.save(vertex) })
+      .then( doc => {
         request(app)
         .post('/graphql')
         .set('Content-Type', 'application/json; charset=utf-8')
         .send('{"query": "{ location(id:' + doc._key +'){address} }"}')
-        .expect('{\n  "data": {\n    "location": {\n      "address": "1234 main st"\n    }\n  }\n}')
+        .expect('{\n  "data": {\n    "location": {\n      "address": "1234 Main St"\n    }\n  }\n}')
         .end(done);
       })
     })
 
 
-    it('it has an id instead of the Arangodb _key', done => {
-      db.collection('vertices')
-      .then((vertices)=>{ return vertices.save({type: 'location', address: '1234 main st', lat: 45.5, lng: -75.0}) })
-      .then((doc) => { return doc })
-      .then(doc => {
-        request(app)
-        .post('/graphql')
-        .set('Content-Type', 'application/json; charset=utf-8')
-        .send('{"query": "{ location(id:' + doc._key +'){id lat lng address} }"}')
-        .expect('{\n  "data": {\n    "location": {\n      "id": ' + doc._key + ',\n      "lat": 45.5,\n      "lng": -75,\n      "address": "1234 main st"\n    }\n  }\n}'
-)
-        .end(done);
-      })
-    })
+     it('it has an id instead of the Arangodb _key', done => {
+       let vertex = {type: 'location', address: '1234 Main St', lat: 45.5, lng: -75.0}
+       db.truncate()
+       .then(() => { return db.collection('vertices') })
+       .then( vertices =>{ return vertices.save(vertex) })
+       .then( doc => {
+         request(app)
+         .post('/graphql')
+         .set('Content-Type', 'application/json; charset=utf-8')
+         .send('{"query": "{ location(id:' + doc._key +'){id lat lng address} }"}')
+         .expect('{\n  "data": {\n    "location": {\n      "id": ' + doc._key + ',\n      "lat": 45.5,\n      "lng": -75,\n      "address": "1234 Main St"\n    }\n  }\n}'
+         )
+         .end(done);
+       })
+     });
+
+     it('it can return a collection of locations', done => {
+       db.truncate()
+       .then(() => { return db.collection('vertices') })
+       .then( vertices => {
+         return vertices.import([
+           { type: 'location', address: '1234 Main St', lat: 45.5, lng: -75.0 },
+           { type: 'location', address: '1 Sesame St', lat: 43.5, lng: -75.5 }
+         ]);
+       })
+       .then(() => {
+         request(app)
+         .post('/graphql')
+         .set('Content-Type', 'application/json; charset=utf-8')
+         .send('{"query": "{ locations{address} }"}')
+         .expect((res) => {
+           let locations = res.body.data.locations;
+           if(!(locations.length == 2)) throw new Error("Response did not include 2 locations.");
+         })
+         .end(done);
+       })
+     });
 
   });
-
-})
+});
