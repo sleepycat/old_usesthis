@@ -19,6 +19,7 @@ var location = new GraphQLObjectType({
     id: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The unique identifier of the location.',
+      resolve: (location) => { return location._key }
     },
     address: {
       type: GraphQLString,
@@ -48,7 +49,7 @@ var query = new GraphQLObjectType({
         }
       },
       resolve: (source, args, root, ast) => {
-        let aql = "FOR v IN vertices FILTER TO_STRING(v._key) == TO_STRING(@_key) RETURN {id: v._key, lat: v.lat, lng: v.lng, address: v.address}"
+        let aql = "FOR v IN vertices FILTER TO_STRING(v._key) == TO_STRING(@_key) RETURN v"
         let bindvars = { "_key": args.id };
         return db.query(aql, bindvars )
         .then( cursor => { return cursor.next() })
