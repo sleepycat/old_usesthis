@@ -12,6 +12,31 @@ import {
 var dbConfig = require('./arangodb_config')[process.env.NODE_ENV]
   , db = require('arangojs')(dbConfig)
 
+// {"founding_year":2004,"type":"organization","name":"Shopify","url":"http://www.shopify.com"}
+var organization = new GraphQLObjectType({
+  name: 'Organization',
+  description: 'An organization of some kind: a company, NGO, etc.',
+  fields: () => ({
+    id: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The unique identifier of the organization.',
+      resolve: (organization) => { return organization._key }
+    },
+    founding_year: {
+      type: GraphQLInt,
+      description: 'The year the organization was founded',
+    },
+    name: {
+      type: GraphQLString,
+      description: 'The name of the organization.',
+    },
+    uri: {
+      type: GraphQLString,
+      description: 'The URI of the organization.',
+    }
+  }),
+});
+
 var location = new GraphQLObjectType({
   name: 'Location',
   description: 'A physical location on the planet that an organisation is operating out of.',
@@ -32,6 +57,17 @@ var location = new GraphQLObjectType({
     lng: {
       type: GraphQLFloat,
       description: 'The longitude of this location.',
+    },
+    organizations: {
+      type: new GraphQLList(organization),
+      description: 'An array of organizations associated with that location.',
+      resolve: (location) => {
+        let aql = "RETURN GRAPH_NEIGHBORS(@graph, @example, {includeData: true, maxDepth: 2, neighborExamples: [{type: 'organization'}]})"
+        let bindvars = { "example": location, graph: "usesthis" };
+        return db.query(aql, bindvars )
+        .then( cursor => { return cursor.all() })
+        .then( result => { return result[0] })
+      }
     }
   }),
 });
@@ -84,7 +120,7 @@ var query = new GraphQLObjectType({
           description: 'The longitude of the northeast corner of the bounding box.',
         },
       },
-      resolve: (source, args, root, ast) => {
+      resolve: (source, args, ast) => {
         let aql = `RETURN WITHIN_RECTANGLE(vertices, @sw_lat, @sw_lng, @ne_lat, @ne_lng)`
         let bindvars = {sw_lat: args.sw_lat, sw_lng: args.sw_lng, ne_lat: args.ne_lat, ne_lng: args.ne_lng}
         return db.query(aql,bindvars)

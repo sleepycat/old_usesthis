@@ -34,6 +34,24 @@ describe('App', () => {
       })
     })
 
+    it('returns the organizations for the specified location', done => {
+      let vertex_data = require('./data/vertices').vertices
+      let edge_data = require('./data/edges').edges
+      db.truncate()
+      .then(() => { return db.collection('vertices') })
+      .then( vertices => { return vertices.import(vertex_data) })
+      .then(() => { return db.collection('edges') })
+      .then( edges => { return edges.import(edge_data) })
+      .then( doc => {
+        request(app)
+        .post('/graphql')
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .send({"query": "{ location(id:2733712293){address organizations {name uri}} }"})
+        .expect('{\n  "data": {\n    "location": {\n      "address": "126 York Street, Ottawa, ON K1N, Canada",\n      "organizations": [\n        {\n          "name": "Magmic Inc",\n          "uri": null\n        },\n        {\n          "name": "Shopify",\n          "uri": null\n        }\n      ]\n    }\n  }\n}')
+        .end(done);
+      })
+    })
+
 
      it('it has an id instead of the Arangodb _key', done => {
        let vertex = {type: 'location', address: '1234 Main St', lat: 45.5, lng: -75.0}
