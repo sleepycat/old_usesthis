@@ -52,6 +52,23 @@ describe('App', () => {
       })
     })
 
+    it('returns the organizations and technologies for the specified location', done => {
+      let vertex_data = require('./data/vertices').vertices
+      let edge_data = require('./data/edges').edges
+      db.truncate()
+      .then(() => { return db.collection('vertices') })
+      .then( vertices => { return vertices.import(vertex_data) })
+      .then(() => { return db.collection('edges') })
+      .then( edges => { return edges.import(edge_data) })
+      .then( doc => {
+        request(app)
+        .post('/graphql')
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .send({"query": "{ location(id:2733712293){address organizations {name uri technologies {name}}} }"})
+        .expect('{\n  "data": {\n    "location": {\n      "address": "126 York Street, Ottawa, ON K1N, Canada",\n      "organizations": [\n        {\n          "name": "Magmic Inc",\n          "uri": null,\n          "technologies": [\n            {\n              "name": "chef"\n            },\n            {\n              "name": "opengl"\n            },\n            {\n              "name": "objective-c"\n            },\n            {\n              "name": "mysql"\n            },\n            {\n              "name": "javascript"\n            },\n            {\n              "name": "java"\n            },\n            {\n              "name": "c++"\n            },\n            {\n              "name": "php"\n            }\n          ]\n        },\n        {\n          "name": "Shopify",\n          "uri": null,\n          "technologies": [\n            {\n              "name": "git"\n            },\n            {\n              "name": "batman.js"\n            },\n            {\n              "name": "coffeescript"\n            },\n            {\n              "name": "linux"\n            },\n            {\n              "name": "ruby"\n            },\n            {\n              "name": "ruby-on-rails"\n            },\n            {\n              "name": "mysql"\n            }\n          ]\n        }\n      ]\n    }\n  }\n}')
+        .end(done);
+      })
+    })
 
      it('it has an id instead of the Arangodb _key', done => {
        let vertex = {type: 'location', address: '1234 Main St', lat: 45.5, lng: -75.0}
