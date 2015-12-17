@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
+  GraphQLID,
   GraphQLFloat,
   GraphQLInt,
   GraphQLNonNull
@@ -58,7 +59,7 @@ var location = new GraphQLObjectType({
   description: 'A physical location on the planet that an organisation is operating out of.',
   fields: () => ({
     id: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The unique identifier of the location.',
       resolve: (location) => { return location._key }
     },
@@ -113,7 +114,7 @@ var query = new GraphQLObjectType({
       args: {
         id: {
           description: 'id of the location',
-          type: new GraphQLNonNull(GraphQLInt)
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
       resolve: (source, args, ast) => {
