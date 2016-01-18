@@ -9,9 +9,14 @@ var express = require('express')
   , schema = require('./schema').schema
   , graphqlHTTP = require('express-graphql');
 
+
+import exphbs from 'express-handlebars';
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+
+app.engine('.hbs', exphbs({defaultLayout: 'application', extname: '.hbs'}));
+app.set('view engine', '.hbs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
