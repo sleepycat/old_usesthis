@@ -5,7 +5,6 @@ var express = require('express')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')
   , routes = require('./routes/index')
-  , users = require('./routes/users')
   , app = express()
   , schema = require('./schema').schema
   , graphqlHTTP = require('express-graphql');
@@ -23,7 +22,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
 
 app.use('/graphql', graphqlHTTP(req => {
   return { schema: schema , pretty: true}
