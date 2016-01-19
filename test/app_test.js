@@ -7,9 +7,9 @@ var request = require('supertest')
 
 describe('App', () => {
 
-  describe('GET /', function(){
+  describe('GET /', () => {
 
-    it('serves the root route', function(done){
+    it('serves the root route', (done) => {
       request(app)
       .get('/')
       .expect(/Welcome to Express/)
@@ -19,7 +19,7 @@ describe('App', () => {
   });
 
 
-  describe('POST /graphql', function(){
+  describe('POST /graphql', () => {
 
     it('serves a specified location', done => {
       let vertex = {type: 'location', address: '1234 Main St', lat: 45.5, lng: -75.0}
