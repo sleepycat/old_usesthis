@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 app.use('/graphql', graphqlHTTP(req => {
-  return { schema: schema , pretty: true}
+  return { schema: schema , pretty: true, graphiql: true}
 }));
 
 // catch 404 and forward to error handler
