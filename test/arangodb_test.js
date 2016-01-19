@@ -31,17 +31,17 @@ describe('Arangodb', () => {
      });
   })
 
-  it('can query the database with AQL', done => {
-    var collection = db.collection('vertices')
-    .then((vertices)=>{ return vertices.save({hello: 'world'}) })
-    .then((result)=>{
-      return db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc')})
-    .then((cursor) =>{ return cursor.next() })
-    .then((doc)=>{
-      expect(doc.hello).toEqual("world");
-      done();
-    });
-  });
+  it('can query the database with AQL', async (done) => {
+    let vertices = await db.collection('vertices');
+    await vertices.save({hello: 'world'});
+
+    let cursor = await db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc');
+    let result = await cursor.next();
+
+    expect(result.hello).toEqual("world");
+    done();
+  })
+
 });
 
 
