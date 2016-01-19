@@ -1,9 +1,8 @@
+import request from 'supertest'
+import expect from 'expect'
 
-
-var request = require('supertest')
-  , expect = require('expect')
-  , config = require('../arangodb_config')[process.env.NODE_ENV]
-  , db = require('arangojs')(config);
+let config = require('../arangodb_config')[process.env.NODE_ENV]
+let db = require('arangojs')(config);
 
 describe('Arangodb', () => {
 
@@ -15,21 +14,13 @@ describe('Arangodb', () => {
     db.truncate()
   })
 
-  it('can make a db connection', done => {
-     db.collections(function(err, collections){
-       expect(err).toBe(null);
-       done();
-     });
-  })
-
-  it('find vertices and edges collections', done => {
-     db.collections(function(err, collections){
-       let collectionNames = collections.map(function(c){return c.name});
-       expect(collectionNames).toInclude('vertices');
-       expect(collectionNames).toInclude('edges');
-       done();
-     });
-  })
+  it('find vertices and edges collections', async (done) => {
+    let collections = await db.collections();
+    let collectionNames = collections.map((c) => {return c.name});
+    expect(collectionNames).toInclude('vertices');
+    expect(collectionNames).toInclude('edges');
+    done();
+  });
 
   it('can query the database with AQL', async (done) => {
     let vertices = await db.collection('vertices');
