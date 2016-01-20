@@ -43,7 +43,11 @@
     "directories": {
       "baseURL": "public"
     },
-    "dependencies": {},
+    "dependencies": {
+      "leaflet": "github:Leaflet/Leaflet@^0.7.7",
+      "lokka": "npm:lokka@^1.6.1",
+      "lokka-transport-http": "npm:lokka-transport-http@^1.3.0"
+    },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",

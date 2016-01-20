@@ -1,7 +1,14 @@
-<script src="jspm_packages/ystem.js"></script>
+<link href="/stylesheets/leaflet.css" media="all" rel="stylesheet" />
+<style>
+  #map { height: 180px; }
+</style>
+<script src="jspm_packages/system.js"></script>
 <script src="config.js"></script>
 <script>
-  System.import('/javascripts/main.js');
+  document.addEventListener('DOMContentLoaded', () => {
+    System.import('/javascripts/main.js');
+  })
 </script>
 <h1>{{ title }}</h1>
 <p>Welcome to {{ title }}</p>
+<section id="map"></section>
