@@ -31,3 +31,6 @@ npm-debug.log
 
 # Vim swap files
 *.swp
+
+# JSPM
+public/jspm_packages
