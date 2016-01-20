@@ -8,10 +8,12 @@ app.dispatchEvent = function(eventName, data){
   document.dispatchEvent(event);
 };
 
-var map = new L.Map('map').setView([37.75, -122.23], 10);
+var map = new L.Map('map', {zoomControl: false}).setView([37.75, -122.23], 10);
 
 L.Icon.Default.imagePath = '/images';
-var tiles = new L.TileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+  new L.Control.Zoom({ position: 'topright' }).addTo(map);
+  let osmUrl = 'https://{s}.tiles.mapbox.com/v3/mikewilliamson.ic5f5glj/{z}/{x}/{y}.png';
+var tiles = new L.TileLayer(osmUrl, {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
