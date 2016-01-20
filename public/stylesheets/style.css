@@ -1,8 +1,80 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+@import url(http://fonts.googleapis.com/css?family=Ubuntu);
+
+.axis line, .axis path {
+  fill: none;
+  stroke: steelblue;
+  shape-rendering: crispEdges;
 }
 
-a {
-  color: #00B7FF;
+.tick, .tick text{
+  fill: steelblue;
+  font-family: sans-serif;
+  font-size: 0.7em;
+}
+
+
+text {
+ fill: #fff;
+ font-family: sans-serif;
+}
+
+rect { fill: steelblue; }
+
+html, body {
+  height: 100%;
+  margin: 0px;
+}
+
+body {
+  background-color: #eee;
+}
+
+#map {
+  height: 100%;
+}
+
+#sidebar {
+  width:30%;
+  float: right;
+  display: inline-block;
+  border-left: 0.3em solid #4682B4;
+  height: 100%;
+}
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+#title {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 1.5em;
+  color: steelblue;
+}
+
+#detail {
+  font-family: 'Ubuntu', sans-serif;
+  margin: 0.5em;
+  height: 30em;
+  overflow: auto;
+}
+
+.technology {
+  list-style-type: none;
+  color: #eee;
+  padding: 0;
+  background-color: #4682B4;
+  border-bottom: 1px solid #B3CEE1;
+  border-right: 1px solid #B3CEE1;
+  padding: 3px 4px;
+  margin: 2px 2px 2px 0px;
+  text-decoration: none;
+  font-size: 90%;
+  line-height: 1.4;
+  white-space: nowrap;
+  display: inline-block;
 }
