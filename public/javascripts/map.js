@@ -12,9 +12,11 @@ let tiles = new L.TileLayer(osmUrl, { attribution: '&copy; <a href="http://osm.o
 L.Icon.Default.imagePath = '/images';
 
 new L.Control.Zoom({ position: 'topright' }).addTo(map);
+map.markersLayer = new L.FeatureGroup();
 
 map.on('moveend', () => {
   let bounds = map.getBounds()
+  map.markersLayer.clearLayers();
 
   let neLat = bounds.getNorthEast().lat;
   let neLng = bounds.getNorthEast().lng;
@@ -31,8 +33,9 @@ map.on('moveend', () => {
       }
   `, {neLat, neLng, swLat, swLng}).then(result => {
     result.locations_within_bounds.map((location) => {
-      L.marker([location.lat, location.lng]).bindPopup(location.address).addTo(map);
+      map.markersLayer.addLayer(L.marker([location.lat, location.lng]).bindPopup(location.address))
     })
+    map.markersLayer.addTo(map);
   });
 })
 
