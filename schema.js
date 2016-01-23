@@ -177,32 +177,3 @@ var query = new GraphQLObjectType({
 })
 
 module.exports.schema = new GraphQLSchema({ query });
-
-//{
-//    "_id" : "vertices/2871010213",
-//    "_key" : "2871010213",
-//    "_rev" : "71405719014",
-//    "lat" : 45.2392009,
-//    "lng" : -75.9095241,
-//    "type" : "location",
-//    "address" : "11 Brads Court, Stittsville, ON K2S 1V2, Canada",
-//    "children" : [
-//      {
-//        "_id" : "vertices/2870223781",
-//        "_key" : "2870223781",
-//        "_rev" : "71405587942",
-//        "type" : "office",
-//        "children" : [
-//          {
-//            "_id" : "vertices/2870027173",
-//            "_rev" : "71405456870",
-//            "_key" : "2870027173",
-//            "founding_year" : null,
-//            "type" : "organization",
-//            "name" : "FaveQuest",
-//            "url" : "http://favequest.com/"
-//          }
-//        ]
-//      }
-//    ]
-//  }
