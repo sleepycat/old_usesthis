@@ -162,16 +162,6 @@ var query = new GraphQLObjectType({
         })
         .then(arr => { return arr[0] })
       }
-    },
-    hello: {
-      type: GraphQLString,
-      resolve: (source, args, root, ast) => {
-        return 'Hello World'
-      }
-    },
-    thrower: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: () => { throw new Error('Throws!'); }
     }
   }
 })
