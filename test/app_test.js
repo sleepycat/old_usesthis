@@ -48,7 +48,12 @@ describe('App', () => {
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
       .send({"query": "{ location(id:2733712293){address organizations {name uri}} }"})
-      .expect('{\n  "data": {\n    "location": {\n      "address": "126 York Street, Ottawa, ON K1N, Canada",\n      "organizations": [\n        {\n          "name": "Magmic Inc",\n          "uri": null\n        },\n        {\n          "name": "Shopify",\n          "uri": null\n        }\n      ]\n    }\n  }\n}')
+      .expect((response) => {
+        let organizations = response.body.data.location.organizations;
+        if (!(organizations.length > 0)) {
+          throw new Error(`Organizations returned were: ${JSON.stringify(organizations)}. Was expecting more than 0`);
+        }
+      })
       .end(done);
     })
 
@@ -65,7 +70,10 @@ describe('App', () => {
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
       .send({"query": "{ location(id:2733712293){address organizations {name uri technologies {name}}} }"})
-      .expect('{\n  "data": {\n    "location": {\n      "address": "126 York Street, Ottawa, ON K1N, Canada",\n      "organizations": [\n        {\n          "name": "Magmic Inc",\n          "uri": null,\n          "technologies": [\n            {\n              "name": "chef"\n            },\n            {\n              "name": "opengl"\n            },\n            {\n              "name": "objective-c"\n            },\n            {\n              "name": "mysql"\n            },\n            {\n              "name": "javascript"\n            },\n            {\n              "name": "java"\n            },\n            {\n              "name": "c++"\n            },\n            {\n              "name": "php"\n            }\n          ]\n        },\n        {\n          "name": "Shopify",\n          "uri": null,\n          "technologies": [\n            {\n              "name": "git"\n            },\n            {\n              "name": "batman.js"\n            },\n            {\n              "name": "coffeescript"\n            },\n            {\n              "name": "linux"\n            },\n            {\n              "name": "ruby"\n            },\n            {\n              "name": "ruby-on-rails"\n            },\n            {\n              "name": "mysql"\n            }\n          ]\n        }\n      ]\n    }\n  }\n}')
+      .expect((response) => {
+        let technologies = response.body.data.location.organizations[0].technologies;
+        if (!(technologies.length > 0)) throw new Error(`What was returned ${JSON.stringify(technologies)}`);
+      })
       .end(done);
     })
 
