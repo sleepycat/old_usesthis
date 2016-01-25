@@ -12,7 +12,7 @@ describe('App', () => {
     it('serves the root route', (done) => {
       request(app)
       .get('/')
-      .expect(/Welcome to Express/)
+      .expect(/Usesth.is/)
       .end(done);
     })
 
