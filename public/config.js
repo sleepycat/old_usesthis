@@ -17,6 +17,7 @@ System.config({
     "babel": "npm:babel-core@5.8.34",
     "babel-runtime": "npm:babel-runtime@5.8.34",
     "core-js": "npm:core-js@1.2.6",
+    "d3": "github:mbostock/d3@3.5.13",
     "kadirahq/lokka": "github:kadirahq/lokka@1.6.1",
     "leaflet": "github:Leaflet/Leaflet@0.7.7",
     "lokka": "npm:lokka@1.6.1",
