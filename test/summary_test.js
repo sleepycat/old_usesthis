@@ -5,10 +5,11 @@ import testData from './data/locations_within_bounds.json'
 
 describe('summary', () => {
 
-  it('does stuff', async () => {
+  it('creates a summary', async () => {
     let locations = testData.data.locations_within_bounds
     let sums = summary(locations)
-    expect(sums).toInclude({name: "javascript", count: 39})
+    expect(sums.summary).toInclude({name: "javascript", count: 39})
+    expect(sums.sample_size).toEqual(54)
   })
 
 })
