@@ -21,6 +21,7 @@ System.config({
     "leaflet": "github:Leaflet/Leaflet@0.7.7",
     "lokka": "npm:lokka@1.6.1",
     "lokka-transport-http": "npm:lokka-transport-http@1.3.0",
+    "underscore": "npm:underscore@1.8.3",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },
