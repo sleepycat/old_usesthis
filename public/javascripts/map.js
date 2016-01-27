@@ -98,7 +98,7 @@ map.on('moveend', () => {
   `, {neLat, neLng, swLat, swLng}).then(result => {
     map.markersLayer.clearLayers();
     result.locations_within_bounds.map((location) => {
-      map.markersLayer.addLayer(L.marker([location.lat, location.lng]).bindPopup(location.address))
+      map.markersLayer.addLayer(L.marker([location.lat, location.lng]))
     })
     map.markersLayer.addTo(map);
     updateSummary(result.locations_within_bounds)
