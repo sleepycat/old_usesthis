@@ -25,7 +25,7 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "express-graphql": "^0.4.5",
-    "express-handlebars": "^2.0.1",
+    "express-handlebars": "^3.0.0",
     "graphiql": "^0.4.5",
     "graphql": "^0.4.14",
     "morgan": "~1.6.1",
