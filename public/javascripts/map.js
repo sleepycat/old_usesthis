@@ -4,6 +4,27 @@ import Transport from 'lokka-transport-http'
 import summary from './summary'
 import d3 from 'd3'
 
+let createOrganizationView = function(org){
+  var div = document.createElement('div');
+  div.className = 'organization-detail';
+  var link = document.createElement('a');
+  link.href = org.url;
+  link.text = org.name;
+  link.target = '_blank';
+  var nameP = document.createElement('p');
+  nameP.appendChild(link);
+  var techList = document.createElement('ul');
+  org.technologies.forEach(function(element, index, array){
+    var li = document.createElement('li');
+    li.innerHTML = element.name;
+    li.className = 'technology';
+    techList.appendChild(li);
+  });
+  div.appendChild(nameP);
+  div.appendChild(techList);
+  return div;
+};
+
 const client = new Lokka({
     transport: new Transport('/graphql')
 });
@@ -74,6 +95,18 @@ let updateSummary = (rawData) => {
 };
 
 map.on('moveend', () => {
+
+  var markericon = L.icon({
+    iconUrl: '/images/marker-icon.png',
+    iconRetinaUrl: '/images/marker-icon-2x.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [0, -30],
+    shadowUrl: '/images/marker-shadow.png',
+    shadowSize: [41, 41]
+  });
+
+
   let bounds = map.getBounds()
 
   let neLat = bounds.getNorthEast().lat;
@@ -98,7 +131,23 @@ map.on('moveend', () => {
   `, {neLat, neLng, swLat, swLng}).then(result => {
     map.markersLayer.clearLayers();
     result.locations_within_bounds.map((location) => {
-      map.markersLayer.addLayer(L.marker([location.lat, location.lng]))
+
+      let organizations = location.organizations;
+      let AnnotatedMarker = L.Marker.extend({ 'organizations': organizations});
+      let marker = new AnnotatedMarker([location.lat, location.lng], {icon: markericon});
+
+      marker.on('click', function(e){
+        console.log(marker.organizations)
+        var detailDiv = document.querySelector('#detail');
+        while(detailDiv.firstChild){
+          detailDiv.removeChild(detailDiv.firstChild);
+        }
+        organizations.forEach(function(org, index, array){
+          detailDiv.appendChild(createOrganizationView(org));
+        });
+      });
+
+      map.markersLayer.addLayer(marker)
     })
     map.markersLayer.addTo(map);
     updateSummary(result.locations_within_bounds)
