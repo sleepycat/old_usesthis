@@ -35,10 +35,12 @@
   },
   "devDependencies": {
     "expect": "^1.13.4",
+    "isomorphic-fetch": "^2.2.1",
     "locus": "^1.2.0",
     "mocha": "^2.3.3",
     "supertest": "^1.1.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "urijs": "^1.17.0"
   },
   "jspm": {
     "directories": {
@@ -46,10 +48,13 @@
     },
     "dependencies": {
       "d3": "github:mbostock/d3@^3.5.13",
+      "isomorphic-fetch": "npm:isomorphic-fetch@^2.2.1",
       "leaflet": "github:Leaflet/Leaflet@^0.7.7",
       "lokka": "npm:lokka@^1.6.1",
       "lokka-transport-http": "npm:lokka-transport-http@^1.3.0",
-      "underscore": "npm:underscore@^1.8.3"
+      "underscore": "npm:underscore@^1.8.3",
+      "uri": "github:medialize/URI.js@^1.17.0",
+      "urijs": "npm:urijs@^1.17.0"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",

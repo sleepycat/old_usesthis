@@ -18,11 +18,16 @@ System.config({
     "babel-runtime": "npm:babel-runtime@5.8.34",
     "core-js": "npm:core-js@1.2.6",
     "d3": "github:mbostock/d3@3.5.13",
+    "isomorphic-fetch": "npm:isomorphic-fetch@2.2.1",
     "kadirahq/lokka": "github:kadirahq/lokka@1.6.1",
     "leaflet": "github:Leaflet/Leaflet@0.7.7",
     "lokka": "npm:lokka@1.6.1",
     "lokka-transport-http": "npm:lokka-transport-http@1.3.0",
     "underscore": "npm:underscore@1.8.3",
+    "uri": "github:medialize/URI.js@1.17.0",
+    "uri-template": "npm:uri-template@1.0.0",
+    "uri-templates": "npm:uri-templates@0.1.9",
+    "urijs": "npm:urijs@1.17.0",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },
@@ -372,6 +377,17 @@ System.config({
     },
     "npm:string_decoder@0.10.31": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0"
+    },
+    "npm:uri-template@1.0.0": {
+      "pct-encode": "npm:pct-encode@1.0.2"
+    },
+    "npm:uri-templates@0.1.9": {
+      "path": "github:jspm/nodelibs-path@0.1.0",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.0",
+      "util": "github:jspm/nodelibs-util@0.1.0"
+    },
+    "npm:urijs@1.17.0": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:url@0.10.3": {
       "assert": "github:jspm/nodelibs-assert@0.1.0",
