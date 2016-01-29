@@ -3,7 +3,7 @@ module.exports.vertices = [
   {"_id":"vertices/2732073893","_rev":"71386058214","_key":"2732073893","type":"office"},
   {"_id":"vertices/2745115557","_rev":"71388024294","_key":"2745115557","type":"office"},
   {"_id":"vertices/2739807141","_rev":"71387762150","_key":"2739807141","type":"office"},
-  {"_id":"vertices/2735416229","_rev":"71386910182","_key":"2735416229","name":"ruby","type":"technology"},
+  {"_id":"vertices/2735416229","_rev":"71386910182","_key":"2735416229","name":"ruby","type":"technology", "category": "language"},
   {"_id":"vertices/2737841061","_rev":"71387368934","_key":"2737841061","type":"technology","name":"coffeescript"},
   {"_id":"vertices/2733712293","_rev":"71386516966","_key":"2733712293","lat":45.4292652,"lng":-75.6900505,"type":"location","address":"126 York Street, Ottawa, ON K1N, Canada"},
   {"_id":"vertices/2738627493","_rev":"71387500006","_key":"2738627493","name":"mysql","type":"technology"},
