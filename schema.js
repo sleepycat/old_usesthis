@@ -250,14 +250,13 @@ const mutation = new GraphQLObjectType({
 	  `;
 	  let technologyCursor = await db.query(technologyQuery)
 	  let technology = await technologyCursor.next()
-		console.log(`Just inserted ${technology.name}`)
 
 	  let technologyEdge = aqlQuery`
-	    INSERT {_to: ${technology._id}, _from: ${office._id}, type: "uses"} UPDATE {} IN edges RETURN NEW
+	    INSERT {_to: ${technology._id}, _from: ${office._id}, type: "uses"} IN edges RETURN NEW
 	  `;
 	  let technologyEdgeCursor = await db.query(technologyEdge)
+	  let technologyOfficeEdge = await technologyCursor.next()
 	})
-
 
 	return location
       }
