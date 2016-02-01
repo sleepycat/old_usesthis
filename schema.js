@@ -2,6 +2,7 @@ import {
   graphql,
   GraphQLSchema,
   GraphQLObjectType,
+  GraphQLInputObjectType,
   GraphQLString,
   GraphQLList,
   GraphQLID,
@@ -12,6 +13,7 @@ import {
 
 var dbConfig = require('./arangodb_config')[process.env.NODE_ENV]
   , db = require('arangojs')(dbConfig)
+  , aqlQuery = require('arangojs').aqlQuery;
 
 let technology = new GraphQLObjectType({
   name: 'Technology',
@@ -86,7 +88,7 @@ var location = new GraphQLObjectType({
           let aql = `
             LET organizations = (RETURN GRAPH_NEIGHBORS(@graph, @example, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
            FOR org IN FLATTEN(organizations)
-             LET technologies = (RETURN GRAPH_NEIGHBORS(@graph, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology"}], uniqueness:{vertices: "global", edges: "global"} }))
+             LET technologies = (RETURN GRAPH_NEIGHBORS(@graph, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology", category: "language"}], uniqueness:{vertices: "global", edges: "global"} }))
              RETURN MERGE(org, {technologies: FLATTEN(technologies)})
           `
           let bindvars = { "example": source, graph: "usesthis" };
@@ -166,4 +168,101 @@ var query = new GraphQLObjectType({
   }
 })
 
-module.exports.schema = new GraphQLSchema({ query });
+var technologyInput = new GraphQLInputObjectType({
+  name: 'technology',
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    category: { type: new GraphQLNonNull(GraphQLString) }
+  }
+});
+
+const mutation = new GraphQLObjectType({
+  name: "AddOrganization",
+  description: "Add an organization",
+  fields: () => ({
+    createOrganization: {
+      type: location,
+      args: {
+	name: { type: new GraphQLNonNull(GraphQLString) },
+	address: { type: new GraphQLNonNull(GraphQLString) },
+	founding_year: { type: GraphQLInt },
+	url: { type: new GraphQLNonNull(GraphQLString) },
+	lat: { type: new GraphQLNonNull(GraphQLFloat) },
+	lng: { type: new GraphQLNonNull(GraphQLFloat) },
+	technologies: { type: new GraphQLList(technologyInput) }
+      },
+      resolve: async (source, args) => {
+        if(args.technologies.length === 0){
+	  throw new Error('You must supply at least 1 technology.');
+        }
+
+	// find or create a location
+	let latLng = {lat: args.lat, lng: args.lng}
+	let unsavedlocation = {lat: args.lat, lng: args.lng, address: args.address, type: "location"}
+
+	let locationQuery = aqlQuery`
+	  UPSERT ${latLng} INSERT ${unsavedlocation} UPDATE {} IN vertices RETURN NEW
+	`
+	let locationCursor = await db.query(locationQuery)
+        let location = await locationCursor.next()
+
+	// find or create an organization
+  	let unsavedOrganization = {"founding_year": args.founding_year,"type":"organization","name": args.name, "url": args.url}
+	let organizationQuery = aqlQuery`
+	  UPSERT ${unsavedOrganization} INSERT ${unsavedOrganization} UPDATE {} IN vertices RETURN NEW
+	`
+	let organizationCursor = await db.query(organizationQuery)
+        let organization = await organizationCursor.next()
+
+        // Is there an office that connects the org to the location?
+	//org ---works_in ---> office ---located_at---> location
+        // Does this org already have an office at this location?
+	let hasOffice = aqlQuery`
+          LET path = (RETURN GRAPH_SHORTEST_PATH("usesthis", ${organization._id}, ${location._id}, {stopAtFirstMatch: true, direction: "outbound", edgeExamples: [{type: "works_in"}, {type: "located_at"}], includeData: true})[0]) RETURN path[0].vertices[1]
+	`
+	let officeCursor = await db.query(hasOffice)
+        let office = await officeCursor.next()
+
+
+	if(office === null){
+	  let createOffice = aqlQuery`
+	     INSERT {type: "office"} IN vertices RETURN NEW
+	  `
+	  let createOfficeCursor = await db.query(createOffice)
+	  office = await createOfficeCursor.next()
+          // link the org to the office
+	  let orgOfficeEdge = aqlQuery`
+	     INSERT {_to: ${office._id}, _from: ${organization._id}, type: "works_in"} IN edges RETURN NEW
+	  `
+	  let orgOfficeCursor = await db.query(orgOfficeEdge)
+
+	  //and finally link the location and the office
+	  let locOfficeEdge = aqlQuery`
+	     INSERT {_to: ${location._id}, _from: ${office._id}, type: "located_at"} IN edges RETURN NEW
+	  `
+	  let locOfficeCursor = await db.query(locOfficeEdge)
+	}
+
+
+	args.technologies.map(async (unsavedTechnology) => {
+	  let technologyQuery = aqlQuery`
+	    UPSERT ${unsavedTechnology} INSERT ${unsavedTechnology} UPDATE {} IN vertices RETURN NEW
+	  `;
+	  let technologyCursor = await db.query(technologyQuery)
+	  let technology = await technologyCursor.next()
+		console.log(`Just inserted ${technology.name}`)
+
+	  let technologyEdge = aqlQuery`
+	    INSERT {_to: ${technology._id}, _from: ${office._id}, type: "uses"} UPDATE {} IN edges RETURN NEW
+	  `;
+	  let technologyEdgeCursor = await db.query(technologyEdge)
+	})
+
+
+	return location
+      }
+    }
+  })
+});
+
+module.exports.schema = new GraphQLSchema({ query, mutation});

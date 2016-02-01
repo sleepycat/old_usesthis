@@ -18,6 +18,63 @@ describe('App', () => {
 
   });
 
+  describe('Mutations', () => {
+
+    beforeEach(async () => {
+      let vertex_data = require('./data/vertices').vertices
+      let edge_data = require('./data/edges').edges
+      await db.truncate()
+      let vertices = await db.collection('vertices')
+      await vertices.import(vertex_data)
+      let edges = db.collection('edges')
+      await edges.import(edge_data)
+    })
+
+    afterEach(async () => {
+      await db.truncate()
+    })
+
+    it('creates a new organization without duplicating the location', (done) => {
+      let graphql = `
+	mutation {
+	  location:createOrganization(
+	    name: "Kivuto Solutions Inc."
+	    address: "126 York Street, Ottawa, ON K1N, Canada"
+	    lat: 45.4292652
+	    lng: -75.6900505
+	    founding_year: 1997
+	    url: "http://kivuto.com/"
+	    technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
+	  ){
+	    address
+	  }
+	}
+      `
+
+      request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/json; charset=utf-8')
+      .send(`{"query": ${JSON.stringify(graphql)}}`)
+      .expect({data: {location: {address: "126 York Street, Ottawa, ON K1N, Canada"}}})
+      .end(done);
+    })
+
+    it('returns the 2 organizations for the specified location', async (done) => {
+      request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/json; charset=utf-8')
+      .send({"query": "{ location(id:2733712293){address organizations {name uri}} }"})
+      .expect((response) => {
+        let organizations = response.body.data.location.organizations;
+        if (!(organizations.length == 2)) {
+          throw new Error(`Organizations returned were: ${JSON.stringify(organizations)}. Was expecting 2`);
+        }
+      })
+      .end(done);
+    })
+
+
+  })
 
   describe('POST /graphql', () => {
 
