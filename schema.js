@@ -81,6 +81,7 @@ var location = new GraphQLObjectType({
       type: new GraphQLList(organization),
       description: 'An array of organizations associated with that location.',
       resolve: (source, args, ast) => {
+        console.log(`Source in resolve is: ${JSON.stringify(source)}`)
 
         let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
@@ -246,7 +247,7 @@ const mutation = new GraphQLObjectType({
 
 	args.technologies.map(async (unsavedTechnology) => {
 	  let technologyQuery = aqlQuery`
-	    UPSERT ${unsavedTechnology} INSERT ${unsavedTechnology} UPDATE {} IN vertices RETURN NEW
+	    UPSERT ${unsavedTechnology} INSERT MERGE(${unsavedTechnology}, {type: "technology"}) UPDATE {} IN vertices RETURN NEW
 	  `;
 	  let technologyCursor = await db.query(technologyQuery)
 	  let technology = await technologyCursor.next()
@@ -258,7 +259,7 @@ const mutation = new GraphQLObjectType({
 	  let technologyOfficeEdge = await technologyCursor.next()
 	})
 
-	return location
+        return location
       }
     }
   })
