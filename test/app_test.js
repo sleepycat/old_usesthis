@@ -46,7 +46,7 @@ describe('App', () => {
 	    url: "http://kivuto.com/"
 	    technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
 	  ){
-	    address
+            address
 	  }
 	}
       `
@@ -105,7 +105,7 @@ describe('App', () => {
       request(app)
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ location(id:2733712293){address organizations {name uri}} }"})
+      .send({"query": "{ location(id: 2733712293){address organizations {name uri}} }"})
       .expect((response) => {
         let organizations = response.body.data.location.organizations;
         if (!(organizations.length == 2)) {
@@ -155,7 +155,7 @@ describe('App', () => {
       .expect((res) => {
         if(typeof res.body.errors !== 'undefined') throw new error(res.body.errors[0].message);
         let locations = res.body.data.locations;
-        if(!(locations.length == 3)) throw new Error("response did not include 3 locations.");
+        if(!(locations.length == 1)) throw new Error("response did not include 1 location.");
       })
       .end(done);
     });
