@@ -81,7 +81,6 @@ var location = new GraphQLObjectType({
       type: new GraphQLList(organization),
       description: 'An array of organizations associated with that location.',
       resolve: (source, args, ast) => {
-        console.log(`Source in resolve is: ${JSON.stringify(source)}`)
 
         let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
