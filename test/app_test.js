@@ -105,7 +105,7 @@ describe('App', () => {
       request(app)
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ location(id: 2733712293){address organizations {name uri}} }"})
+      .send({"query": "{ location(id: 2733712293){address organizations {name url}} }"})
       .expect((response) => {
         let organizations = response.body.data.location.organizations;
         if (!(organizations.length == 2)) {
@@ -119,7 +119,7 @@ describe('App', () => {
       request(app)
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ location(id:2733712293){address organizations {name uri technologies {name}}} }"})
+      .send({"query": "{ location(id:2733712293){address organizations {name url technologies {name}}} }"})
       .expect((response) => {
         let technologies = response.body.data.location.organizations[0].technologies;
         if (!(technologies.length > 0)) throw new Error(`What was returned ${JSON.stringify(technologies)}`);

@@ -45,9 +45,9 @@ var organization = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The name of the organization.',
     },
-    uri: {
+    url: {
       type: GraphQLString,
-      description: 'The URI of the organization.',
+      description: 'The URL of the organization.',
     },
     technologies: {
       type: new GraphQLList(technology),
