@@ -176,89 +176,99 @@ var technologyInput = new GraphQLInputObjectType({
   }
 });
 
+var locationInput = new GraphQLInputObjectType({
+  name: 'location',
+  fields: {
+    lat: { type: new GraphQLNonNull(GraphQLFloat) },
+    lng: { type: new GraphQLNonNull(GraphQLFloat) },
+    address: { type: new GraphQLNonNull(GraphQLString) }
+  }
+});
+
 const mutation = new GraphQLObjectType({
   name: "AddOrganization",
   description: "Add an organization",
   fields: () => ({
     createOrganization: {
-      type: location,
+      type: organization,
       args: {
 	name: { type: new GraphQLNonNull(GraphQLString) },
-	address: { type: new GraphQLNonNull(GraphQLString) },
 	founding_year: { type: GraphQLInt },
 	url: { type: new GraphQLNonNull(GraphQLString) },
-	lat: { type: new GraphQLNonNull(GraphQLFloat) },
-	lng: { type: new GraphQLNonNull(GraphQLFloat) },
+	locations: { type: new GraphQLList(locationInput) },
 	technologies: { type: new GraphQLList(technologyInput) }
       },
       resolve: async (source, args) => {
         if(args.technologies.length === 0){
 	  throw new Error('You must supply at least 1 technology.');
         }
-
-	// find or create a location
-	let latLng = {lat: args.lat, lng: args.lng}
-	let unsavedlocation = {lat: args.lat, lng: args.lng, address: args.address, type: "location"}
-
-	let locationQuery = aqlQuery`
-	  UPSERT ${latLng} INSERT ${unsavedlocation} UPDATE {} IN vertices RETURN NEW
-	`
-	let locationCursor = await db.query(locationQuery)
-        let location = await locationCursor.next()
-
-	// find or create an organization
-  	let unsavedOrganization = {"founding_year": args.founding_year,"type":"organization","name": args.name, "url": args.url}
-	let organizationQuery = aqlQuery`
-	  UPSERT ${unsavedOrganization} INSERT ${unsavedOrganization} UPDATE {} IN vertices RETURN NEW
-	`
-	let organizationCursor = await db.query(organizationQuery)
-        let organization = await organizationCursor.next()
-
-        // Is there an office that connects the org to the location?
-	//org ---works_in ---> office ---located_at---> location
-        // Does this org already have an office at this location?
-	let hasOffice = aqlQuery`
-          LET path = (RETURN GRAPH_SHORTEST_PATH("usesthis", ${organization._id}, ${location._id}, {stopAtFirstMatch: true, direction: "outbound", edgeExamples: [{type: "works_in"}, {type: "located_at"}], includeData: true})[0]) RETURN path[0].vertices[1]
-	`
-	let officeCursor = await db.query(hasOffice)
-        let office = await officeCursor.next()
+        if(args.locations.length === 0){
+	  throw new Error('You must supply at least 1 location.');
+        }
 
 
-	if(office === null){
-	  let createOffice = aqlQuery`
-	     INSERT {type: "office"} IN vertices RETURN NEW
-	  `
-	  let createOfficeCursor = await db.query(createOffice)
-	  office = await createOfficeCursor.next()
-          // link the org to the office
-	  let orgOfficeEdge = aqlQuery`
-	     INSERT {_to: ${office._id}, _from: ${organization._id}, type: "works_in"} IN edges RETURN NEW
-	  `
-	  let orgOfficeCursor = await db.query(orgOfficeEdge)
+        //This is a function that will be stringified and sent to Arango
+        //to be run in a transaction.
+        var action = String(function (args) {
+          var db = require('org/arangodb').db;
+          var orgData = args[0];
 
-	  //and finally link the location and the office
-	  let locOfficeEdge = aqlQuery`
-	     INSERT {_to: ${location._id}, _from: ${office._id}, type: "located_at"} IN edges RETURN NEW
-	  `
-	  let locOfficeCursor = await db.query(locOfficeEdge)
-	}
+          // find or create an organization
+          var unsavedOrganization = {"founding_year": orgData.founding_year,"type":"organization","name": orgData.name, "url": orgData.url}
+          var organizationQuery = `
+            UPSERT @unsavedOrganization INSERT @unsavedOrganization UPDATE {} IN vertices RETURN NEW
+          `
+          var organization = db._query(organizationQuery, {unsavedOrganization}).toArray()[0]
+
+          orgData.locations.map(function(unsavedLocation){
+
+            var latLng = {lat: unsavedLocation.lat, lng: unsavedLocation.lng}
+            var locationQuery = `
+              UPSERT @latLng INSERT MERGE(@unsavedLocation, {type: "location"}) UPDATE {} IN vertices RETURN NEW
+            `;
+            var location = db._query(locationQuery, {latLng, unsavedLocation}).toArray()[0]
+
+            // Is there an office that connects the org to the location?
+            //org ---works_in ---> office ---located_at---> location
+            // Does this org already have an office at this location?
+            var hasOffice = `
+            LET path = (RETURN GRAPH_SHORTEST_PATH("usesthis", @organization_id, @location_id, {stopAtFirstMatch: true, direction: "outbound", edgeExamples: [{type: "works_in"}, {type: "located_at"}], includeData: true})[0]) RETURN path[0].vertices[1]
+            `
+            var office = db._query(hasOffice, {organization_id: organization._id, location_id: location._id}).toArray()[0]
 
 
-	args.technologies.map(async (unsavedTechnology) => {
-	  let technologyQuery = aqlQuery`
-	    UPSERT ${unsavedTechnology} INSERT MERGE(${unsavedTechnology}, {type: "technology"}) UPDATE {} IN vertices RETURN NEW
-	  `;
-	  let technologyCursor = await db.query(technologyQuery)
-	  let technology = await technologyCursor.next()
+            if(office === null){
+              office = db._query('INSERT {type: "office"} IN vertices RETURN NEW').toArray()[0]
+              // link the org to the office
+              var orgOfficeEdgeQuery = `
+              INSERT {_to: @office_id, _from: @organization_id, type: "works_in"} IN edges RETURN NEW
+              `
+              var orgOfficeEdge =  db._query(orgOfficeEdgeQuery, {office_id: office._id, organization_id: organization._id}).toArray()[0]
 
-	  let technologyEdge = aqlQuery`
-	    INSERT {_to: ${technology._id}, _from: ${office._id}, type: "uses"} IN edges RETURN NEW
-	  `;
-	  let technologyEdgeCursor = await db.query(technologyEdge)
-	  let technologyOfficeEdge = await technologyCursor.next()
-	})
+              //and finally link the location and the office
+              var locOfficeEdgeQuery = `
+                INSERT {_to: @location_id, _from: @office_id, type: "located_at"} IN edges RETURN NEW
+              `
+              var locOfficeEdge = db._query(locOfficeEdgeQuery, {location_id: location._id, office_id: office._id}).toArray()[0]
+            }
 
-        return location
+             orgData.technologies.map(function(unsavedTechnology) {
+               var technologyQuery = `
+                 UPSERT @unsavedTechnology INSERT MERGE(@unsavedTechnology, {type: "technology"}) UPDATE {} IN vertices RETURN NEW
+               `;
+               var technology = db._query(technologyQuery, {unsavedTechnology: unsavedTechnology}).toArray()[0]
+
+               var technologyEdgeQuery = `
+                 INSERT {_to: @technology_id, _from: @office_id, type: "uses"} IN edges RETURN NEW
+               `;
+               var technologyEdge = db._query(technologyEdgeQuery, {technology_id: technology._id, office_id: office._id}).toArray()[0]
+             })
+          })
+
+          return organization
+        });
+
+        return  db.transaction({write: ['vertices', 'edges']}, action, [args])
       }
     }
   })
