@@ -32,5 +32,6 @@ npm-debug.log
 # Vim swap files
 *.swp
 
-# JSPM
-public/jspm_packages
+# Webpack
+public/javascripts/bundle.js
+
