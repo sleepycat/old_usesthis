@@ -1,7 +1,7 @@
 import map from './map'
 import Geocoder from './geocoder'
 
-map.setView([37.75, -122.23], 10);
+//map.setView([37.75, -122.23], 10);
 
 let searchField = document.querySelector('#search_field');
 

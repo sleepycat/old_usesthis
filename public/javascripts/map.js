@@ -1,8 +1,19 @@
-import L from 'leaflet';
 import Lokka from 'lokka'
 import Transport from 'lokka-transport-http'
 import summary from './summary'
 import d3 from 'd3'
+import mapboxgl from 'mapbox-gl'
+import Convert from './convert'
+
+const client = new Lokka({ transport: new Transport('/graphql') })
+
+mapboxgl.accessToken = 'pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu',
+    center: [-122.23, 37.75],
+    zoom: 9
+});
 
 let createOrganizationView = function(org){
   var div = document.createElement('div');
@@ -24,18 +35,6 @@ let createOrganizationView = function(org){
   div.appendChild(techList);
   return div;
 };
-
-const client = new Lokka({
-    transport: new Transport('/graphql')
-});
-
-let map = new L.Map('map', {zoomControl: false})
-let osmUrl = 'https://{s}.tiles.mapbox.com/v3/mikewilliamson.ic5f5glj/{z}/{x}/{y}.png';
-let tiles = new L.TileLayer(osmUrl, { attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
-L.Icon.Default.imagePath = '/images';
-
-new L.Control.Zoom({ position: 'topright' }).addTo(map);
-map.markersLayer = new L.FeatureGroup();
 
 let updateSummary = (rawData) => {
   let data = summary(rawData)
@@ -94,19 +93,9 @@ let updateSummary = (rawData) => {
 
 };
 
-map.on('moveend', () => {
+map.addControl(new mapboxgl.Navigation());
 
-  var markericon = L.icon({
-    iconUrl: '/images/marker-icon.png',
-    iconRetinaUrl: '/images/marker-icon-2x.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [0, -30],
-    shadowUrl: '/images/marker-shadow.png',
-    shadowSize: [41, 41]
-  });
-
-
+let getLocationsWithinBounds = (map) => {
   let bounds = map.getBounds()
 
   let neLat = bounds.getNorthEast().lat;
@@ -115,48 +104,150 @@ map.on('moveend', () => {
   let swLng = bounds.getSouthWest().lng;
   client.query(`
       query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
-        locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
-          id
-          lat
-          lng
-          address
-          organizations {
-            name
-            technologies {
-              name
-            }
-          }
-        }
+	locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
+	  id
+	  lat
+	  lng
+	  address
+	  organizations {
+	    name
+	    technologies {
+	      name
+	    }
+	  }
+	}
       }
   `, {neLat, neLng, swLat, swLng}).then(result => {
-    map.markersLayer.clearLayers();
-    result.locations_within_bounds.map((location) => {
-
-      let organizations = location.organizations;
-      let AnnotatedMarker = L.Marker.extend({ 'organizations': organizations});
-      let marker = new AnnotatedMarker([location.lat, location.lng], {icon: markericon});
-
-      marker.on('click', function(e){
-        console.log(marker.organizations)
-        var detailDiv = document.querySelector('#detail');
-        while(detailDiv.firstChild){
-          detailDiv.removeChild(detailDiv.firstChild);
-        }
-        organizations.forEach(function(org, index, array){
-          detailDiv.appendChild(createOrganizationView(org));
-        });
-      });
-
-      map.markersLayer.addLayer(marker)
-    })
-    map.markersLayer.addTo(map);
     updateSummary(result.locations_within_bounds)
-  });
-})
+
+    map.addSource("markers", {
+      "type": "geojson",
+      "data": Convert.toGeojson(result.locations_within_bounds)
+    });
+
+    map.addLayer({
+      "id": "markers",
+      "type": "symbol",
+      "interactive": true,
+      "source": "markers",
+      "layout": {
+	"icon-image": "{marker-symbol}-24",
+	"text-field": "{title}",
+	"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+	"text-offset": [0, 0.6],
+	"text-anchor": "top"
+      }
+    });
+  })
+}
+
+map.on('moveend', (e) => {
+  map.removeLayer("markers")
+  map.removeSource("markers")
+  getLocationsWithinBounds(map)
+});
+
+map.on('load', function () {
+  getLocationsWithinBounds(map)
+});
+
+map.on('click', (e) => {
+    console.log(e)
+    map.featuresAt(e.point, {
+        radius: 7.5, // Half the marker size (15px).
+        includeGeometry: true,
+        layer: 'markers'
+    }, function (err, features) {
+
+        if (err || !features.length) {
+            return;
+        }
+
+	let detailDiv = document.querySelector('#detail');
+	while(detailDiv.firstChild){
+	  detailDiv.removeChild(detailDiv.firstChild);
+	}
+	features.forEach((feature, index, array) => {
+	  if(feature.properties) {
+	    feature.properties.organizations.forEach((org, i, arr) => {
+	      detailDiv.appendChild(createOrganizationView(org));
+	    })
+	  }
+	});
 
 
+    });
+});
 
 export default map;
 
 
-
+// let map = new L.Map('map', {zoomControl: false})
+// let osmUrl = 'https://{s}.tiles.mapbox.com/v3/mikewilliamson.ic5f5glj/{z}/{x}/{y}.png';
+// let tiles = new L.TileLayer(osmUrl, { attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
+// L.Icon.Default.imagePath = '/images';
+// 
+// new L.Control.Zoom({ position: 'topright' }).addTo(map);
+// map.markersLayer = new L.FeatureGroup();
+// 
+// 
+// map.on('moveend', () => {
+// 
+//   var markericon = L.icon({
+//     iconUrl: '/images/marker-icon.png',
+//     iconRetinaUrl: '/images/marker-icon-2x.png',
+//     iconSize: [25, 41],
+//     iconAnchor: [12, 41],
+//     popupAnchor: [0, -30],
+//     shadowUrl: '/images/marker-shadow.png',
+//     shadowSize: [41, 41]
+//   });
+// 
+// 
+//   let bounds = map.getBounds()
+// 
+//   let neLat = bounds.getNorthEast().lat;
+//   let neLng = bounds.getNorthEast().lng;
+//   let swLat = bounds.getSouthWest().lat;
+//   let swLng = bounds.getSouthWest().lng;
+//   client.query(`
+//       query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
+//         locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
+//           id
+//           lat
+//           lng
+//           address
+//           organizations {
+//             name
+//             technologies {
+//               name
+//             }
+//           }
+//         }
+//       }
+//   `, {neLat, neLng, swLat, swLng}).then(result => {
+//     map.markersLayer.clearLayers();
+//     result.locations_within_bounds.map((location) => {
+// 
+//       let organizations = location.organizations;
+//       let AnnotatedMarker = L.Marker.extend({ 'organizations': organizations});
+//       let marker = new AnnotatedMarker([location.lat, location.lng], {icon: markericon});
+// 
+//       marker.on('click', function(e){
+//         console.log(marker.organizations)
+//         var detailDiv = document.querySelector('#detail');
+//         while(detailDiv.firstChild){
+//           detailDiv.removeChild(detailDiv.firstChild);
+//         }
+//         organizations.forEach(function(org, index, array){
+//           detailDiv.appendChild(createOrganizationView(org));
+//         });
+//       });
+// 
+//       map.markersLayer.addLayer(marker)
+//     })
+//     map.markersLayer.addTo(map);
+//     updateSummary(result.locations_within_bounds)
+//   });
+// })
+// 
