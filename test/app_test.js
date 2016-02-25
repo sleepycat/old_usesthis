@@ -237,5 +237,17 @@ describe('App', () => {
       .end(done);
     });
 
+    it('returns an error if the bounds are to big', async (done) => {
+      // Ask for the whole world
+      request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/json; charset=utf-8')
+      .send({"query": "{ locations_within_bounds(sw_lat: -58.303625959817744, sw_lng: -203.8709457158272, ne_lat: 82.34832466131675, ne_lng:243.65914906226857){address} }"})
+      .expect((res) => {
+        if(!(res.body.errors)) throw new Error(`No error was raise and the bounds were huge!`);
+      })
+      .end(done);
+    });
+
   });
 });

@@ -11,8 +11,8 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvl
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu',
-    center: [-122.23, 37.75],
-    zoom: 9
+    center: [-122.27593323274039, 37.66552780572411],
+    zoom: 10.006562529849507
 });
 
 let createOrganizationView = function(org){
@@ -118,6 +118,7 @@ let getLocationsWithinBounds = (map) => {
 	}
       }
   `, {neLat, neLng, swLat, swLng}).then(result => {
+    //XXX: api is restricted by area. Check for errors!
     updateSummary(result.locations_within_bounds)
 
     map.addSource("markers", {
@@ -142,6 +143,7 @@ let getLocationsWithinBounds = (map) => {
 }
 
 map.on('moveend', (e) => {
+  //console.log(`Map Center: ${JSON.stringify(map.getCenter())} zoom: ${map.getZoom()}`)
   map.removeLayer("markers")
   map.removeSource("markers")
   getLocationsWithinBounds(map)
@@ -180,74 +182,3 @@ map.on('click', (e) => {
 });
 
 export default map;
-
-
-// let map = new L.Map('map', {zoomControl: false})
-// let osmUrl = 'https://{s}.tiles.mapbox.com/v3/mikewilliamson.ic5f5glj/{z}/{x}/{y}.png';
-// let tiles = new L.TileLayer(osmUrl, { attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
-// L.Icon.Default.imagePath = '/images';
-// 
-// new L.Control.Zoom({ position: 'topright' }).addTo(map);
-// map.markersLayer = new L.FeatureGroup();
-// 
-// 
-// map.on('moveend', () => {
-// 
-//   var markericon = L.icon({
-//     iconUrl: '/images/marker-icon.png',
-//     iconRetinaUrl: '/images/marker-icon-2x.png',
-//     iconSize: [25, 41],
-//     iconAnchor: [12, 41],
-//     popupAnchor: [0, -30],
-//     shadowUrl: '/images/marker-shadow.png',
-//     shadowSize: [41, 41]
-//   });
-// 
-// 
-//   let bounds = map.getBounds()
-// 
-//   let neLat = bounds.getNorthEast().lat;
-//   let neLng = bounds.getNorthEast().lng;
-//   let swLat = bounds.getSouthWest().lat;
-//   let swLng = bounds.getSouthWest().lng;
-//   client.query(`
-//       query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
-//         locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
-//           id
-//           lat
-//           lng
-//           address
-//           organizations {
-//             name
-//             technologies {
-//               name
-//             }
-//           }
-//         }
-//       }
-//   `, {neLat, neLng, swLat, swLng}).then(result => {
-//     map.markersLayer.clearLayers();
-//     result.locations_within_bounds.map((location) => {
-// 
-//       let organizations = location.organizations;
-//       let AnnotatedMarker = L.Marker.extend({ 'organizations': organizations});
-//       let marker = new AnnotatedMarker([location.lat, location.lng], {icon: markericon});
-// 
-//       marker.on('click', function(e){
-//         console.log(marker.organizations)
-//         var detailDiv = document.querySelector('#detail');
-//         while(detailDiv.firstChild){
-//           detailDiv.removeChild(detailDiv.firstChild);
-//         }
-//         organizations.forEach(function(org, index, array){
-//           detailDiv.appendChild(createOrganizationView(org));
-//         });
-//       });
-// 
-//       map.markersLayer.addLayer(marker)
-//     })
-//     map.markersLayer.addTo(map);
-//     updateSummary(result.locations_within_bounds)
-//   });
-// })
-// 

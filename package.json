@@ -40,6 +40,7 @@
     "react-dom": "^0.14.6",
     "serve-favicon": "~2.3.0",
     "transform-loader": "^0.2.3",
+    "turf": "^2.0.2",
     "underscore": "^1.8.3",
     "urijs": "^1.17.0",
     "webworkify-webpack": "^1.0.4"

@@ -1,3 +1,5 @@
+import turf from 'turf'
+
 import {
   graphql,
   GraphQLSchema,
@@ -156,6 +158,14 @@ var query = new GraphQLObjectType({
         },
       },
       resolve: (source, args, ast) => {
+
+	// Check the incoming request bounds
+        // If they are to big return an error.
+	var bbox = [args.sw_lng, args.sw_lat, args.ne_lng, args.ne_lat];
+	var poly = turf.bboxPolygon(bbox);
+	var area = turf.area(poly);
+	if(area > 12427311001.261375) throw new Error(`The requested area is to large.`)
+
         let aql = `RETURN WITHIN_RECTANGLE(vertices, @sw_lat, @sw_lng, @ne_lat, @ne_lng)`
         let bindvars = {sw_lat: args.sw_lat, sw_lng: args.sw_lng, ne_lat: args.ne_lat, ne_lng: args.ne_lng}
         return db.query(aql,bindvars)
