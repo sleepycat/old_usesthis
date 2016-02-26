@@ -118,34 +118,42 @@ let getLocationsWithinBounds = (map) => {
 	}
       }
   `, {neLat, neLng, swLat, swLng}).then(result => {
-    //XXX: api is restricted by area. Check for errors!
-    updateSummary(result.locations_within_bounds)
 
-    map.addSource("markers", {
-      "type": "geojson",
-      "data": Convert.toGeojson(result.locations_within_bounds)
-    });
-
-    map.addLayer({
-      "id": "markers",
-      "type": "symbol",
-      "interactive": true,
-      "source": "markers",
-      "layout": {
-	"icon-image": "{marker-symbol}-24",
-	"text-field": "{title}",
-	"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-	"text-offset": [0, 0.6],
-	"text-anchor": "top"
+    if(!(result.locations_within_bounds === [])){
+      try {
+        map.removeLayer("markers")
+        map.removeSource("markers")
       }
-    });
+      catch (e){
+        // move along. Nothing to see here.
+      }
+      updateSummary(result.locations_within_bounds)
+      map.addSource("markers", {
+        "type": "geojson",
+        "data": Convert.toGeojson(result.locations_within_bounds)
+      });
+
+      map.addLayer({
+        "id": "markers",
+        "type": "symbol",
+        "interactive": true,
+        "source": "markers",
+        "layout": {
+          "icon-image": "{marker-symbol}-24",
+          "text-field": "{title}",
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-offset": [0, 0.6],
+          "text-anchor": "top"
+        }
+      });
+    }
+  }, (e) => {
+    console.log(`Error is: ${JSON.stringify(e)}`)
   })
 }
 
 map.on('moveend', (e) => {
   //console.log(`Map Center: ${JSON.stringify(map.getCenter())} zoom: ${map.getZoom()}`)
-  map.removeLayer("markers")
-  map.removeSource("markers")
   getLocationsWithinBounds(map)
 });
 
