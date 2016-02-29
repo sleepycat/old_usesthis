@@ -1,8 +1,6 @@
 import map from './map'
 import Geocoder from './geocoder'
 
-//map.setView([37.75, -122.23], 10);
-
 let searchField = document.querySelector('#search_field');
 
 let searchButton = document.querySelector('#search_button')
@@ -16,7 +14,7 @@ let enterKeyPressedinSearchField = (e) => {
 
 let geocode = (e) => {
   Geocoder.geocode(searchField.value).then((res) => {
-    map.setView([res.lat, res.lng], 10);
+    map.setCenter([res.lng, res.lat], 10);
   });
   return false;
 }
