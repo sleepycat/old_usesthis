@@ -16,7 +16,10 @@ var map = new mapboxgl.Map({
     zoom: 10.006562529849507
 });
 
-map.addControl(new Geocoder());
+map.addControl(new Geocoder({
+  container: 'geocoder-container',
+  placeholder: 'Zoom to your city'
+}));
 
 let createOrganizationView = function(org){
   var div = document.createElement('div');

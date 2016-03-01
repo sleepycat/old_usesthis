@@ -1,22 +1,45 @@
 import mapboxgl from 'mapbox-gl'
-import MapboxClient from 'mapbox/lib/services/geocoder';
-import Typeahead from 'suggestions';
-import debounce from 'lodash.debounce';
-import { EventEmitter } from 'events';
+'use strict';
+/* global mapboxgl */
 
-export default class Geocoder extends mapboxgl.Control {
+var MapboxClient = require('mapbox/lib/services/geocoder');
+var Typeahead = require('suggestions');
+var debounce = require('lodash.debounce');
+var extend = require('xtend');
+var EventEmitter = require('events').EventEmitter;
 
-  options = {
-    position: 'top-left'
-  }
+/**
+ * A geocoder component using Mapbox Geocoding APi
+ * @class mapboxgl.Geocoder
+ *
+ * @param {Object} options
+ * @param {String} [options.position="top-right"] A string indicating the control's position on the map. Options are `top-right`, `top-left`, `bottom-right`, `bottom-left`
+ * @param {String} [options.accessToken=null] Required unless `mapboxgl.accessToken` is set globally
+ * @param {string|element} options.container html element to initialize the map in (or element id as string). if no container is passed map.getcontainer() is used instead.
+ * @param {Array<Array<number>>} options.proximity If set, search results closer to these coordinates will be given higher priority.
+ * @param {Boolean} [options.flyTo=true] If false, animating the map to a selected result is disabled.
+ * @param {String} [options.placeholder="Search"] Override the default placeholder attribute value.
+ * @param {string} options.types a comma seperated list of types that filter results to match those specified. See https://www.mapbox.com/developers/api/geocoding/#filter-type for available types.
+ * @param {string} options.country a comma seperated list of country codes to limit results to specified country or countries.
+ * @example
+ * var geocoder = new mapboxgl.Geocoder();
+ * map.addControl(geocoder);
+ * @return {Geocoder} `this`
+ */
+function Geocoder(options) {
+  this._ev = new EventEmitter();
+  this.options = extend({}, this.options, options);
+}
 
-  constructor(options) {
-    super();
-    this._ev = new EventEmitter();
-    this.options = Object.assign({}, this.options, options);
-  }
+Geocoder.prototype = mapboxgl.util.inherit(mapboxgl.Control, {
 
-  onAdd(map) {
+  options: {
+    position: 'top-left',
+    placeholder: 'Search',
+    flyTo: true
+  },
+
+  onAdd: function(map) {
     this.container = this.options.container ?
       typeof this.options.container === 'string' ?
       document.getElementById(this.options.container) :
@@ -24,48 +47,47 @@ export default class Geocoder extends mapboxgl.Control {
       map.getContainer();
 
     // Template
-    const el = document.createElement('div');
+    var el = document.createElement('div');
     el.className = 'mapboxgl-ctrl-geocoder';
 
-    const icon = document.createElement('span');
-    icon.classList.add('geocoder-icon', 'geocoder-icon-search');
+    var icon = document.createElement('span');
+    icon.className = 'geocoder-icon geocoder-icon-search';
 
-    const input = this._inputEl = document.createElement('input');
+    var input = this._inputEl = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'Search';
+    input.placeholder = this.options.placeholder;
 
-    input.addEventListener('keydown', debounce((e) => {
+    input.addEventListener('keydown', debounce(function(e) {
       // TAB, ESC, LEFT, RIGHT, ENTER, UP, DOWN
       if ([9, 27, 37, 39, 13, 38, 40].indexOf(e.keyCode) !== -1) return;
       this._queryFromInput(e.target.value);
-    }), 200);
+    }.bind(this)), 200);
 
-    input.addEventListener('change', () => {
-      const { selected } = this._typeahead;
-
+    input.addEventListener('change', function() {
+      var selected = this._typeahead.selected;
       if (selected) {
-
-        if (selected.bbox) {
-          const { bbox } = selected;
-          map.fitBounds([[bbox[0], bbox[1]],[bbox[2], bbox[3]]]);
-        } else {
-          map.flyTo({ center: selected.center });
+        if (this.options.flyTo) {
+          if (selected.bbox && selected.context <= 3) {
+            var bbox = selected.bbox;
+            map.fitBounds([[bbox[0], bbox[1]],[bbox[2], bbox[3]]]);
+          } else {
+            map.flyTo({ center: selected.center });
+          }
         }
-
         this._input = selected;
-        this.fire('geocoder.input', { result: selected });
+        this.fire('result', { result: selected });
       }
-    });
+    }.bind(this));
 
-    const actions = document.createElement('div');
+    var actions = document.createElement('div');
     actions.classList.add('geocoder-pin-right');
 
-    const clear = this._clearEl = document.createElement('button');
-    clear.classList.add('geocoder-icon', 'geocoder-icon-close');
+    var clear = this._clearEl = document.createElement('button');
+    clear.className = 'geocoder-icon geocoder-icon-close';
     clear.addEventListener('click', this._clear.bind(this));
 
-    const loading = this._loadingEl = document.createElement('span');
-    loading.classList.add('geocoder-icon', 'geocoder-icon-loading');
+    var loading = this._loadingEl = document.createElement('span');
+    loading.className = 'geocoder-icon geocoder-icon-loading';
 
     actions.appendChild(clear);
     actions.appendChild(loading);
@@ -86,13 +108,13 @@ export default class Geocoder extends mapboxgl.Control {
     this._typeahead.getItemValue = function(item) { return item.place_name; };
 
     return el;
-  }
+  },
 
-  _geocode(q, callback) {
+  _geocode: function(q, callback) {
     this._loadingEl.classList.toggle('active', true);
-    this.fire('geocoder.loading');
+    this.fire('loading');
 
-    const options = {};
+    var options = {};
 
     if (this.options.proximity) {
       options.proximity = {
@@ -104,46 +126,46 @@ export default class Geocoder extends mapboxgl.Control {
     if (this.options.country) options.country = this.options.country;
     if (this.options.types) options.types = this.options.types;
 
-    return this.client.geocodeForward(q.trim(), options, (err, res) => {
+    return this.client.geocodeForward(q.trim(), options, function(err, res) {
       this._loadingEl.classList.toggle('active', false);
-      if (err) return this.fire('geocoder.error', { error: err.message });
+      if (err) return this.fire('error', { error: err.message });
       if (!res.features.length) this._typeahead.selected = null;
       this._typeahead.update(res.features);
       this._clearEl.classList.toggle('active', res.features.length);
       return callback(res.features);
-    });
-  }
+    }.bind(this));
+  },
 
-  _queryFromInput(q) {
+  _queryFromInput: function(q) {
     q = q.trim();
     if (!q) this._clear();
     if (q.length > 2) {
-      this._geocode(q, (results) => {
+      this._geocode(q, function(results) {
         this._results = results;
-      });
+      }.bind(this));
     }
-  }
+  },
 
-  _change() {
-    const onChange = document.createEvent('HTMLEvents');
+  _change: function() {
+    var onChange = document.createEvent('HTMLEvents');
     onChange.initEvent('change', true, false);
     this._inputEl.dispatchEvent(onChange);
-  }
+  },
 
-  _query(input) {
+  _query: function(input) {
     if (!input) return;
-    const q = (typeof input === 'string') ? input : input.join();
-    this._geocode(q, (results) => {
+    var q = (typeof input === 'string') ? input : input.join();
+    this._geocode(q, function(results) {
       if (!results.length) return;
-      const result = results[0];
+      var result = results[0];
       this._results = results;
       this._typeahead.selected = result;
       this._inputEl.value = result.place_name;
       this._change();
-    });
-  }
+    }.bind(this));
+  },
 
-  _clear() {
+  _clear: function() {
     this._input = null;
     this._inputEl.value = '';
     this._typeahead.selected = null;
@@ -151,41 +173,41 @@ export default class Geocoder extends mapboxgl.Control {
     this._change();
     this._inputEl.focus();
     this._clearEl.classList.remove('active');
-    this.fire('geocoder.clear');
-  }
+    this.fire('clear');
+  },
 
   /**
    * Return the input
    * @returns {Object} input
    */
-  getResult() {
+  getResult: function() {
     return this._input;
-  }
+  },
 
   /**
    * Set input
    * @param {Array|String} query An array of coordinates [lng, lat] or location name as a string.
    * @returns {Geocoder} this
    */
-  query(query) {
+  query: function(query) {
     this._query(query);
     return this;
-  }
+  },
 
   /**
    * Subscribe to events that happen within the plugin.
    * @param {String} type name of event. Available events and the data passed into their respective event objects are:
-   * - __geocoder.clear__ `Emitted when the input is cleared`
-   * - __geocoder.loading__ `Emitted when the geocoder is looking up a query`
-   * - __geocoder.input__ `{ result } Fired when input is set`
-   * - __geocoder.error__ `{ error } Error as string
+   * - __clear__ `Emitted when the input is cleared`
+   * - __loading__ `Emitted when the geocoder is looking up a query`
+   * - __result__ `{ result } Fired when input is set`
+   * - __error__ `{ error } Error as string
    * @param {Function} fn function that's called when the event is emitted.
    * @returns {Geocoder} this;
    */
-  on(type, fn) {
+  on: function(type, fn) {
     this._ev.on(type, fn);
     return this;
-  }
+  },
 
   /**
    * Fire an event
@@ -193,10 +215,10 @@ export default class Geocoder extends mapboxgl.Control {
    * @param {Object} data event data to pass to the function subscribed.
    * @returns {Geocoder} this
    */
-  fire(type, data) {
+  fire: function(type, data) {
     this._ev.emit(type, data);
     return this;
-  }
+  },
 
   /**
    * Remove an event
@@ -204,8 +226,14 @@ export default class Geocoder extends mapboxgl.Control {
    * @param {String} type Event name.
    * @param {Function} fn Function that should unsubscribe to the event emitted.
    */
-  off(type, fn) {
+  off: function(type, fn) {
     this._ev.removeListener(type, fn);
     return this;
   }
+});
+
+if (window.mapboxgl) {
+  mapboxgl.Geocoder = Geocoder;
+} else if (typeof module !== 'undefined') {
+  module.exports = Geocoder;
 }
