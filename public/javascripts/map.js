@@ -3,6 +3,7 @@ import Transport from 'lokka-transport-http'
 import summary from './summary'
 import d3 from 'd3'
 import mapboxgl from 'mapbox-gl'
+import Geocoder from './mapbox-geocoder'
 import Convert from './convert'
 
 const client = new Lokka({ transport: new Transport('/graphql') })
@@ -14,6 +15,8 @@ var map = new mapboxgl.Map({
     center: [-122.27593323274039, 37.66552780572411],
     zoom: 10.006562529849507
 });
+
+map.addControl(new Geocoder());
 
 let createOrganizationView = function(org){
   var div = document.createElement('div');
