@@ -50,6 +50,7 @@
     "expect": "^1.13.4",
     "isomorphic-fetch": "^2.2.1",
     "locus": "^1.2.0",
+    "mapbox-gl-flash": "git+https://git@github.com/sleepycat/mapbox-gl-flash.git",
     "mapbox-gl-geocoder": "^0.1.0",
     "mocha": "^2.3.3",
     "supertest": "^1.1.0",

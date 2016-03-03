@@ -1,5 +1,27 @@
 @import url(http://fonts.googleapis.com/css?family=Ubuntu);
 
+.flash-message {
+  text-align: center;
+  color: #ddd;
+  background-color: red;
+  margin: 0;
+}
+
+@-webkit-keyframes fadeout {
+    0% {opacity:1;}
+    100% {opacity:0;}
+}
+@keyframes fadeout {
+    0% {opacity:1;}
+    100% {opacity:0;}
+}
+.fadeOut {
+  opacity:0;
+  -moz-animation   : fadeout 3s linear;
+  -webkit-animation: fadeout 3s linear;
+  animation        : fadeout 3s linear;
+}
+
 .axis line, .axis path {
   fill: none;
   stroke: steelblue;

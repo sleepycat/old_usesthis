@@ -4,7 +4,14 @@ import summary from './summary'
 import d3 from 'd3'
 import mapboxgl from 'mapbox-gl'
 import Geocoder from './mapbox-geocoder'
+import Flash from 'mapbox-gl-flash'
 import Convert from './convert'
+
+let dispatchEvent = (eventName, data) => {
+  let event = document.createEvent('CustomEvent');
+  event.initCustomEvent(eventName, true, false, data);
+  document.dispatchEvent(event);
+};
 
 const client = new Lokka({ transport: new Transport('/graphql') })
 
@@ -16,10 +23,14 @@ var map = new mapboxgl.Map({
     zoom: 10.006562529849507
 });
 
+window.map = map;
 map.addControl(new Geocoder({
   container: 'geocoder-container',
   placeholder: 'Zoom to your city'
 }));
+
+map.addControl(new Flash());
+
 
 let createOrganizationView = function(org){
   var div = document.createElement('div');
@@ -155,6 +166,7 @@ let getLocationsWithinBounds = (map) => {
     }
   }, (e) => {
     console.log(`Error is: ${JSON.stringify(e)}`)
+    dispatchEvent('mapbox.setflash', {message: e.message, info: true, fadeout: 3})
   })
 }
 
