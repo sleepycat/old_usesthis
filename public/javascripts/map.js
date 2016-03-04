@@ -165,8 +165,7 @@ let getLocationsWithinBounds = (map) => {
       });
     }
   }, (e) => {
-    console.log(`Error is: ${JSON.stringify(e)}`)
-    dispatchEvent('mapbox.setflash', {message: e.message, info: true, fadeout: 3})
+    dispatchEvent('mapbox.setflash', {message: e.message.split(':')[1], info: true, fadeout: 3})
   })
 }
 

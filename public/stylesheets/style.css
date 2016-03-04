@@ -1,25 +1,22 @@
 @import url(http://fonts.googleapis.com/css?family=Ubuntu);
 
 .flash-message {
+  font-family: 'Ubuntu', sans-serif;
+  position: relative;
   text-align: center;
-  color: #ddd;
-  background-color: red;
+  top: 1.5em;
+  border-radius: 0.5em;
+  width: 60%;
+  left:20%;
+  right:20%;
+  color: #fff;
   margin: 0;
+  padding: 0.5em;
+  background-color: steelblue;
 }
 
-@-webkit-keyframes fadeout {
-    0% {opacity:1;}
-    100% {opacity:0;}
-}
-@keyframes fadeout {
-    0% {opacity:1;}
-    100% {opacity:0;}
-}
-.fadeOut {
-  opacity:0;
-  -moz-animation   : fadeout 3s linear;
-  -webkit-animation: fadeout 3s linear;
-  animation        : fadeout 3s linear;
+.flash-message.info {
+  background-color: steelblue;
 }
 
 .axis line, .axis path {
