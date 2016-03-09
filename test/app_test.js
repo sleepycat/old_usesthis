@@ -214,18 +214,6 @@ describe('App', () => {
       .end(done);
     })
 
-    it('it can return a collection of locations', async (done) => {
-      request(app)
-      .post('/graphql')
-      .set('content-type', 'application/json; charset=utf-8')
-      .send('{"query": "{ locations{address} }"}')
-      .expect((res) => {
-        if(typeof res.body.errors !== 'undefined') throw new error(res.body.errors[0].message);
-        let locations = res.body.data.locations;
-        if(!(locations.length == 1)) throw new Error("response did not include 1 location.");
-      })
-      .end(done);
-    });
 
     // Nota Bene: This test will fail if there no geo indexes created!
     it('returns a locations within given bounds', async (done) => {

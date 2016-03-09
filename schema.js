@@ -148,15 +148,6 @@ var query = new GraphQLObjectType({
         return results.next()
       }
     },
-    locations: {
-      type: new GraphQLList(location),
-      resolve: (source, args, ast) => {
-        return db.query('FOR v IN vertices FILTER v.type == "location" RETURN v',{})
-        .then((cursor) => {
-          return cursor.all()
-        })
-      }
-    },
     locations_within_bounds: {
       type: new GraphQLList(location),
       args: {
