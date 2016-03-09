@@ -1,11 +1,11 @@
 module.exports = {
   "production" : {
-    "databaseName": process.env.USESTHIS_PROD_DB_NAME,
-    "url": process.env.USESTHIS_PROD_DB_HOST,
+    "databaseName": process.env.USESTHIS_PRODUCTION_DB_NAME,
+    "url": process.env.USESTHIS_PRODUCTION_DB_URL,
   },
   "development" : {
     "databaseName": process.env.USESTHIS_DEVELOPMENT_DB_NAME,
-    "url": process.env.USESTHIS_DEVELOPMENT_URL
+    "url": process.env.USESTHIS_DEVELOPMENT_DB_URL
   },
   "test" : {
     "databaseName": "usesthis_test",

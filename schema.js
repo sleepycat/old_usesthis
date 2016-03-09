@@ -13,9 +13,10 @@ import {
   GraphQLNonNull
 } from 'graphql';
 
-var dbConfig = require('./arangodb_config')[process.env.NODE_ENV]
-  , db = require('arangojs')(dbConfig)
-  , aqlQuery = require('arangojs').aqlQuery;
+var env = process.env.NODE_ENV || "development"
+var dbConfig = require('./arangodb_config')[env]
+    , db = require('arangojs')(dbConfig)
+    , aqlQuery = require('arangojs').aqlQuery;
 
 let technology = new GraphQLObjectType({
   name: 'Technology',
