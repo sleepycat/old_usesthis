@@ -54,7 +54,16 @@ var organization = new GraphQLObjectType({
     },
     technologies: {
       type: new GraphQLList(technology),
-      description: 'An array of the technologies at use by this organization.'
+      description: 'An array of the technologies at use by this organization.',
+      resolve: async (source, args, ast) => {
+        let query = aqlQuery`
+          FOR v,e,p IN 2 OUTBOUND ${source} edges
+            FILTER v.type == 'technology'
+             RETURN v
+        `
+        let results = await db.query(query)
+        return results.all()
+      }
     }
   }),
 });

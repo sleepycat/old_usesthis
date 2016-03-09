@@ -159,6 +159,16 @@ describe('App', () => {
       .end(done);
     })
 
+    it('finds technologies for the named organization', async (done) => {
+      request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query { organization(name: "Shopify"){technologies{name}} }`)
+      .expect(`{\n  "data": {\n    "organization": {\n      "technologies": [\n        {\n          "name": "coffeescript"\n        },\n        {\n          "name": "ruby-on-rails"\n        },\n        {\n          "name": "mysql"\n        },\n        {\n          "name": "git"\n        },\n        {\n          "name": "ruby"\n        },\n        {\n          "name": "linux"\n        },\n        {\n          "name": "batman.js"\n        }\n      ]\n    }\n  }\n}`)
+      .end(done);
+    })
+
+
     it('serves a specified location', async (done) => {
       request(app)
       .post('/graphql')
