@@ -129,6 +129,25 @@ var query = new GraphQLObjectType({
         .then( cursor => { return cursor.next() })
       },
     },
+    organization: {
+      type: organization,
+      args: {
+        name: {
+          description: 'the name of the organization',
+          type: new GraphQLNonNull(GraphQLString)
+        }
+      },
+      resolve: async (source, args, ast) => {
+        let query = aqlQuery`
+        FOR v IN vertices
+          FILTER v.type == "organization" && v.name == ${args.name}
+          LIMIT 1
+            RETURN v
+        `
+        let results =  await db.query(query)
+        return results.next()
+      }
+    },
     locations: {
       type: new GraphQLList(location),
       resolve: (source, args, ast) => {

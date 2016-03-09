@@ -150,6 +150,15 @@ describe('App', () => {
       await db.truncate()
     })
 
+    it('serves an organization by name', async (done) => {
+      request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query { organization(name: "Shopify"){founding_year} }`)
+      .expect(`{\n  "data": {\n    "organization": {\n      "founding_year": 2004\n    }\n  }\n}`)
+      .end(done);
+    })
+
     it('serves a specified location', async (done) => {
       request(app)
       .post('/graphql')
