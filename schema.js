@@ -1,4 +1,12 @@
 import turf from 'turf'
+import {
+  technologiesForOrganization,
+  orgsAndTechnologiesForLocation,
+  orgsForLocation,
+  organizationByName,
+  locationByID,
+  locationsWithinBounds
+} from './data/database'
 
 import {
   graphql,
@@ -55,14 +63,8 @@ var organization = new GraphQLObjectType({
     technologies: {
       type: new GraphQLList(technology),
       description: 'An array of the technologies at use by this organization.',
-      resolve: async (source, args, ast) => {
-        let query = aqlQuery`
-          FOR v,e,p IN 2 OUTBOUND ${source} edges
-            FILTER v.type == 'technology'
-             RETURN v
-        `
-        let results = await db.query(query)
-        return results.all()
+      resolve: (source, args, ast) => {
+        return technologiesForOrganization(source._id)
       }
     }
   }),
@@ -97,22 +99,9 @@ var location = new GraphQLObjectType({
         let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
         if(requestedFields.includes('technologies')) {
-          let aql = `
-            LET organizations = (RETURN GRAPH_NEIGHBORS(@graph, @example, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
-           FOR org IN FLATTEN(organizations)
-             LET technologies = (RETURN GRAPH_NEIGHBORS(@graph, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology", category: "language"}], uniqueness:{vertices: "global", edges: "global"} }))
-             RETURN MERGE(org, {technologies: FLATTEN(technologies)})
-          `
-          let bindvars = { "example": source, graph: "usesthis" };
-          return db.query(aql, bindvars )
-          .then( cursor => { return cursor.all() })
-          .then( result => { return result })
+          return orgsAndTechnologiesForLocation(source._id)
         } else {
-          let aql = "RETURN GRAPH_NEIGHBORS(@graph, @example, {includeData: true, maxDepth: 2, neighborExamples: [{type: 'organization'}]})"
-          let bindvars = { "example": source, graph: "usesthis" };
-          return db.query(aql, bindvars )
-          .then( cursor => { return cursor.all() })
-          .then( result => { return result[0] })
+          return orgsForLocation(source._id)
         }
       }
     }
@@ -132,10 +121,7 @@ var query = new GraphQLObjectType({
         }
       },
       resolve: (source, args, ast) => {
-        let aql = "FOR v IN vertices FILTER TO_STRING(v._key) == TO_STRING(@_key) RETURN v"
-        let bindvars = { "_key": args.id };
-        return db.query(aql, bindvars )
-        .then( cursor => { return cursor.next() })
+        return locationByID(args.id)
       },
     },
     organization: {
@@ -147,14 +133,7 @@ var query = new GraphQLObjectType({
         }
       },
       resolve: async (source, args, ast) => {
-        let query = aqlQuery`
-        FOR v IN vertices
-          FILTER v.type == "organization" && v.name == ${args.name}
-          LIMIT 1
-            RETURN v
-        `
-        let results =  await db.query(query)
-        return results.next()
+         return organizationByName(args.name)
       }
     },
     locations_within_bounds: {
@@ -186,13 +165,7 @@ var query = new GraphQLObjectType({
 	var area = turf.area(poly);
 	if(area > 12427311001.261375) throw new Error(`The requested area is too large.`)
 
-        let aql = `RETURN WITHIN_RECTANGLE(vertices, @sw_lat, @sw_lng, @ne_lat, @ne_lng)`
-        let bindvars = {sw_lat: args.sw_lat, sw_lng: args.sw_lng, ne_lat: args.ne_lat, ne_lng: args.ne_lng}
-        return db.query(aql,bindvars)
-        .then((cursor) => {
-          return cursor.all()
-        })
-        .then(arr => { return arr[0] })
+        return locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
       }
     }
   }
