@@ -64,7 +64,13 @@ var organization = new GraphQLObjectType({
       type: new GraphQLList(technology),
       description: 'An array of the technologies at use by this organization.',
       resolve: (source, args, ast) => {
+        // Technologies may have been added in a single query in the
+        // resolve function under location.organizations.
+        if(typeof source.technologies === 'undefined'){
         return technologiesForOrganization(source._id)
+        } else {
+          return source.technologies
+        }
       }
     }
   }),
@@ -98,6 +104,8 @@ var location = new GraphQLObjectType({
 
         let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
+        //TODO: is it actually faster to do organizations and
+        //technologies in a single query? Test this assumption.
         if(requestedFields.includes('technologies')) {
           return orgsAndTechnologiesForLocation(source._id)
         } else {
