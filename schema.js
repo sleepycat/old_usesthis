@@ -8,6 +8,8 @@ import {
   locationsWithinBounds
 } from './data/database'
 
+import UrlType from './data/custom_types/urlType'
+
 import {
   graphql,
   GraphQLSchema,
@@ -205,7 +207,7 @@ const mutation = new GraphQLObjectType({
       args: {
 	name: { type: new GraphQLNonNull(GraphQLString) },
 	founding_year: { type: GraphQLInt },
-	url: { type: new GraphQLNonNull(GraphQLString) },
+	url: { type: new GraphQLNonNull(UrlType) },
 	locations: { type: new GraphQLList(locationInput) },
 	technologies: { type: new GraphQLList(technologyInput) }
       },
