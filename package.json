@@ -41,7 +41,6 @@
     "transform-loader": "^0.2.3",
     "turf": "^2.0.2",
     "underscore": "^1.8.3",
-    "urijs": "^1.17.1",
     "webworkify-webpack": "^1.0.4"
   },
   "devDependencies": {
