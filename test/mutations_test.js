@@ -116,5 +116,35 @@ describe('Mutations', () => {
 
     })
   })
+
+
+  it('rejects malformed urls', (done) => {
+    let graphql = `
+      mutation {
+        location:createOrganization(
+          name: "Kivuto Solutions Inc."
+          founding_year: 1997
+          url: "foo"
+          locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
+          technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
+        ){
+          name
+          founding_year
+          url
+        }
+      }
+    `
+
+    request(app)
+    .post('/graphql')
+    .set('Content-Type', 'application/graphql; charset=utf-8')
+    .send(graphql)
+    .expect((response) => {
+      if (!(response.body.errors)) throw new Error(`Expected invalid date to raise an error. Got ${JSON.stringify(response.body)}`)
+      var error = response.body.errors[0]
+      if (!( error.message == "Query error: Not a valid URL")) throw new Error(`Expected invalid date to raise an error. Got ${JSON.stringify(response)}`)
+    })
+    .end(done);
+  })
 })
 
