@@ -127,6 +127,7 @@ let getLocationsWithinBounds = (map) => {
 	  lng
 	  address
 	  organizations {
+            url
 	    name
 	    technologies {
 	      name
