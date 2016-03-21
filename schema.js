@@ -229,9 +229,9 @@ const mutation = new GraphQLObjectType({
           // find or create an organization
           var unsavedOrganization = {"founding_year": orgData.founding_year,"type":"organization","name": orgData.name, "url": orgData.url}
           var organizationQuery = `
-            UPSERT @unsavedOrganization INSERT @unsavedOrganization UPDATE {} IN vertices RETURN NEW
+            UPSERT {name: @orgName} INSERT @unsavedOrganization UPDATE {} IN vertices RETURN NEW
           `
-          var organization = db._query(organizationQuery, {unsavedOrganization}).toArray()[0]
+          var organization = db._query(organizationQuery, {orgName: unsavedOrganization.name, unsavedOrganization}).toArray()[0]
 
           orgData.locations.map(function(unsavedLocation){
 
