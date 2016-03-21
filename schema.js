@@ -185,7 +185,7 @@ var technologyInput = new GraphQLInputObjectType({
   name: 'technology',
   fields: {
     name: { type: new GraphQLNonNull(GraphQLString) },
-    category: { type: new GraphQLNonNull(GraphQLString) }
+    category: { type: GraphQLString }
   }
 });
 
