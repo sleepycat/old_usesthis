@@ -90,9 +90,9 @@ export async function addOrganization(organization) {
       //org ---works_in ---> office ---located_at---> location
       // Does this org already have an office at this location?
       var hasOffice = `
-      LET path = (RETURN GRAPH_SHORTEST_PATH("usesthis", @organization_id, @location_id, {stopAtFirstMatch: true, direction: "outbound", edgeExamples: [{type: "works_in"}, {type: "located_at"}], includeData: true})[0]) RETURN path[0].vertices[1]
+      LET path = (RETURN GRAPH_SHORTEST_PATH(@graph, @organization_id, @location_id, {stopAtFirstMatch: true, direction: "outbound", edgeExamples: [{type: "works_in"}, {type: "located_at"}], includeData: true})[0]) RETURN path[0].vertices[1]
       `
-      var office = db._query(hasOffice, {organization_id: organization._id, location_id: location._id}).toArray()[0]
+      var office = db._query(hasOffice, {graph: "usesthis", organization_id: organization._id, location_id: location._id}).toArray()[0]
 
 
       if(office === null){
