@@ -146,5 +146,35 @@ describe('Mutations', () => {
     })
     .end(done);
   })
+
+  it('rejects bad years', (done) => {
+    let graphql = `
+      mutation {
+        location:createOrganization(
+          name: "Kivuto Solutions Inc."
+          founding_year: 2100
+          url: "foo"
+          locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
+          technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
+        ){
+          name
+          founding_year
+          url
+        }
+      }
+    `
+
+    request(app)
+    .post('/graphql')
+    .set('Content-Type', 'application/graphql; charset=utf-8')
+    .send(graphql)
+    .expect((response) => {
+      let error = response.body.errors[0]
+      if (!(error)) throw new Error(`Expected invalid year to raise an error. Got ${JSON.stringify(response.body)}`)
+      if (!( error.message.includes("between 1600 and the current year"))) throw new Error(`Expected invalid year to raise an error. Got ${JSON.stringify(response.body)}`)
+    })
+    .end(done);
+  })
+
 })
 

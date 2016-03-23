@@ -10,6 +10,7 @@ import {
 } from './data/database'
 
 import UrlType from './data/custom_types/urlType'
+import YearType from './data/custom_types/yearType'
 
 import {
   graphql,
@@ -207,7 +208,7 @@ const mutation = new GraphQLObjectType({
       type: organization,
       args: {
 	name: { type: new GraphQLNonNull(GraphQLString) },
-	founding_year: { type: GraphQLInt },
+	founding_year: { type: YearType },
 	url: { type: new GraphQLNonNull(UrlType) },
 	locations: { type: new GraphQLList(locationInput) },
 	technologies: { type: new GraphQLList(technologyInput) }
