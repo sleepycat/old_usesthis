@@ -140,9 +140,9 @@ describe('Mutations', () => {
     .set('Content-Type', 'application/graphql; charset=utf-8')
     .send(graphql)
     .expect((response) => {
-      if (!(response.body.errors)) throw new Error(`Expected invalid date to raise an error. Got ${JSON.stringify(response.body)}`)
+      if (!(response.body.errors)) throw new Error(`Expected invalid URL to raise an error. Got ${JSON.stringify(response.body)}`)
       var error = response.body.errors[0]
-      if (!( error.message == "Query error: Not a valid URL")) throw new Error(`Expected invalid date to raise an error. Got ${JSON.stringify(response)}`)
+      if (!( error.message == "Query error: Not a valid URL")) throw new Error(`Expected invalid URL to raise an error. Got ${JSON.stringify(response.body)}`)
     })
     .end(done);
   })
