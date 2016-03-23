@@ -9,6 +9,8 @@ services:
     ports:
       - "3000:3000"
     image: mikewilliamson/usesthis
+    links:
+      - arangodb
   arangodb:
     environment:
       - "ARANGO_NO_AUTH=1"
