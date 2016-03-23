@@ -32,8 +32,11 @@ let schema = new GraphQLSchema({
       add_url: {
 	type: UrlType,
 	args: {
-	  url: { type: new GraphQLNonNull(UrlType) },
-	},
+	  url: { type: new GraphQLInputObjectType({
+            name: 'URLinput',
+            fields: { url: { type: new GraphQLNonNull(UrlType) } }
+          })}
+        },
 	resolve: (source, args) => {
 	  return "http://www.example.com"
 	},
@@ -58,16 +61,10 @@ describe('The UrlType', () => {
 
   it('can be used as an type with input objects', async () => {
 
-    let urlInput = new GraphQLInputObjectType({
-      name: 'inputURL',
-      fields: { url: { type: new GraphQLNonNull(UrlType) } }
-    });
-
-
     let query = `
       mutation foo {
         add_url(
-	  url: "http://www.example.com"
+	  url: {url: "http://www.example.com"}
 	)
       }
     `;
@@ -78,16 +75,10 @@ describe('The UrlType', () => {
 
   it('will throw and error if you try to add something that is not a url', async () => {
 
-    let urlInput = new GraphQLInputObjectType({
-      name: 'inputURL',
-      fields: { url: { type: new GraphQLNonNull(UrlType) } }
-    });
-
-
     let query = `
       mutation foo {
         add_url(
-	  url: "foo"
+	  url: {url: "foo"}
 	)
       }
     `;
