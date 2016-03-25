@@ -1,8 +1,7 @@
 require("babel-polyfill");
+import { db } from '../data/database'
 
 let request = require('supertest')
-  , dbConfig = require('../arangodb_config')[process.env.NODE_ENV]
-  , db = require('arangojs')(dbConfig)
   , app = require('../app');
 
 describe('Mutations', () => {

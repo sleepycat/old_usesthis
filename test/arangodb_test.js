@@ -1,9 +1,8 @@
 require("babel-polyfill");
 import request from 'supertest'
 import expect from 'expect'
+import { db } from '../data/database'
 
-let config = require('../arangodb_config')[process.env.NODE_ENV]
-let db = require('arangojs')(config);
 let vertices = db.collection('vertices')
 let edges = db.collection('edges')
 var aqlQuery = require('arangojs').aqlQuery;
