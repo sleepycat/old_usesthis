@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "babel-node ./bin/www",
-    "test": "NODE_ENV=test mocha --timeout 2000 --require babel-core/register test/*.js"
+    "test": "NODE_ENV=test mocha --timeout 2000 --recursive --require babel-core/register test"
   },
   "babel": {
     "presets": [
