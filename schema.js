@@ -1,4 +1,5 @@
 import turf from 'turf'
+
 import {
   organizationByName,
   locationByID,
@@ -10,12 +11,12 @@ import UrlType from './data/types/urlType'
 import YearType from './data/types/yearType'
 import Location from './data/types/location'
 import Organization from './data/types/organization'
+import TechnologyInput from './data/types/input/technologyInput'
+import LocationInput from './data/types/input/locationInput'
 
 import {
-  graphql,
   GraphQLSchema,
   GraphQLObjectType,
-  GraphQLInputObjectType,
   GraphQLString,
   GraphQLList,
   GraphQLID,
@@ -86,22 +87,7 @@ var query = new GraphQLObjectType({
   }
 })
 
-var technologyInput = new GraphQLInputObjectType({
-  name: 'technology',
-  fields: {
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    category: { type: GraphQLString }
-  }
-});
 
-var locationInput = new GraphQLInputObjectType({
-  name: 'location',
-  fields: {
-    lat: { type: new GraphQLNonNull(GraphQLFloat) },
-    lng: { type: new GraphQLNonNull(GraphQLFloat) },
-    address: { type: new GraphQLNonNull(GraphQLString) }
-  }
-});
 
 const mutation = new GraphQLObjectType({
   name: "AddOrganization",
@@ -113,8 +99,8 @@ const mutation = new GraphQLObjectType({
 	name: { type: new GraphQLNonNull(GraphQLString) },
 	founding_year: { type: YearType },
 	url: { type: new GraphQLNonNull(UrlType) },
-	locations: { type: new GraphQLList(locationInput) },
-	technologies: { type: new GraphQLList(technologyInput) }
+	locations: { type: new GraphQLList(LocationInput) },
+	technologies: { type: new GraphQLList(TechnologyInput) }
       },
       resolve: async (source, args) => {
         if(args.technologies.length === 0){
