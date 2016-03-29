@@ -11,8 +11,7 @@ import {
   GraphQLNonNull
 } from 'graphql';
 
-import UrlType from '../data/types/urlType'
-import YearType from '../data/types/yearType'
+import YearType from '../../data/types/yearType'
 
 let schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -21,13 +20,6 @@ let schema = new GraphQLSchema({
       year: {
         type: YearType,
 	resolve: () => 1993
-      },
-      url: {
-	type: UrlType,
-	args: {},
-	resolve: () => {
-	  return "https://www.example.com"
-	},
       }
     })
   }),
@@ -45,72 +37,15 @@ let schema = new GraphQLSchema({
 	resolve: (source, args) => {
 	  return args.year
 	},
-      },
-      add_url: {
-	type: UrlType,
-	args: {
-	  url: { type: new GraphQLInputObjectType({
-            name: 'URLinput',
-            fields: { url: { type: new GraphQLNonNull(UrlType) } }
-          })}
-        },
-	resolve: (source, args) => {
-	  return "http://www.example.com"
-	},
       }
     })
   })
 });
 
-describe('The UrlType', () => {
-
-  it('correctly returns something using the url type', async () => {
-
-    let query = `
-      query fooQuery {
-	url
-      }
-    `;
-
-    let result = await graphql(schema, query);
-    expect(result.data.url).toEqual('https://www.example.com');
-  })
-
-  it('can be used as an type with input objects', async () => {
-
-    let query = `
-      mutation foo {
-        add_url(
-	  url: {url: "http://www.example.com"}
-	)
-      }
-    `;
-
-    let result = await graphql(schema, query);
-    expect(result.data.add_url).toEqual('http://www.example.com');
-  })
-
-  it('will throw and error if you try to add something that is not a url', async () => {
-
-    let query = `
-      mutation foo {
-        add_url(
-	  url: {url: "foo"}
-	)
-      }
-    `;
-
-    let result = await graphql(schema, query);
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude("Not a valid URL");
-  })
-
-})
-
 
 describe('The YearType', () => {
 
-  it('can be used in a shema', async () => {
+  it('can be used in a schema', async () => {
 
     let query = `
       query fooQuery {
@@ -202,3 +137,4 @@ describe('The YearType', () => {
   })
 
 })
+
