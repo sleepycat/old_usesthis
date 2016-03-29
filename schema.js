@@ -1,8 +1,5 @@
 import turf from 'turf'
 import {
-  technologiesForOrganization,
-  orgsAndTechnologiesForLocation,
-  orgsForLocation,
   organizationByName,
   locationByID,
   locationsWithinBounds,
@@ -11,6 +8,8 @@ import {
 
 import UrlType from './data/types/urlType'
 import YearType from './data/types/yearType'
+import Location from './data/types/location'
+import Organization from './data/types/organization'
 
 import {
   graphql,
@@ -25,102 +24,11 @@ import {
   GraphQLNonNull
 } from 'graphql';
 
-let technology = new GraphQLObjectType({
-  name: 'Technology',
-  description: 'A technology of some kind: A database, a library, a tool.',
-  fields: () => ({
-    name: {
-    type: GraphQLString,
-    description: 'The name by which the technology is commonly known.',
-    }
-  })
-
-});
-
-// {"founding_year":2004,"type":"organization","name":"Shopify","url":"http://www.shopify.com"}
-var organization = new GraphQLObjectType({
-  name: 'Organization',
-  description: 'An organization of some kind: a company, NGO, etc.',
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The unique identifier of the organization.',
-      resolve: (organization) => { return organization._key }
-    },
-    founding_year: {
-      type: GraphQLInt,
-      description: 'The year the organization was founded',
-    },
-    name: {
-      type: GraphQLString,
-      description: 'The name of the organization.',
-    },
-    url: {
-      type: GraphQLString,
-      description: 'The URL of the organization.',
-    },
-    technologies: {
-      type: new GraphQLList(technology),
-      description: 'An array of the technologies at use by this organization.',
-      resolve: (source, args, ast) => {
-        // Technologies may have been added in a single query in the
-        // resolve function under location.organizations.
-        if(typeof source.technologies === 'undefined'){
-        return technologiesForOrganization(source._id)
-        } else {
-          return source.technologies
-        }
-      }
-    }
-  }),
-});
-
-var location = new GraphQLObjectType({
-  name: 'Location',
-  description: 'A physical location on the planet that an organisation is operating out of.',
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique identifier of the location.',
-      resolve: (location) => { return location._key }
-    },
-    address: {
-      type: GraphQLString,
-      description: 'The street address of this location.',
-    },
-    lat: {
-      type: GraphQLFloat,
-      description: 'The latitude of this location.',
-    },
-    lng: {
-      type: GraphQLFloat,
-      description: 'The longitude of this location.',
-    },
-    organizations: {
-      type: new GraphQLList(organization),
-      description: 'An array of organizations associated with that location.',
-      resolve: (source, args, ast) => {
-
-        let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
-
-        //TODO: is it actually faster to do organizations and
-        //technologies in a single query? Test this assumption.
-        if(requestedFields.includes('technologies')) {
-          return orgsAndTechnologiesForLocation(source._id)
-        } else {
-          return orgsForLocation(source._id)
-        }
-      }
-    }
-  }),
-});
-
-
 var query = new GraphQLObjectType({
   name: 'Root',
   fields: {
     location: {
-      type: location,
+      type: Location,
       args: {
         id: {
           description: 'id of the location',
@@ -132,7 +40,7 @@ var query = new GraphQLObjectType({
       },
     },
     organization: {
-      type: organization,
+      type: Organization,
       args: {
         name: {
           description: 'the name of the organization',
@@ -144,7 +52,7 @@ var query = new GraphQLObjectType({
       }
     },
     locations_within_bounds: {
-      type: new GraphQLList(location),
+      type: new GraphQLList(Location),
       args: {
         sw_lat: {
           type: GraphQLFloat,
@@ -200,7 +108,7 @@ const mutation = new GraphQLObjectType({
   description: "Add an organization",
   fields: () => ({
     createOrganization: {
-      type: organization,
+      type: Organization,
       args: {
 	name: { type: new GraphQLNonNull(GraphQLString) },
 	founding_year: { type: YearType },
