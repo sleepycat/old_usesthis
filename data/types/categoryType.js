@@ -1,8 +1,14 @@
-export default CategoryType = new GraphQLEnumType({
-  name: 'RGB',
+import {
+  GraphQLEnumType,
+} from 'graphql';
+
+export default new GraphQLEnumType({
+  name: 'category',
   values: {
-    RED: { value: 0 },
-    GREEN: { value: 1 },
-    BLUE: { value: 2 }
+    FRAMEWORKS: {value: "frameworks"},
+    LIBRARIES: {value: "library"},
+    TOOLS: {value: "tools"},
+    STORAGE: {value: "storage"},
+    LANGUAGES: {value: "language"}
   }
 });
