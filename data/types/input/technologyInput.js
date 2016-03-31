@@ -1,3 +1,5 @@
+import CategoryType from '../categoryType'
+
 import {
   GraphQLInputObjectType,
   GraphQLString,
@@ -8,7 +10,7 @@ let TechnologyInput = new GraphQLInputObjectType({
   name: 'technology',
   fields: {
     name: { type: new GraphQLNonNull(GraphQLString) },
-    category: { type: GraphQLString }
+    category: { type: CategoryType }
   }
 });
 

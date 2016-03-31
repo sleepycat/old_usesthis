@@ -17,7 +17,7 @@ describe('Mutations', () => {
   })
 
   afterEach(async () => {
-    await db.truncate()
+    //await db.truncate()
   })
 
   it('creates a new organization without duplicating the location', (done) => {
@@ -28,7 +28,7 @@ describe('Mutations', () => {
           founding_year: 1997
           url: "http://kivuto.com/"
     locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
-          technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
+          technologies: [{name: "asp.net", category:LANGUAGES}, {name: "sql-server", category: STORAGE}]
         ){
           founding_year
         }
@@ -56,15 +56,15 @@ describe('Mutations', () => {
           {address: "Via Stella, 11, 36070 Stella VI, Italy", lat: 45.5952034, lng: 11.3200602}
         ]
         technologies: [
-          {name: "c++", category: "language"},
-          {name: "java", category: "language"},
-          {name: "docker", category: "tools"},
-          {name: "cassandra", category: "storage"},
-          {name: "angular", category: "framework"},
-          {name: "javascript", category: "language"},
-          {name: "nodejs", category: "tools"},
-          {name: "qt", category: "library"},
-          {name: "cordova", category: "tools"}
+          {name: "c++", category: LANGUAGES},
+          {name: "java", category: LANGUAGES},
+          {name: "docker", category: TOOLS},
+          {name: "cassandra", category: STORAGE},
+          {name: "angular", category: FRAMEWORKS},
+          {name: "javascript", category: LANGUAGES},
+          {name: "nodejs", category: TOOLS},
+          {name: "qt", category: LIBRARIES},
+          {name: "cordova", category: TOOLS}
         ]
       ) {
         name
@@ -125,7 +125,7 @@ describe('Mutations', () => {
           founding_year: 1997
           url: "foo"
           locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
-          technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
+          technologies: [{name: "asp.net", category:LANGUAGES}, {name: "sql-server", category: STORAGE}]
         ){
           name
           founding_year
@@ -154,7 +154,7 @@ describe('Mutations', () => {
           founding_year: 2100
           url: "foo"
           locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
-          technologies: [{name: "asp.net", category:"language"}, {name: "sql-server", category: "storage"}]
+          technologies: [{name: "asp.net", category:LANGUAGES}, {name: "sql-server", category: STORAGE}]
         ){
           name
           founding_year
