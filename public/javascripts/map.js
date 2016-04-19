@@ -180,9 +180,8 @@ map.on('load', function () {
 });
 
 map.on('click', (e) => {
-    console.log(e)
     map.featuresAt(e.point, {
-        radius: 7.5, // Half the marker size (15px).
+        radius: 10, // Half the marker size (15px).
         includeGeometry: true,
         layer: 'markers'
     }, function (err, features) {
@@ -195,6 +194,7 @@ map.on('click', (e) => {
 	while(detailDiv.firstChild){
 	  detailDiv.removeChild(detailDiv.firstChild);
 	}
+        //TODO: We probably only want to display the first one.
 	features.forEach((feature, index, array) => {
 	  if(feature.properties) {
 	    feature.properties.organizations.forEach((org, i, arr) => {
