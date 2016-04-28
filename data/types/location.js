@@ -39,7 +39,7 @@ var Location = new GraphQLObjectType({
     organizations: {
       type: new GraphQLList(Organization),
       description: 'An array of organizations associated with that location.',
-      resolve: (source, args, ast) => {
+      resolve: (source, args, root, ast) => {
 
         let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
