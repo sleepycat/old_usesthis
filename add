@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require "net/http"
+require "pry"
 require "uri"
 require "skrape"
 require "json"
@@ -82,7 +83,7 @@ begin
 
   organization[:locations] = []
 
-  raise "This only works with Stackoverflow at the moment" unless hostname == "careers.stackoverflow.com"
+  raise "This only works with Stackoverflow at the moment" unless hostname == "stackoverflow.com"
 
   raw_results = Skrape::Page.new(opts[:url]).extract do
     extract_locations with: '.address', and_run: proc {|address| address.map{|a| a.inner_html.gsub('<br>', ', ')} }
