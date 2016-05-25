@@ -9,6 +9,26 @@ var express = require('express')
   , schema = require('./schema').schema
   , graphqlHTTP = require('express-graphql');
 
+//Webpack hot reloading for dev.
+if(app.get('env') == 'development') {
+
+  var webpack = require('webpack')
+  var webpackDevMiddleware = require('webpack-dev-middleware')
+  var webpackHotMiddleware = require('webpack-hot-middleware')
+  var config = require('./webpack.dev.config')
+
+  var compiler = webpack(config)
+
+  app.use(webpackDevMiddleware(compiler, {
+    publicPath: config.output.publicPath,
+    stats: {colors: true}
+  }))
+
+  app.use(webpackHotMiddleware(compiler, {
+        log: console.log
+  }))
+
+}
 
 import exphbs from 'express-handlebars';
 
