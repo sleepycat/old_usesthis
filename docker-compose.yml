@@ -1,20 +1,22 @@
-web:
-  environment:
-    - USESTHIS_PRODUCTION_DB_URL
-    - USESTHIS_PRODUCTION_DB_NAME
-    - "PORT=3000"
-    - "NODE_ENV=production"
-  ports:
-    - "${PORT}:3000"
-  image: mikewilliamson/usesthis
-  links:
-    - arangodb
-arangodb:
-  environment:
-    - "ARANGO_NO_AUTH=1"
-  image: mikewilliamson/arangodb
-  volumes:
-    - usesthisdata:/var/lib/arangodb
+version: '2'
+services:
+  web:
+    environment:
+      - USESTHIS_PRODUCTION_DB_URL
+      - USESTHIS_PRODUCTION_DB_NAME
+      - "PORT=3000"
+      - "NODE_ENV=production"
+    ports:
+      - "${PORT}:3000"
+    image: mikewilliamson/usesthis
+    links:
+      - arangodb
+  arangodb:
+    environment:
+      - "ARANGO_NO_AUTH=1"
+    image: mikewilliamson/arangodb
+    volumes:
+      - usesthisdata:/var/lib/arangodb
 volumes:
-usesthisdata:
-  driver: local
+  usesthisdata:
+    driver: local
