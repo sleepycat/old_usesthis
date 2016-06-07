@@ -85,7 +85,7 @@ describe('The YearType', () => {
     let result = await graphql(schema, query);
     //Year gets stringifed on the way out.
     expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude('Can only be an integer.');
+    expect(result.errors[0].message).toInclude('Must be an integer');
   })
 
   it('rejects non-integer values', async () => {
@@ -101,39 +101,7 @@ describe('The YearType', () => {
     let result = await graphql(schema, query);
     //Year gets stringifed on the way out.
     expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude('Can only be an integer.');
-  })
-
-  it('rejects years beyond the current year', async () => {
-
-    let query = `
-      mutation foo {
-        add_year(
-	  year: {year: 2100}
-	)
-      }
-    `;
-
-    let result = await graphql(schema, query);
-    //Year gets stringifed on the way out.
-    expect(result.errors).toExist('A year in the future was accepted when it should not have been.');
-    expect(result.errors[0].message).toInclude('between 1600 and the current year');
-  })
-
-  it('rejects years earlier than 1600', async () => {
-
-    let query = `
-      mutation foo {
-        add_year(
-	  year: {year: 1559}
-	)
-      }
-    `;
-
-    let result = await graphql(schema, query);
-    //Year gets stringifed on the way out.
-    expect(result.errors).toExist('A year in the distant past was accepted when it should not have been.');
-    expect(result.errors[0].message).toInclude('between 1600 and the current year');
+    expect(result.errors[0].message).toInclude('Must be an integer');
   })
 
 })

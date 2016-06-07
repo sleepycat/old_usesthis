@@ -152,7 +152,7 @@ describe('Mutations', () => {
         location:createOrganization(
           name: "Kivuto Solutions Inc."
           founding_year: 2100
-          url: "foo"
+    url: "http://www.example.com"
           locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
           technologies: [{name: "asp.net", category:LANGUAGES}, {name: "sql-server", category: STORAGE}]
         ){

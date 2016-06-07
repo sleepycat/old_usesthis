@@ -110,6 +110,13 @@ const mutation = new GraphQLObjectType({
 	  throw new Error('You must supply at least 1 location.');
         }
 
+        // 1600 till today is a reasonable range.
+        let currentYear = new Date(Date.now()).getFullYear()
+        if(!(args.founding_year > 1600 && args.founding_year <= currentYear)) {
+          throw new Error(`Year should be somewhere between 1600 and the current year.`);
+        }
+
+
         return  await addOrganization(args)
       }
     }
