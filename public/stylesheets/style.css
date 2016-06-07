@@ -51,10 +51,14 @@ body {
   shape-rendering: crispEdges;
 }
 
-.tick, .tick text{
+.domain, .tick line {
+  stroke: steelblue;
+}
+
+.tick text{
   fill: steelblue;
   font-family: sans-serif;
-  font-size: 0.7em;
+  font-size: 1em;
 }
 
 text {

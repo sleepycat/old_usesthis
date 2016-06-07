@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "start": "babel-node ./bin/www",
-    "test": "NODE_ENV=test mocha --timeout 2000 --recursive --require babel-core/register test"
+    "test": "NODE_ENV=test mocha --timeout 2000 --recursive --require babel-core/register test",
+    "dump": "arangodump --server.database usesthis_development --output-directory arango_dump_system --overwrite true --include-system-collections true",
+    "load": "arangorestore --server.endpoint 'tcp://ec2-54-213-157-146.us-west-2.compute.amazonaws.com:8529' --server.database usesthis_production --input-directory arango_dump_system --overwrite true --include-system-collections true",
+    "todos": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} TODO public/",
+    "bugs": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} XXX public/"
   },
   "babel": {
     "presets": [
@@ -46,7 +50,9 @@
   },
   "devDependencies": {
     "babel-loader": "^6.2.4",
+    "d3": "^4.0.0-alpha.44",
     "expect": "^1.19.0",
+    "ismobilejs": "^0.4.0",
     "isomorphic-fetch": "^2.2.1",
     "locus": "^1.2.0",
     "mapbox-gl": "^0.18.0",
