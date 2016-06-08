@@ -104,5 +104,36 @@ describe('The YearType', () => {
     expect(result.errors[0].message).toInclude('Must be an integer');
   })
 
+  it('rejects values with fewer than 4 digits', async () => {
+
+    let query = `
+      mutation foo {
+        add_year(
+	  year: {year: 93}
+	)
+      }
+    `;
+
+    let result = await graphql(schema, query);
+    expect(result.errors).toExist();
+    expect(result.errors[0].message).toInclude('Must have 4 digits');
+  })
+
+  it('rejects values with greater than 4 digits', async () => {
+
+    //Apologies to the Long Now Foundation and their effort to avoid the
+    //deca-millennium bug
+    let query = `
+      mutation foo {
+        add_year(
+	  year: {year: 01996}
+	)
+      }
+    `;
+
+    let result = await graphql(schema, query);
+    expect(result.errors).toExist();
+  })
+
 })
 
