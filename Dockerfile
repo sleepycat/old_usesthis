@@ -1,10 +1,8 @@
-FROM mhart/alpine-node:5.7.1
+# FROM mhart/alpine-node:5.7.1
+FROM node:6-onbuild
 MAINTAINER Mike Williamson <mike@korora.ca>
 
-RUN mkdir /app
-COPY . /app
+RUN npm run build
 
-WORKDIR /app
-RUN /app/node_modules/.bin/webpack -p
 EXPOSE 3000
 CMD npm start

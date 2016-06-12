@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "webpack -p",
     "start": "babel-node ./bin/www",
     "test": "NODE_ENV=test mocha --timeout 2000 --recursive --require babel-core/register test",
     "dump": "arangodump --server.database usesthis_development --output-directory arango_dump_system --overwrite true --include-system-collections true",
