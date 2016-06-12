@@ -53,6 +53,7 @@
     "babel-loader": "^6.2.4",
     "d3": "^4.0.0-alpha.44",
     "expect": "^1.19.0",
+    "imports-loader": "^0.6.5",
     "ismobilejs": "^0.4.0",
     "isomorphic-fetch": "^2.2.1",
     "locus": "^1.2.0",

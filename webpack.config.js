@@ -6,7 +6,9 @@ module.exports = {
   output: { path: "public/javascripts", filename: 'bundle.js' },
   node: {
     console: true,
-    fs: "empty"
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
   },
   devtool: 'source-map',
   resolve: {
@@ -18,31 +20,31 @@ module.exports = {
   module: {
     loaders: [
       {
-	test: /\.jsx?$/,
-	loader: 'babel',
-	exclude: /node_modules/,
-	query: {
-	  presets: ['es2015', 'stage-0', 'react']
-	}
+        test: /\.jsx?$/,
+        loader: 'babel',
+        exclude: /node_modules/,
+        query: {
+          presets: ['es2015', 'stage-0', 'react']
+        }
       },
       {
-	test: /\.json$/,
-	loader: 'json-loader'
+        test: /\.json$/,
+        loader: 'json-loader'
       },
       {
-	test: /\.js$/,
-	include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/shaders.js'),
-	loader: 'transform/cacheable?brfs'
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/shaders.js'),
+        loader: 'transform/cacheable?brfs'
       },
       {
-	test: /\.js$/,
-	include: path.resolve(__dirname, 'node_modules/webworkify/index.js'),
-	loader: 'worker'
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'node_modules/webworkify/index.js'),
+        loader: 'worker'
       },
       {
-	test: /\.js$/,
-	include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/painter/use_program.js'),
-	loader: 'transform/cacheable?brfs'
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/painter/use_program.js'),
+        loader: 'transform/cacheable?brfs'
       }
     ]
   },

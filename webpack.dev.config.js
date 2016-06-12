@@ -13,13 +13,14 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
   ],
   node: {
     console: true,
-    fs: "empty"
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
   },
   watchOptions: {
     aggregateTimeout: 300,
@@ -36,27 +37,35 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx?$/,
-	loaders: ['react-hot', 'babel-loader?presets[]=es2015,presets[]=stage-0,presets[]=react'],
-	exclude: /node_modules/
+        loaders: ['react-hot', 'babel-loader?presets[]=es2015,presets[]=stage-0,presets[]=react'],
+        exclude: /node_modules/
       },
       {
-	test: /\.json$/,
-	loader: 'json-loader'
+        test: /\.json$/,
+        loader: 'json-loader'
       },
       {
-	test: /\.js$/,
-	include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/shaders.js'),
-	loader: 'transform/cacheable?brfs'
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/shaders.js'),
+        loader: 'transform/cacheable?brfs'
       },
       {
-	test: /\.js$/,
-	include: path.resolve(__dirname, 'node_modules/webworkify/index.js'),
-	loader: 'worker'
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'node_modules/webworkify/index.js'),
+        loader: 'worker'
       },
       {
-	test: /\.js$/,
-	include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/painter/use_program.js'),
-	loader: 'transform/cacheable?brfs'
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/painter/use_program.js'),
+        loader: 'transform/cacheable?brfs'
+      },
+      {
+        test: require.resolve("mapbox-gl-geocoder"),
+        loader: "imports?mapboxgl=mapbox-gl"
+      },
+      {
+        test: require.resolve("mapbox-gl-flash"),
+        loader: "imports?mapboxgl=mapbox-gl"
       }
     ]
   },
