@@ -1,7 +1,5 @@
 import Lokka from 'lokka'
 import MediaQuery from 'react-responsive'
-import ReactFauxDOM from 'react-faux-dom'
-import d3 from 'd3'
 import Transport from 'lokka-transport-http'
 import summary from './summary'
 import Convert from './convert'

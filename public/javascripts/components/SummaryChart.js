@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import ReactFauxDOM from 'react-faux-dom'
-import d3 from 'd3'
+let d3 = require('d3')
 
 export default class SummaryChart extends Component {
 
