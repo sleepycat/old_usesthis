@@ -9,12 +9,12 @@ This is a rewrite of usesth.is aimed at building on graphql and react.
 There are a few assumptions that are currently made about the state of the database. First it assumes that [ArangoDB](https://www.arangodb.com/download/) is installed on your system. Currently the required version is 2.8.9.
 
  * The following databases exist:
- ** usesthis_production
- ** usesthis_development
- ** usesthis_test
+    * usesthis_production
+    * usesthis_development
+    * usesthis_test
  * Those database contain the following collections:
- ** vertices (document type)
- ** edges (edge type)
+    * vertices (document type)
+    * edges (edge type)
  * A graph named `usesthis` has been created linking the vertices &
    edges collections
  * A [geo index](https://docs.arangodb.com/IndexHandling/Geo.html) exists on the lat & lng propertices of the vertices
@@ -63,6 +63,13 @@ arangorestore --server.endpoint 'tcp://ec2-54-213-157-146.us-west-2.compute.amaz
 arangorestore --server.endpoint 'tcp://127.0.0.1:8529' --create-database true --server.database usesthis_production --input-directory arango_dump_system --overwrite true --include-system-collections true
 ```
 
+### Running the tests
+
+The server side code has tests that can be run like this:
+
+```sh
+mike@longshot:~/projects/usesthis☺  npm test
+```
 
 ## Deployment
 
