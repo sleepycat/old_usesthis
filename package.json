@@ -42,7 +42,8 @@
     "react-dom": "^15.0.2",
     "serve-favicon": "~2.3.0",
     "transform-loader": "^0.2.3",
-    "turf": "^2.0.2",
+    "turf-area": "^3.0.5",
+    "turf-bbox-polygon": "^3.0.5",
     "underscore": "^1.8.3",
     "valid-url": "^1.0.9",
     "d3": "^4.0.0-alpha.44"
