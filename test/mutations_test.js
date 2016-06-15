@@ -10,7 +10,7 @@ describe('Mutations', () => {
     let vertex_data = require('./data/vertices').vertices
     let edge_data = require('./data/edges').edges
     await db.truncate()
-    let vertices = await db.collection('vertices')
+    let vertices = db.collection('vertices')
     await vertices.import(vertex_data)
     let edges = db.collection('edges')
     await edges.import(edge_data)
