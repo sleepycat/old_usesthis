@@ -17,7 +17,7 @@ describe('Mutations', () => {
   })
 
   afterEach(async () => {
-    //await db.truncate()
+    await db.truncate()
   })
 
   it('creates a new organization without duplicating the location', (done) => {
