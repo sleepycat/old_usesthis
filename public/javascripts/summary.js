@@ -4,10 +4,17 @@ let summary = (locations) => {
   let technologies = []
   let organizations = 0
   locations.map((location) => {
-    location.organizations.map((org) => {
-      organizations += 1
-      technologies = technologies.concat(org.technologies)
-    })
+    if(typeof location.organizations == 'string'){
+      JSON.parse(location.organizations).map((org) => {
+        organizations += 1
+        technologies = technologies.concat(org.technologies)
+      })
+    } else {
+      location.organizations.map((org) => {
+        organizations += 1
+        technologies = technologies.concat(org.technologies)
+      })
+    }
   })
 
   let sums =  _.chain(technologies)
