@@ -111,7 +111,19 @@ class Map extends React.Component {
       }
   }
 
-  shouldComponentUpdate() {
+  shouldComponentUpdate(nextProps, nextState) {
+    let center = this.map.getCenter()
+    let currentZoom = this.map.getZoom()
+    let nextZoom = parseFloat(nextProps.zoom)
+    let lat = parseFloat(nextProps.center[1])
+    let lng = parseFloat(nextProps.center[0])
+    //If the URL was set by this.props.router.push above
+    //nextProps and the current map state would be the same
+    if(!(lat === center.lat && lng === center.lng && nextZoom == currentZoom)){
+      //Out of sync, so the URL is being set by the user pushing
+      //back/forward buttons
+      this.map.jumpTo({center: new mapboxgl.LngLat(lng, lat), zoom: nextZoom})
+    }
     return false
   }
 
@@ -146,10 +158,10 @@ class Map extends React.Component {
       this.component.addDataLayerToMap(result.locations_within_bounds)
       //Give the data to our owning component
       this.component.props.passDataToParent(result.locations_within_bounds)
-
     }, (e) => {
       this.component.dispatchEvent('mapbox.setflash', {message: e.message.split(':')[1], info: true, fadeout: 3})
     })
+      this.component.props.router.push(`/map=${this.getZoom()}/${this.getCenter().lat}/${map.getCenter().lng}`)
   }
 
   handleClick(e) {

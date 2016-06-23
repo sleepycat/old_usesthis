@@ -5,10 +5,18 @@ import React, { PropTypes } from 'react'
 import SummaryChart from './components/SummaryChart'
 import OrganizationProfile from './components/OrganizationProfile'
 import ReactDOM from 'react-dom'
-import { Router, Route, hashHistory } from 'react-router'
+import {
+  Link,
+  Router,
+  IndexRoute,
+  IndexRedirect,
+  Route,
+  withRouter,
+  hashHistory,
+} from 'react-router'
 
 
-class App extends React.Component {
+class MapView extends React.Component {
 
   state = { mapData: [], orgProfiles: []}
 
@@ -61,10 +69,11 @@ class App extends React.Component {
 	  </section>
 	</MediaQuery>
 	<Map
+          router={this.props.router}
 	  accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
 	  styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
-	  center= {[-122.27593323274039, 37.66552780572411]}
-	  zoom={10.006562529849507}
+	  center= {[this.props.params.lng, this.props.params.lat]}
+	  zoom={this.props.params.zoom}
 	  passDataToParent={ ::this.updateMapData } //JSX shorthand for .bind(this)
 	  showOrganizationProfile={ ::this.updateOrgProfile }
 	/>
@@ -73,11 +82,24 @@ class App extends React.Component {
   }
 }
 
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
 ReactDOM.render(
   <Router history={hashHistory}>
-    <Route path="/" component={App}/>
+    <Route path="/" component={App} >
+      <IndexRedirect to="map=10/37.66552780572411/-122.27593323274039" />
+      <Route path="map=:zoom/:lat/:lng" component={ withRouter(MapView) } />
+    </Route>
   </Router>
-, document.getElementById('app'))
+  , document.getElementById('app'))
 
 let handle = document.querySelector("#pullout_handle")
 
