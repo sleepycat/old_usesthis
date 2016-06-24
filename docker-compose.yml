@@ -14,7 +14,7 @@ services:
   arangodb:
     environment:
       - "ARANGO_NO_AUTH=1"
-    image: arangodb/arangodb
+    image: arangodb/arangodb:2.8.9
     volumes:
       - usesthisdata:/var/lib/arangodb
 volumes:
