@@ -1,8 +1,10 @@
-# FROM mhart/alpine-node:5.7.1
-FROM node:6-onbuild
+FROM mhart/alpine-node:6.2.2
 MAINTAINER Mike Williamson <mike@korora.ca>
 
-RUN npm run build
+ENV NODE_ENV production
+
+WORKDIR /src
+ADD . .
 
 EXPOSE 3000
 CMD npm start
