@@ -10,7 +10,6 @@ module.exports = {
     net: 'empty',
     tls: 'empty'
   },
-  devtool: 'source-map',
   resolve: {
     extensions: ['', '.js', '.jsx'],
     alias: {
@@ -18,6 +17,18 @@ module.exports = {
       'mapbox-gl': path.resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js')
     }
   },
+  plugins:[
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    }),
+    new webpack.DefinePlugin({
+      'process.env':{
+        'NODE_ENV': JSON.stringify('production')
+      }
+    })
+  ],
   module: {
     noParse: /node_modules\/json-schema\/lib\/validate\.js/,
     loaders: [
@@ -47,6 +58,14 @@ module.exports = {
         test: /\.js$/,
         include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/painter/use_program.js'),
         loader: 'transform/cacheable?brfs'
+      },
+      {
+        test: require.resolve("mapbox-gl-geocoder"),
+        loader: "imports?mapboxgl=mapbox-gl"
+      },
+      {
+        test: require.resolve("mapbox-gl-flash"),
+        loader: "imports?mapboxgl=mapbox-gl"
       }
     ]
   },
