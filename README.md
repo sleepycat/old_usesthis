@@ -73,8 +73,18 @@ mike@longshot:~/projects/usesthis☺  npm test
 
 ## Deployment
 
-Deployment is currently on AWS and looks roughly like this:
+Deployment is currently on a single AWS EC2 micro instance.
+The first step is to build for production:
 
+```sh
+# NODE_ENV here is required to build React for prod
+NODE_ENV=production webpack -p
+# then build a new docker image
+docker build -t mikewilliamson/usesthis .
+docker push mikewilliamson/usesthis
+```
+SSH into the production instance and docker pull the new image.
+Starting everthing with docker-compose looks like this:
 ```sh
 USESTHIS_PRODUCTION_DB_NAME="usesthis_production" USESTHIS_PRODUCTION_DB_URL="http://u:p@arangodb:8529" PORT=80 docker-compose up -d
 ```
