@@ -4,7 +4,7 @@ import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import isMobile from 'ismobilejs'
 import mapboxgl from 'mapbox-gl'
-import Geocoder from 'mapbox-gl-geocoder'
+import Geocoder from 'imports?mapboxgl=mapbox-gl!../mapbox-gl-geocoder'
 import Convert from '../convert'
 import Flash from 'mapbox-gl-flash'
 
