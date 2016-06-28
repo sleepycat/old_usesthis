@@ -34,7 +34,7 @@ describe('database functions', () => {
 
     it('returns the organizations and languages for the location', async (done) => {
       //TODO: this test suggests that this function is poorly named.
-      let orgs = await orgsAndTechnologiesForLocation(_126_york, {category: "language"})
+      let orgs = await orgsAndTechnologiesForLocation(_126_york)
       let technologies = orgs.reduce((prev, curr) => { return prev.concat(curr.technologies)}, [])
       let categories = technologies.map((tech) => { return tech.category })
       expect(categories).toNotContain("tools")

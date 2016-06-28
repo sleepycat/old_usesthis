@@ -14,15 +14,14 @@ export async function technologiesForOrganization(id) {
 }
 
 export async function orgsAndTechnologiesForLocation(id) {
-  //TODO: clean this up
-  let aql = `
-  LET organizations = (RETURN GRAPH_NEIGHBORS(@graph, @example, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
+  let graph = 'usesthis'
+  let aql = aqlQuery`
+  LET organizations = (RETURN GRAPH_NEIGHBORS(${graph}, ${id}, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
   FOR org IN FLATTEN(organizations)
-  LET technologies = (RETURN GRAPH_NEIGHBORS(@graph, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology", category: "language"}], uniqueness:{vertices: "global", edges: "global"} }))
+  LET technologies = (RETURN GRAPH_NEIGHBORS(${graph}, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology", category: "language"}], uniqueness:{vertices: "global", edges: "global"} }))
   RETURN MERGE(org, {technologies: FLATTEN(technologies)})
   `
-  let bindvars = { "example": id, graph: "usesthis" };
-  let result = await db.query(aql, bindvars )
+  let result = await db.query(aql)
   return result.all()
 }
 
