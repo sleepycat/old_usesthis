@@ -52,6 +52,7 @@
     "lokka-transport-http": "^1.3.2",
     "mapbox-gl": "^0.18.0",
     "mapbox-gl-flash": "^1.0.0",
+    "mapbox-gl-geocoder": "https://github.com/mapbox/mapbox-gl-geocoder.git",
     "mocha": "^2.4.5",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
