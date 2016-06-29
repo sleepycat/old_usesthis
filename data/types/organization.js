@@ -1,5 +1,6 @@
 import {
   technologiesForOrganization,
+  languagesForOrganization
 } from '../database'
 
 import {
@@ -43,10 +44,17 @@ var Organization = new GraphQLObjectType({
         // Technologies may have been added in a single query in the
         // resolve function under location.organizations.
         if(typeof source.technologies === 'undefined'){
-        return technologiesForOrganization(source._id)
+          return technologiesForOrganization(source._id)
         } else {
           return source.technologies
         }
+      }
+    },
+    languages: {
+      type: new GraphQLList(Technology),
+      description: 'An array of the programming languages in use by this organization.',
+      resolve: (source, args, ast) => {
+        return languagesForOrganization(source._id)
       }
     }
   }),

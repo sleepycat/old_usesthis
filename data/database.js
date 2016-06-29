@@ -13,12 +13,35 @@ export async function technologiesForOrganization(id) {
   return results.all()
 }
 
-export async function orgsAndTechnologiesForLocation(id) {
+export async function languagesForOrganization(org) {
+  let graph = 'usesthis'
+  let query = aqlQuery`
+  FOR vertex IN 2 OUTBOUND ${org} GRAPH ${graph}
+    FILTER vertex.type == "technology" && vertex.category == "language"
+      RETURN DISTINCT vertex
+  `
+  let results = await db.query(query)
+  return results.all()
+}
+
+export async function orgsAndLanguagesForLocation(id) {
   let graph = 'usesthis'
   let aql = aqlQuery`
   LET organizations = (RETURN GRAPH_NEIGHBORS(${graph}, ${id}, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
   FOR org IN FLATTEN(organizations)
   LET technologies = (RETURN GRAPH_NEIGHBORS(${graph}, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology", category: "language"}], uniqueness:{vertices: "global", edges: "global"} }))
+  RETURN MERGE(org, {technologies: FLATTEN(technologies)})
+  `
+  let result = await db.query(aql)
+  return result.all()
+}
+
+export async function orgsAndTechnologiesForLocation(id) {
+  let graph = 'usesthis'
+  let aql = aqlQuery`
+  LET organizations = (RETURN GRAPH_NEIGHBORS(${graph}, ${id}, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
+  FOR org IN FLATTEN(organizations)
+  LET technologies = (RETURN GRAPH_NEIGHBORS(${graph}, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology"}], uniqueness:{vertices: "global", edges: "global"} }))
   RETURN MERGE(org, {technologies: FLATTEN(technologies)})
   `
   let result = await db.query(aql)
