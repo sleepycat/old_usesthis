@@ -94,7 +94,7 @@ export async function addOrganization(organization) {
     var orgData = args[0];
 
     // find or create an organization
-    var unsavedOrganization = {"founding_year": orgData.founding_year,"type":"organization","name": orgData.name, "url": orgData.url}
+    var unsavedOrganization = {"founding_year": orgData.founding_year,"type":"organization","name": orgData.name, "url": orgData.url, "code": orgData.code}
     var organizationQuery = `
     UPSERT {name: @orgName} INSERT @unsavedOrganization UPDATE {} IN vertices RETURN NEW
     `

@@ -176,6 +176,7 @@ class Map extends React.Component {
               organizations {
                 url
                 name
+                code
                 technologies {
                   name
                 }

@@ -108,6 +108,7 @@ describe('Mutations', () => {
       .set('Content-Type', 'application/json; charset=utf-8')
       .send(JSON.stringify({query: locationsAroundReykjavík, variables: variables }))
       .expect((res) => {
+        console.log(res.body.data.locations_within_bounds)
         let organizations = res.body.data.locations_within_bounds[0].organizations
         if (!(organizations.length === 1)) throw new Error(`Expected one organization to be found. Recieved ${organizations}`)
       })
@@ -172,6 +173,30 @@ describe('Mutations', () => {
       if (!(error)) throw new Error(`Expected invalid year to raise an error. Got ${JSON.stringify(response.body)}`)
       if (!( error.message.includes("between 1600 and the current year"))) throw new Error(`Expected invalid year to raise an error. Got ${JSON.stringify(response.body)}`)
     })
+    .end(done);
+  })
+
+  it('accepts a url for public code repo', (done) => {
+    let graphql = `
+      mutation {
+        location:createOrganization(
+          name: "Kivuto Solutions Inc."
+          founding_year: 1997
+          url: "http://kivuto.com/"
+          code: "https://github.com/kivuto"
+    locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
+          technologies: [{name: "asp.net", category:LANGUAGES}, {name: "sql-server", category: STORAGE}]
+        ){
+          code
+        }
+      }
+    `
+
+    request(app)
+    .post('/graphql')
+    .set('Content-Type', 'application/json; charset=utf-8')
+    .send(`{"query": ${JSON.stringify(graphql)}}`)
+    .expect({data: {location: {code: "https://github.com/kivuto"}}})
     .end(done);
   })
 

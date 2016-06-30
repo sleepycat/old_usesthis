@@ -100,6 +100,7 @@ const mutation = new GraphQLObjectType({
 	name: { type: new GraphQLNonNull(GraphQLString) },
 	founding_year: { type: YearType },
 	url: { type: new GraphQLNonNull(UrlType) },
+	code: { type: UrlType },
 	locations: { type: new GraphQLList(LocationInput) },
 	technologies: { type: new GraphQLList(TechnologyInput) }
       },

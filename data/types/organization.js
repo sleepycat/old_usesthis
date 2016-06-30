@@ -37,6 +37,10 @@ var Organization = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The URL of the organization.',
     },
+    code: {
+      type: GraphQLString,
+      description: 'A URL pointing to the organization public code repository (github, bitbucket, gitlab, etc.).',
+    },
     technologies: {
       type: new GraphQLList(Technology),
       description: 'An array of the technologies at use by this organization.',
