@@ -1,5 +1,17 @@
 @import url(http://fonts.googleapis.com/css?family=Ubuntu);
 
+.repo_link {
+  margin-left: 1em;
+}
+
+.organization-detail a, .profile_section_heading {
+  color: #4682B4;
+}
+
+
+.profile_section_heading {
+}
+
 body {
  width: 100%;
  overflow: hidden;
