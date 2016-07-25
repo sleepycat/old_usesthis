@@ -93,6 +93,15 @@ body {
   pointer-events: all;
 }
 
+.bar_label {
+  pointer-events: all;
+}
+
+.bar.selected {
+  fill: #000;
+}
+
+
 #sidebar {
   z-index: 1;
   pointer-events: none;

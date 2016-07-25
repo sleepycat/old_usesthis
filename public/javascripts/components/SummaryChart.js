@@ -10,8 +10,9 @@ export default class SummaryChart extends Component {
 
   render() {
 
+    let chartComponent = this
+
     let data = this.props.data
-    //TODO: make sure we have clean data here:
 
     let sidebarWidth =  this.props.width
     let barHeight = 20;
@@ -43,19 +44,29 @@ export default class SummaryChart extends Component {
     let g = bar.enter()
     .append("g")
     .attr("transform", (d, i) => { return "translate(0," + ((i * barHeight) + 26) + ")"; })
-    .attr("class", "bar")
-
 
     g.append("rect")
     .attr("class", "bar")
+    .attr("class", function(d){
+      if(chartComponent.props.highlight == d.name) {
+        return 'bar selected'
+      } else {
+        return 'bar'
+      }
+    })
+    .attr("id", (d) => d.name)
     .attr("width", (d) => xScale(d.count))
-    .attr("height", barHeight - 1);
+    .attr("height", barHeight - 1)
 
     g.append("text")
-    .attr("class", "label")
+    .attr("class", "bar_label")
     .attr("x", 5)
+    .attr("cursor", "pointer")
     .attr("y", barHeight / 2.1)
     .attr("dy", ".31em")
+    .on('click', function(data){
+      chartComponent.props.labelOnClick(data.name)
+    })
     .text((d) => d.name);
 
     chart.append('g')

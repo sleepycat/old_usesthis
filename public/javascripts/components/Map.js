@@ -71,6 +71,8 @@ class Map extends React.Component {
       this.setState({ map });
     })
 
+    window.map = map
+    window.mapboxgl = mapboxgl
   }
 
   dispatchEvent(eventName, data) {
@@ -84,6 +86,7 @@ class Map extends React.Component {
       if(!(data === [])){
         try {
           this.map.removeLayer("markers")
+          this.map.removeLayer("selected")
           this.map.removeSource("markers")
         }
         catch (e){
@@ -95,11 +98,33 @@ class Map extends React.Component {
           "data": Convert.toGeojson(data)
         });
 
+
         this.map.addLayer({
           "id": "markers",
           "type": "symbol",
           "interactive": true,
           "source": "markers",
+          "paint": {
+          },
+          "layout": {
+            "icon-image": "marker-stroked-24",
+            "text-field": "{title}",
+            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-offset": [0, 0.6],
+            "text-anchor": "top"
+          }
+        });
+
+
+        this.map.addLayer({
+          "id": "selected",
+          "type": "symbol",
+          "interactive": true,
+          "source": "markers",
+          "filter": ["==", this.props.highlight, true],
+          "paint": {
+            "icon-color": "#0000ff" //XXX: why does this not work?
+          },
           "layout": {
             "icon-image": "{marker-symbol}-24",
             "text-field": "{title}",
@@ -108,6 +133,8 @@ class Map extends React.Component {
             "text-anchor": "top"
           }
         });
+
+
       }
   }
 
@@ -117,12 +144,16 @@ class Map extends React.Component {
     let nextZoom = parseFloat(nextProps.zoom)
     let lat = parseFloat(nextProps.center[1])
     let lng = parseFloat(nextProps.center[0])
+    let currentHighlight = this.props.highlight
     //If the URL was set by this.props.router.push above
     //nextProps and the current map state would be the same
-    if(!(lat === center.lat && lng === center.lng && nextZoom == currentZoom)){
+    if(!(lat === center.lat && lng === center.lng && nextZoom == currentZoom )){
       //Out of sync, so the URL is being set by the user pushing
       //back/forward buttons
       this.map.jumpTo({center: new mapboxgl.LngLat(lng, lat), zoom: nextZoom})
+    }
+    if(nextProps.highlight !==  currentHighlight){
+      this.map.setFilter("selected", ["==", nextProps.highlight, true])
     }
     return false
   }
@@ -161,15 +192,18 @@ class Map extends React.Component {
     }, (e) => {
       this.component.dispatchEvent('mapbox.setflash', {message: e.message.split(':')[1], info: true, fadeout: 3})
     })
-      this.component.props.router.push(`/map=${this.getZoom()}/${this.getCenter().lat}/${map.getCenter().lng}`)
+    this.component.props.router.push({pathname:`/map=${this.getZoom()}/${this.getCenter().lat}/${map.getCenter().lng}`, query: {highlight: this.component.props.highlight}})
   }
 
   handleClick(e) {
     let map = e.target
 
-    let features = map.queryRenderedFeatures(e.point, { layer: ['markers'] })
+    let features = map.queryRenderedFeatures(e.point, { layer: ['markers', 'selected'] })
 
-    if (features[0].layer.id == 'markers') {
+    // Features is an array of things found near the click.
+    // Since it can return map features as well as data from layers we
+    // need to check if the source is mapbox.
+    if (features.length > 0 && features[0].layer.source !== 'mapbox') {
       client.query(`
           query getLocation($id: ID!) {
             location(id: $id){

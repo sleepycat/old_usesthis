@@ -41,7 +41,19 @@ class MapView extends React.Component {
     }
   }
 
+  listTechnologies(summaryData) {
+    return summaryData.summary.reduce((prev, curr) => { return prev.concat(curr.name) }, [])
+  }
+
+  summaryLabelClickHandler(nameOnLabel) {
+    this.props.router.push({pathname: this.props.location.pathname, query: {highlight: nameOnLabel}})
+  }
+
   render() {
+
+    let summaryData = summary(this.state.mapData)
+    let highlight = this.props.location.query.highlight || ""
+
     return (
       <div>
 	<div id="pullout_panel">
@@ -56,7 +68,7 @@ class MapView extends React.Component {
 	      Usesth.is
 	    </div>
 	    <div id="geocoder-container"></div>
-	    <SummaryChart width={ 300 }  data={summary(this.state.mapData)} />
+            <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } width={ 300 } highlight={ highlight }  data={ summaryData } />
 	  </section>
 	</MediaQuery>
 	<MediaQuery query='(max-width: 60em)'>
@@ -65,13 +77,14 @@ class MapView extends React.Component {
 	      Usesth.is
 	    </div>
 	    <div style={{fontSize: '0.8em', width: '33%'}} id="geocoder-container"></div>
-	    <SummaryChart width={ 200 } data={summary(this.state.mapData)} />
+	    <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } width={ 200 } data={ summaryData } />
 	  </section>
 	</MediaQuery>
 	<Map
           router={this.props.router}
 	  accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
 	  styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
+          highlight={ highlight }
 	  center= {[this.props.params.lng, this.props.params.lat]}
 	  zoom={this.props.params.zoom}
 	  passDataToParent={ ::this.updateMapData } //JSX shorthand for .bind(this)
