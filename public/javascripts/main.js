@@ -77,7 +77,7 @@ class MapView extends React.Component {
 	      Usesth.is
 	    </div>
 	    <div style={{fontSize: '0.8em', width: '33%'}} id="geocoder-container"></div>
-	    <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } width={ 200 } data={ summaryData } />
+	    <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } highlight={ highlight } width={ 200 } data={ summaryData } />
 	  </section>
 	</MediaQuery>
 	<Map
