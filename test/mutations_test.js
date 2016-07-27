@@ -108,7 +108,6 @@ describe('Mutations', () => {
       .set('Content-Type', 'application/json; charset=utf-8')
       .send(JSON.stringify({query: locationsAroundReykjavík, variables: variables }))
       .expect((res) => {
-        console.log(res.body.data.locations_within_bounds)
         let organizations = res.body.data.locations_within_bounds[0].organizations
         if (!(organizations.length === 1)) throw new Error(`Expected one organization to be found. Recieved ${organizations}`)
       })
