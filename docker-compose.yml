@@ -1,5 +1,23 @@
 version: '2'
 services:
+  nginx:
+    environment:
+      - "EMAIL=me@email.com"
+      - "DOMAIN=www.usesth.is"
+      - "UPSTREAM=backend:3000"
+    container_name: lets-nginx
+    links:
+      - "web:backend"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./nginx_conf:/configs:ro"
+      - letsencrypt:/etc/letsencrypt
+      - letsencrypt-backups:/var/lib/letsencrypt
+      - dhparam-cache:/cache
+    build: ./nginx
+    image: mikewilliamson/nginx
   web:
     environment:
       - USESTHIS_PRODUCTION_DB_URL
@@ -19,4 +37,10 @@ services:
       - usesthisdata:/var/lib/arangodb
 volumes:
   usesthisdata:
+    driver: local
+  letsencrypt:
+    driver: local
+  letsencrypt-backups:
+    driver: local
+  dhparam-cache:
     driver: local
