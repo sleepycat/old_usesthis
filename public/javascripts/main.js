@@ -3,6 +3,7 @@ import summary from './summary'
 import Map from './components/Map'
 import React, { PropTypes } from 'react'
 import SummaryChart from './components/SummaryChart'
+import OrganizationProfileList from './components/OrganizationProfileList'
 import OrganizationProfile from './components/OrganizationProfile'
 import ReactDOM from 'react-dom'
 import {
@@ -26,19 +27,8 @@ class MapView extends React.Component {
   }
 
   updateOrgProfile(orgs) {
+    console.log('updateOrgProfile called')
     return this.setState({orgProfiles: orgs})
-  }
-
-  organizationProfile() {
-    if(this.state.orgProfiles.length == 0){
-      return(
-	<p key={ btoa("default") }  className="explanation">
-	  Click one of the organizations on the map to see the details.
-	</p>
-      )
-    } else {
-      return this.state.orgProfiles.map((org) => <OrganizationProfile key={ btoa(org.name) } { ...org } />)
-    }
   }
 
   listTechnologies(summaryData) {
@@ -59,7 +49,7 @@ class MapView extends React.Component {
 	<div id="pullout_panel">
 	  <div id="pullout_handle"></div>
 	  <div id='detail'>
-	    { this.organizationProfile() }
+            <OrganizationProfileList profiles={ this.state.orgProfiles } />
 	  </div>
 	</div>
 	<MediaQuery query='(min-width: 60em)'>
