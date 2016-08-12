@@ -11,7 +11,7 @@ import {
   GraphQLNonNull
 } from 'graphql';
 
-import YearType from '../../data/types/yearType'
+import YearType from '../../src/data/types/yearType'
 
 let schema = new GraphQLSchema({
   query: new GraphQLObjectType({

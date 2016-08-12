@@ -1,7 +1,7 @@
 require("babel-polyfill");
 import request from 'supertest'
 import expect from 'expect'
-import { db } from '../data/database'
+import { db } from '../src/data/database'
 
 let vertices = db.collection('vertices')
 let edges = db.collection('edges')

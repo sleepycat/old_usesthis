@@ -11,7 +11,7 @@ import {
   locationByID,
   locationsWithinBounds,
   db
-} from '../data/database'
+} from '../src/data/database'
 
 let _126_york = "vertices/2733712293"
 let shopify = "vertices/2731811749"

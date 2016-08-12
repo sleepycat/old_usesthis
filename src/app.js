@@ -4,6 +4,7 @@ var express = require('express')
   , logger = require('morgan')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')
+  , exphbs = require('express-handlebars')
   , routes = require('./routes/index')
   , app = express()
   , schema = require('./schema').schema
@@ -15,7 +16,7 @@ if(app.get('env') == 'development') {
   var webpack = require('webpack')
   var webpackDevMiddleware = require('webpack-dev-middleware')
   var webpackHotMiddleware = require('webpack-hot-middleware')
-  var config = require('./webpack.dev.config')
+  var config = require('../webpack.dev.config')
 
   var compiler = webpack(config)
 
@@ -30,12 +31,11 @@ if(app.get('env') == 'development') {
 
 }
 
-import exphbs from 'express-handlebars';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 
-app.engine('.hbs', exphbs({defaultLayout: 'application', extname: '.hbs'}));
+app.engine('.hbs', exphbs({defaultLayout: 'application', layoutsDir: "src/views/layouts/", extname: '.hbs'}));
 app.set('view engine', '.hbs');
 
 // uncomment after placing your favicon in /public
@@ -47,7 +47,7 @@ app.use('/graphql', graphqlHTTP(req => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', routes);
 

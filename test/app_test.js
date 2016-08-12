@@ -1,7 +1,7 @@
 require("babel-polyfill");
 
 let request = require('supertest')
-  , app = require('../app');
+  , app = require('../src/app');
 
 describe('App', () => {
 

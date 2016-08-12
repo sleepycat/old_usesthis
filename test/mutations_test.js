@@ -1,8 +1,8 @@
 require("babel-polyfill");
-import { db } from '../data/database'
+import { db } from '../src/data/database'
 
 let request = require('supertest')
-  , app = require('../app');
+  , app = require('../src/app');
 
 describe('Mutations', () => {
 

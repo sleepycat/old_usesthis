@@ -11,7 +11,7 @@ import {
   GraphQLNonNull
 } from 'graphql';
 
-import CategoryType from '../../data/types/categoryType'
+import CategoryType from '../../src/data/types/categoryType'
 
 let schema = new GraphQLSchema({
   query: new GraphQLObjectType({

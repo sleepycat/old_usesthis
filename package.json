@@ -3,18 +3,22 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "babel-node ./bin/www",
+    "start": "npm run build:server && node ./bin/www",
     "test": "NODE_ENV=test mocha --timeout 2000 --recursive --require babel-core/register test",
     "dump": "arangodump --server.database usesthis_development --output-directory arango_dump_system --overwrite true --include-system-collections true",
     "load": "arangorestore --server.endpoint 'tcp://ec2-54-213-157-146.us-west-2.compute.amazonaws.com:8529' --server.database usesthis_production --input-directory arango_dump_system --overwrite true --include-system-collections true",
     "todos": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} TODO public/",
-    "bugs": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} XXX public/"
+    "bugs": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} XXX public/",
+    "build:server": "babel --copy-files --out-dir dist/ src/"
   },
   "babel": {
     "presets": [
       "stage-0",
       "es2015",
       "react"
+    ],
+    "plugins": [
+      "transform-runtime"
     ]
   },
   "dependencies": {
@@ -24,6 +28,7 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.8.0",
+    "babel-runtime": "^6.11.6",
     "body-parser": "~1.15.0",
     "cookie-parser": "~1.4.1",
     "debug": "~2.2.0",
@@ -41,6 +46,7 @@
   },
   "devDependencies": {
     "babel-loader": "^6.2.4",
+    "babel-plugin-transform-runtime": "^6.12.0",
     "d3": "^4.0.0-alpha.44",
     "es6-promise": "^3.2.1",
     "expect": "^1.19.0",

@@ -1,5 +1,5 @@
 let env = process.env.NODE_ENV || "development"
-let dbConfig = require('../arangodb_config')[env]
+let dbConfig = require('../../arangodb_config')[env]
 export let db = require('arangojs')(dbConfig)
 let aqlQuery = require('arangojs').aqlQuery
 
