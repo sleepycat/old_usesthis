@@ -15,7 +15,10 @@ import {
   withRouter,
   hashHistory,
 } from 'react-router'
+import Lokka from 'lokka'
+import Transport from 'lokka-transport-http'
 
+const client = new Lokka({ transport: new Transport('/graphql') })
 
 class MapView extends React.Component {
 
@@ -26,9 +29,36 @@ class MapView extends React.Component {
     return this.setState({mapData: data})
   }
 
-  updateOrgProfile(orgs) {
-    console.log('updateOrgProfile called')
-    return this.setState({orgProfiles: orgs})
+  updateOrgProfile(locationID) {
+
+      client.query(`
+          query getLocation($id: ID!) {
+            location(id: $id){
+              organizations {
+                url
+                name
+                code
+                technologies {
+                  name
+                }
+              }
+            }
+          }
+      `, {id: locationID}).then(result => {
+
+         this.setState({orgProfiles: result.location.organizations})
+
+      }, (e) => {
+
+        let opts = {
+          message: e.message.split(':')[1],
+          info: true,
+          fadeout: 3
+        }
+
+        this.component.dispatchEvent('mapbox.setflash', opts)
+
+      });
   }
 
   listTechnologies(summaryData) {

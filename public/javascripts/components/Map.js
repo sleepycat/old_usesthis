@@ -204,26 +204,8 @@ class Map extends React.Component {
     // Since it can return map features as well as data from layers we
     // need to check if the source is mapbox.
     if (features.length > 0 && features[0].layer.source !== 'mapbox') {
-      client.query(`
-          query getLocation($id: ID!) {
-            location(id: $id){
-              organizations {
-                url
-                name
-                code
-                technologies {
-                  name
-                }
-              }
-            }
-          }
-      `, {id: features[0].properties.id}).then(result => {
-         //pass the organizations to the owner so it can
-         // render the org profile
-         this.component.props.showOrganizationProfile(result.location.organizations)
-      }, (e) => {
-        this.component.dispatchEvent('mapbox.setflash', {message: e.message.split(':')[1], info: true, fadeout: 3})
-      });
+      // send location id to owner
+      this.component.props.showOrganizationProfile(features[0].properties.id)
     }
 
   }
