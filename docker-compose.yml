@@ -2,7 +2,7 @@ version: '2'
 services:
   nginx:
     environment:
-      - "EMAIL=me@email.com"
+      - "EMAIL=mike@korora.ca"
       - "DOMAIN=www.usesth.is"
       - "UPSTREAM=backend:3000"
     container_name: lets-nginx
