@@ -1,3 +1,5 @@
+//TODO: importing all of underscore is heavy.
+// Look into a lighter-weight alternative. Lodash?
 import _ from 'underscore'
 
 let summary = (locations) => {

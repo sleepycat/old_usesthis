@@ -1,6 +1,7 @@
 import Lokka from 'lokka'
 import Transport from 'lokka-transport-http'
 import React, { PropTypes } from 'react'
+import equal from 'deep-equal'
 import ReactDOM from 'react-dom'
 import isMobile from 'ismobilejs'
 import mapboxgl from 'mapbox-gl'
@@ -16,7 +17,7 @@ class Map extends React.Component {
     super(props)
   }
 
-  state = {}
+  state = {mapData: []}
 
   static propTypes = {
     accessToken: PropTypes.string.isRequired,
@@ -57,15 +58,28 @@ class Map extends React.Component {
 
     map.on("click", this.handleClick);
 
+    let getBounds = (e) => {
+      let bounds = e.target.getBounds()
+      let boundsObj = {
+        'neLat': bounds.getNorthEast().lat,
+        'neLng': bounds.getNorthEast().lng,
+        'swLat': bounds.getSouthWest().lat,
+        'swLng': bounds.getSouthWest().lng,
+        'center': e.target.getCenter(),
+        'zoom': e.target.getZoom()
+      }
+      this.props.onBoundsChange(boundsObj)
+    }
+
     //Use touchend on mobile
     //otherwise you get WAY to many events
     if(isMobile.any){
-      map.on("touchend", this.getLocationsWithinBounds);
+      map.on("touchend", getBounds);
     } else {
-      map.on("moveend", this.getLocationsWithinBounds);
+      map.on("moveend", getBounds);
     }
 
-    map.on("load", this.getLocationsWithinBounds);
+    map.on("load", getBounds);
 
     map.on('style.load', (e) => {
       this.setState({ map });
@@ -73,13 +87,9 @@ class Map extends React.Component {
 
     window.map = map
     window.mapboxgl = mapboxgl
+
   }
 
-  dispatchEvent(eventName, data) {
-    let event = document.createEvent('CustomEvent')
-    event.initCustomEvent(eventName, true, false, data)
-    document.dispatchEvent(event)
-  }
 
   addDataLayerToMap(data) {
 
@@ -152,48 +162,18 @@ class Map extends React.Component {
       //back/forward buttons
       this.map.jumpTo({center: new mapboxgl.LngLat(lng, lat), zoom: nextZoom})
     }
+    //This equality test is pretty heavy for a hot method.
+    if(!(equal(nextProps.data, this.props.data))){
+      this.addDataLayerToMap(nextProps.data)
+    }
     if(nextProps.highlight !==  currentHighlight){
       this.map.setFilter("selected", ["==", nextProps.highlight, true])
     }
+
+
     return false
   }
 
-  getLocationsWithinBounds(e) {
-    //Beacuse this is an event handler `this` is the map not the <Map> component
-    let map = this
-    let bounds = map.getBounds()
-
-    let neLat = bounds.getNorthEast().lat;
-    let neLng = bounds.getNorthEast().lng;
-    let swLat = bounds.getSouthWest().lat;
-    let swLng = bounds.getSouthWest().lng;
-
-    client.query(`
-	query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
-	  locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
-	    id
-	    lat
-	    lng
-	    address
-	    organizations {
-	      url
-	      name
-	      technologies:languages {
-		name
-	      }
-	    }
-	  }
-	}
-      `, {neLat, neLng, swLat, swLng}).then((result) => {
-      //Update the map to display the new data
-      this.component.addDataLayerToMap(result.locations_within_bounds)
-      //Give the data to our owning component
-      this.component.props.passDataToParent(result.locations_within_bounds)
-    }, (e) => {
-      this.component.dispatchEvent('mapbox.setflash', {message: e.message.split(':')[1], info: true, fadeout: 3})
-    })
-    this.component.props.router.push({pathname:`/map=${this.getZoom()}/${this.getCenter().lat}/${map.getCenter().lng}`, query: {highlight: this.component.props.highlight}})
-  }
 
   handleClick(e) {
     let map = e.target
