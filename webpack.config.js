@@ -13,8 +13,7 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.jsx'],
     alias: {
-      webworkify: 'webworkify-webpack',
-      'mapbox-gl': path.resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js')
+      webworkify: 'webworkify-webpack'
     }
   },
   plugins:[
@@ -46,17 +45,11 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/shaders.js'),
-        loader: 'transform/cacheable?brfs'
-      },
-      {
-        test: /\.js$/,
         include: path.resolve(__dirname, 'node_modules/webworkify/index.js'),
         loader: 'worker'
       },
       {
-        test: /\.js$/,
-        include: path.resolve(__dirname, 'node_modules/mapbox-gl/js/render/painter/use_program.js'),
+        test: /mapbox-gl.+\.js$/,
         loader: 'transform/cacheable?brfs'
       },
       {
