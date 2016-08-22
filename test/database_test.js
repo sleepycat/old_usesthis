@@ -33,7 +33,7 @@ describe('database functions', () => {
 
   describe('orgsAndLanguagesForLocation()', () => {
 
-    it('returns the organizations and languages for the location', async (done) => {
+    it('returns the organizations and languages for the location', async () => {
       let orgs = await orgsAndLanguagesForLocation(_126_york)
       let technologies = orgs.reduce((prev, curr) => { return prev.concat(curr.technologies)}, [])
       let categories = technologies.map((tech) => { return tech.category })
@@ -41,14 +41,13 @@ describe('database functions', () => {
       expect(categories).toNotContain("tool")
       expect(categories).toNotContain("storage")
       expect(categories).toNotContain("os")
-      done();
     })
 
   })
 
   describe('orgsAndTechnologiesForLocation()', () => {
 
-    it('returns the organizations and technologies for the location', async (done) => {
+    it('returns the organizations and technologies for the location', async () => {
       let orgs = await orgsAndTechnologiesForLocation(_126_york)
       let technologies = orgs.reduce((prev, curr) => { return prev.concat(curr.technologies)}, [])
       let categories = technologies.map((tech) => { return tech.category })
@@ -56,7 +55,6 @@ describe('database functions', () => {
       expect(categories).toContain("language")
       expect(categories).toContain("storage")
       expect(categories).toContain("os")
-      done();
     })
 
   })
@@ -71,6 +69,17 @@ describe('database functions', () => {
       expect(categories).toNotContain("storage")
       expect(categories).toNotContain("os")
       done();
+    })
+
+  })
+
+  describe('orgsForLocation()', () => {
+
+    it('returns the organizations for the specified location', async () => {
+      let organizations = await orgsForLocation(_126_york)
+      let names = organizations.map((org) => { return org.name })
+      expect(names).toContain("Magmic Inc.")
+      expect(names).toContain("Shopify")
     })
 
   })

@@ -2,10 +2,11 @@ let env = process.env.NODE_ENV || "development"
 let dbConfig = require('../../arangodb_config')[env]
 export let db = require('arangojs')(dbConfig)
 let aqlQuery = require('arangojs').aqlQuery
+let graph = dbConfig.graph
 
 export async function technologiesForOrganization(id) {
   let query = aqlQuery`
-  FOR v,e,p IN 2 OUTBOUND ${id} edges
+  FOR v IN 2 OUTBOUND ${id} edges
     FILTER v.type == 'technology'
       RETURN v
   `
@@ -14,7 +15,6 @@ export async function technologiesForOrganization(id) {
 }
 
 export async function languagesForOrganization(org) {
-  let graph = 'usesthis'
   let query = aqlQuery`
   FOR vertex IN 2 OUTBOUND ${org} GRAPH ${graph}
     FILTER vertex.type == "technology" && vertex.category == "language"
@@ -25,35 +25,43 @@ export async function languagesForOrganization(org) {
 }
 
 export async function orgsAndLanguagesForLocation(id) {
-  let graph = 'usesthis'
   let aql = aqlQuery`
-  LET organizations = (RETURN GRAPH_NEIGHBORS(${graph}, ${id}, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
-  FOR org IN FLATTEN(organizations)
-  LET technologies = (RETURN GRAPH_NEIGHBORS(${graph}, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology", category: "language"}], uniqueness:{vertices: "global", edges: "global"} }))
-  RETURN MERGE(org, {technologies: FLATTEN(technologies)})
+    FOR vertex IN 2 INBOUND ${id} GRAPH ${graph} OPTIONS {bfs: true, uniqueVertices: 'global'}
+      FILTER vertex.type == "organization"
+        LET technologies = (
+          FOR v IN 2 OUTBOUND vertex GRAPH ${graph} OPTIONS {bfs: true, uniqueVertices: 'global'}
+            FILTER v.type == "technology" && v.category == "language"
+              RETURN v
+        )
+    RETURN MERGE(vertex, {technologies: FLATTEN(technologies)})
   `
   let result = await db.query(aql)
   return result.all()
 }
 
 export async function orgsAndTechnologiesForLocation(id) {
-  let graph = 'usesthis'
   let aql = aqlQuery`
-  LET organizations = (RETURN GRAPH_NEIGHBORS(${graph}, ${id}, { maxDepth: 2, includeData: true, neighborExamples: [{type: "organization"}], uniqueness:{vertices: "global", edges: "global"} }))
-  FOR org IN FLATTEN(organizations)
-  LET technologies = (RETURN GRAPH_NEIGHBORS(${graph}, org, { maxDepth: 2, includeData: true, neighborExamples: [{type: "technology"}], uniqueness:{vertices: "global", edges: "global"} }))
-  RETURN MERGE(org, {technologies: FLATTEN(technologies)})
+    FOR vertex IN 2 INBOUND ${id} GRAPH ${graph} OPTIONS {bfs: true, uniqueVertices: 'global'}
+      FILTER vertex.type == "organization"
+        LET technologies = (
+          FOR v IN 2 OUTBOUND vertex GRAPH ${graph} OPTIONS {bfs: true, uniqueVertices: 'global'}
+            FILTER v.type == "technology"
+              RETURN v
+        )
+    RETURN MERGE(vertex, {technologies: FLATTEN(technologies)})
   `
   let result = await db.query(aql)
   return result.all()
 }
 
 export async function orgsForLocation(id) {
-  let graph = 'usesthis'
-  let query = aqlQuery`RETURN GRAPH_NEIGHBORS(${graph}, ${id}, {includeData: true, maxDepth: 2, neighborExamples: [{type: 'organization'}]})`
+  let query = aqlQuery`
+    FOR vertex IN 2 INBOUND ${id} GRAPH ${graph} OPTIONS {bfs: true, uniqueVertices: 'global'}
+      FILTER vertex.type == "organization"
+	RETURN vertex
+  `
   let result = await db.query(query)
-  let allResults = await result.all()
-  return allResults[0]
+  return await result.all()
 }
 
 export async function organizationByName(name) {
@@ -92,6 +100,7 @@ export async function addOrganization(organization) {
   var action = String(function (args) {
     var db = require('org/arangodb').db;
     var orgData = args[0];
+    var graph = args[1];
 
     // find or create an organization
     var unsavedOrganization = {"founding_year": orgData.founding_year,"type":"organization","name": orgData.name, "url": orgData.url, "code": orgData.code}
@@ -111,13 +120,16 @@ export async function addOrganization(organization) {
       // Is there an office that connects the org to the location?
       //org ---works_in ---> office ---located_at---> location
       // Does this org already have an office at this location?
+
       var hasOffice = `
-      LET path = (RETURN GRAPH_SHORTEST_PATH(@graph, @organization_id, @location_id, {stopAtFirstMatch: true, direction: "outbound", edgeExamples: [{type: "works_in"}, {type: "located_at"}], includeData: true})[0]) RETURN path[0].vertices[1]
+      FOR v, e IN OUTBOUND SHORTEST_PATH @organization_id TO @location_id GRAPH @graph
+        FILTER e.type == "works_in"
+            RETURN v
       `
-      var office = db._query(hasOffice, {graph: "usesthis", organization_id: organization._id, location_id: location._id}).toArray()[0]
+      var office = db._query(hasOffice, {graph, organization_id: organization._id, location_id: location._id}).toArray()[0]
 
+      if(typeof office == 'undefined'){
 
-      if(office === null){
         office = db._query('INSERT {type: "office"} IN vertices RETURN NEW').toArray()[0]
         // link the org to the office
         var orgOfficeEdgeQuery = `
@@ -148,5 +160,5 @@ export async function addOrganization(organization) {
     return organization
   });
 
-  return  db.transaction({write: ['vertices', 'edges']}, action, [organization])
+  return  db.transaction({write: ['vertices', 'edges']}, action, [organization, graph])
 }
