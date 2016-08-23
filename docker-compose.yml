@@ -34,7 +34,7 @@ services:
       - "ARANGO_NO_AUTH=1"
     image: arangodb/arangodb:3.0.5
     volumes:
-      - usesthisdata:/var/lib/arangodb
+      - usesthisdata:/var/lib/arangodb3
 volumes:
   usesthisdata:
     driver: local
