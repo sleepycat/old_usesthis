@@ -36,7 +36,7 @@
     "express-graphql": "^0.5.1",
     "express-handlebars": "^3.0.0",
     "graphiql": "^0.7.1",
-    "graphql": "^0.6.2",
+    "graphql": "^0.7.0",
     "isomorphic-fetch": "^2.2.1",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
