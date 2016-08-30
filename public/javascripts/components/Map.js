@@ -192,16 +192,8 @@ class Map extends React.Component {
 
   render() {
 
-    let styles = {
-      zIndex: 0,
-      height: '100vh',
-      width: '100%'
-    }
-
     return (
-      <div>
-        <div ref={(el) => this.element = el} style={ styles }></div>
-      </div>
+      <div ref={(el) => this.element = el} style={ this.props.style }></div>
     )
   }
 }

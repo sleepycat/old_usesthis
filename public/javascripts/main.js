@@ -117,41 +117,62 @@ class MapView extends React.Component {
 
     return (
       <div>
-	<div id="pullout_panel">
-	  <div id="pullout_handle"></div>
-	  <div id='detail'>
+        <div id="pullout_panel">
+          <div id="pullout_handle"></div>
+          <div id='detail'>
             <OrganizationProfileList profiles={ this.state.orgProfiles } />
-	  </div>
-	</div>
-	<MediaQuery query='(min-width: 60em)'>
-	  <section id="sidebar">
-	    <div id='title'>
-	      Usesth.is
-	    </div>
-	    <div id="geocoder-container"></div>
+          </div>
+        </div>
+        <MediaQuery query='(min-width: 60em)'>
+          <section id="sidebar">
+            <div id='title'>
+              Usesth.is
+            </div>
+            <div id="geocoder-container"></div>
             <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } width={ 300 } highlight={ highlight }  data={ summaryData } />
-	  </section>
-	</MediaQuery>
-	<MediaQuery query='(max-width: 60em)'>
-	  <section id="sidebar">
-	    <div id='title'>
-	      Usesth.is
-	    </div>
-	    <div style={{fontSize: '0.8em', width: '33%'}} id="geocoder-container"></div>
-	    <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } highlight={ highlight } width={ 200 } data={ summaryData } />
-	  </section>
-	</MediaQuery>
-	<Map
-          data={ this.state.mapData }
-          router={this.props.router}
-	  accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
-	  styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
-          highlight={ highlight }
-	  center= {[this.props.params.lng, this.props.params.lat]}
-	  zoom={this.props.params.zoom}
-          onBoundsChange={ ::this.handleMapBoundsChange }
-	  showOrganizationProfile={ ::this.updateOrgProfile }
-	/>
+          </section>
+          <Map
+            data={ this.state.mapData }
+            router={this.props.router}
+            accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
+            styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
+            style={{
+              zIndex: 0,
+              height: '100vh',
+              width: '80%'
+            }}
+            highlight={ highlight }
+            center= {[this.props.params.lng, this.props.params.lat]}
+            zoom={this.props.params.zoom}
+            onBoundsChange={ ::this.handleMapBoundsChange }
+            showOrganizationProfile={ ::this.updateOrgProfile }
+          />
+        </MediaQuery>
+        <MediaQuery query='(max-width: 60em)'>
+          <section id="sidebar">
+            <div id='title'>
+              Usesth.is
+            </div>
+            <div style={{fontSize: '0.8em', width: '33%'}} id="geocoder-container"></div>
+            <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } highlight={ highlight } width={ 200 } data={ summaryData } />
+          </section>
+          <Map
+            data={ this.state.mapData }
+            router={this.props.router}
+            accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
+            styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
+            style={{
+              zIndex: 0,
+              height: '100vh',
+              width: '100%'
+            }}
+            highlight={ highlight }
+            center= {[this.props.params.lng, this.props.params.lat]}
+            zoom={this.props.params.zoom}
+            onBoundsChange={ ::this.handleMapBoundsChange }
+            showOrganizationProfile={ ::this.updateOrgProfile }
+          />
+        </MediaQuery>
       </div>
     );
   }
