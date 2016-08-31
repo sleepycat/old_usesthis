@@ -1,6 +1,5 @@
-//TODO: importing all of underscore is heavy.
-// Look into a lighter-weight alternative. Lodash?
-import _ from 'underscore'
+import countBy from 'lodash.countby'
+import sortBy from 'lodash.sortby'
 
 let summary = (locations) => {
   let technologies = []
@@ -19,14 +18,16 @@ let summary = (locations) => {
     }
   })
 
-  let sums =  _.chain(technologies)
-  .countBy('name')
-  .map((value, key) => { return { name: key, count: value} })
-  .sortBy((obj) => { return obj.count })
-  .reverse()
-  .value()
+  let counted = countBy(technologies, 'name')
+  let sums = []
+  for(var key in counted) {
+    if(counted.hasOwnProperty(key)) {
+      sums.push({ name: key, count: counted[key]})
+    }
+  }
+  let sorted = sortBy(sums, (el) => el.count)
 
-  return {summary: sums, sample_size: organizations }
+  return {summary: sorted.reverse(), sample_size: organizations }
 };
 
 export default summary;
