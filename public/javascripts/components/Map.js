@@ -81,13 +81,6 @@ class Map extends React.Component {
 
     map.on("load", getBounds);
 
-    map.on('style.load', (e) => {
-      this.setState({ map });
-    })
-
-    window.map = map
-    window.mapboxgl = mapboxgl
-
   }
 
 
