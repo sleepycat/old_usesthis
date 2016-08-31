@@ -1,6 +1,27 @@
 import React, { Component, PropTypes } from 'react'
 import ReactFauxDOM from 'react-faux-dom'
-let d3 = require('d3')
+import {format} from 'd3-format'
+import {
+  select,
+  selectAll,
+  attr,
+  data
+} from 'd3-selection'
+import {
+  scaleLinear,
+  domain,
+  range,
+  nice
+} from 'd3-scale'
+import {
+  axisBottom,
+  scale,
+  tickValues,
+  tickFormat
+} from 'd3-axis'
+import {
+  ticks,
+} from 'd3-array'
 
 export default class SummaryChart extends Component {
 
@@ -18,13 +39,13 @@ export default class SummaryChart extends Component {
     let barHeight = 20;
 
     const svg = new ReactFauxDOM.Element('svg')
-    let chart = d3.select(svg)
+    let chart = select(svg)
       .attr("width", sidebarWidth)
       .attr("height", barHeight * 10 + 25);
 
     chart.select("g.axis").attr("transform", "translate(0,25)");
 
-    let xScale = d3.scaleLinear()
+    let xScale = scaleLinear()
     .domain([0, data.sample_size])
     .range([0, sidebarWidth - 10])
     .nice()
@@ -32,12 +53,12 @@ export default class SummaryChart extends Component {
     let bar = chart.selectAll("g.bar")
     .data(data.summary);
 
-    let xAxis = d3.axisBottom()
+    let xAxis = axisBottom()
     .scale(xScale)
 
     if(data.sample_size < 8){
-      xAxis.tickValues(d3.ticks(0, data.sample_size, data.sample_size))
-      .tickFormat(d3.format('d'))
+      xAxis.tickValues(ticks(0, data.sample_size, data.sample_size))
+      .tickFormat(format('d'))
     }
 
 
