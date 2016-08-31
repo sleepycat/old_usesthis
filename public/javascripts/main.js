@@ -114,6 +114,10 @@ class MapView extends React.Component {
 
     let summaryData = summary(this.state.mapData)
     let highlight = this.props.location.query.highlight || ""
+    let browser = {
+      width: window.innerWidth || document.body.clientWidth,
+      height: window.innerHeight || document.body.clientHeight
+    }
 
     return (
       <div>
@@ -138,8 +142,8 @@ class MapView extends React.Component {
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
               zIndex: 0,
-              height: '100vh',
-              width: '80%'
+              height: browser.height,
+              width: browser.width * 0.8
             }}
             highlight={ highlight }
             center= {[this.props.params.lng, this.props.params.lat]}
@@ -163,8 +167,8 @@ class MapView extends React.Component {
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
               zIndex: 0,
-              height: '100vh',
-              width: '100%'
+              height: browser.height,
+              width: browser.width
             }}
             highlight={ highlight }
             center= {[this.props.params.lng, this.props.params.lat]}
