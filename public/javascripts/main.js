@@ -3,9 +3,8 @@ import summary from './summary'
 import Map from './components/Map'
 import React, { PropTypes } from 'react'
 import SummaryChart from './components/SummaryChart'
-import OrganizationProfileList from './components/OrganizationProfileList'
-import OrganizationProfile from './components/OrganizationProfile'
 import ReactDOM from 'react-dom'
+import Drawer from './components/Drawer'
 import {
   Link,
   Router,
@@ -121,12 +120,7 @@ class MapView extends React.Component {
 
     return (
       <div>
-        <div id="pullout_panel">
-          <div id="pullout_handle"></div>
-          <div id='detail'>
-            <OrganizationProfileList profiles={ this.state.orgProfiles } />
-          </div>
-        </div>
+        <Drawer contents={ this.state.orgProfiles } />
         <MediaQuery query='(min-width: 60em)'>
           <section id="sidebar">
             <div id='title'>
@@ -142,8 +136,8 @@ class MapView extends React.Component {
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
               zIndex: 0,
-              height: browser.height,
-              width: browser.width * 0.8
+              height: '100vh',
+              width: '80vw'
             }}
             highlight={ highlight }
             center= {[this.props.params.lng, this.props.params.lat]}
@@ -167,8 +161,8 @@ class MapView extends React.Component {
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
               zIndex: 0,
-              height: browser.height,
-              width: browser.width
+              height: '100vh',
+              width: '100%'
             }}
             highlight={ highlight }
             center= {[this.props.params.lng, this.props.params.lat]}
@@ -183,11 +177,13 @@ class MapView extends React.Component {
 }
 
 class App extends React.Component {
+
+
   render() {
     return (
-      <div>
+      <main>
         {this.props.children}
-      </div>
+      </main>
     );
   }
 }
@@ -200,19 +196,3 @@ ReactDOM.render(
     </Route>
   </Router>
   , document.getElementById('app'))
-
-let handle = document.querySelector("#pullout_handle")
-
-let pulloutMenu = handle.parentElement
-
-let moveFunction = function(e){
-  pulloutMenu.style.transform = `translateX(${e.touches[0].pageX - screen.width}px)`
-}
-
-handle.addEventListener("touchstart", function(e){
-  handle.addEventListener('touchmove', moveFunction)
-})
-
-handle.addEventListener("touchend", function(e){
-  handle.removeEventListener('touchmove', moveFunction)
-})

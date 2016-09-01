@@ -42,7 +42,8 @@ class Map extends React.Component {
 	container: this.element,
 	style: styleURI,
 	center: center,
-	zoom: zoom,
+        zoom: zoom,
+        trackResize: true
     });
 
     map.component = this
@@ -53,8 +54,11 @@ class Map extends React.Component {
       placeholder: 'Zoom to your city'
     }));
 
+
     map.addControl(new Flash());
-    map.addControl(new mapboxgl.Navigation());
+    if(!isMobile.any){
+      map.addControl(new mapboxgl.Navigation());
+    }
 
     map.on("click", this.handleClick);
 
@@ -80,7 +84,6 @@ class Map extends React.Component {
     }
 
     map.on("load", getBounds);
-
   }
 
 
