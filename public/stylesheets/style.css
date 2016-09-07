@@ -1,3 +1,9 @@
+.handle_highlight {
+  background-color: blue !important;
+  transition-duration: 0.3s;
+  transition-property: background-color;
+}
+
 .repo_link {
   margin-left: 1em;
 }

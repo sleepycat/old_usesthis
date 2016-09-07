@@ -8,6 +8,7 @@ import mapboxgl from 'mapbox-gl'
 import Geocoder from 'mapbox-gl-geocoder'
 import Convert from '../convert'
 import Flash from 'mapbox-gl-flash'
+import differenceby from 'lodash.differenceby'
 
 const client = new Lokka({ transport: new Transport('/graphql') })
 
@@ -158,10 +159,11 @@ class Map extends React.Component {
       //back/forward buttons
       this.map.jumpTo({center: new mapboxgl.LngLat(lng, lat), zoom: nextZoom})
     }
-    //This equality test is pretty heavy for a hot method.
-    if(!(equal(nextProps.data, this.props.data))){
+
+    if(differenceby(nextProps.data, this.props.data, 'name').length !== 0){
       this.addDataLayerToMap(nextProps.data)
     }
+
     if(nextProps.highlight !==  currentHighlight){
       this.map.setFilter("selected", ["==", nextProps.highlight, true])
     }

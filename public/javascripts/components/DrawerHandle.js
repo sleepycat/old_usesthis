@@ -11,14 +11,12 @@ class DrawerHandle extends React.Component {
     this.element.removeEventListener('touchmove', this.props.onMove)
   }
 
-  componentDidMount() {
-
-  }
-
   render() {
     let baseStyles = {
       zIndex: 2,
       backgroundColor: 'steelblue',
+      transitionDuration: '0.3s',
+      transitionProperty: 'background-color',
       boxShadow: 'inset 0 0 0 2px #fff',
       display: 'inline-block',
       borderRadius: '50%',
@@ -44,9 +42,10 @@ class DrawerHandle extends React.Component {
       }
     }
 
+
     let styles = Object.assign({}, baseStyles, additional)
     return(
-      <div style={ styles } ref={(el) => this.element = el} onTouchStart={ ::this.handleTouchStart } onTouchEnd={ ::this.handleTouchEnd } ></div>
+      <div className={ this.props.highlight ? 'handle_highlight' : '' } style={ styles } ref={(el) => this.element = el} onTouchStart={ ::this.handleTouchStart } onTouchEnd={ ::this.handleTouchEnd } ></div>
     )
   }
 

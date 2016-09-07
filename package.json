@@ -61,6 +61,7 @@
     "isomorphic-fetch": "^2.2.1",
     "json-loader": "^0.5.4",
     "lodash.countby": "^4.6.0",
+    "lodash.differenceby": "^4.8.0",
     "lodash.sortby": "^4.7.0",
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.4.0",
