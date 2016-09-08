@@ -156,10 +156,6 @@ class MapView extends React.Component {
       var summaryData = summary(this.state.mapData)
     }
     let highlight = this.props.location.query.highlight || ""
-    let browser = {
-      width: window.innerWidth || document.body.clientWidth,
-      height: window.innerHeight || document.body.clientHeight
-    }
 
     return (
       <div>
