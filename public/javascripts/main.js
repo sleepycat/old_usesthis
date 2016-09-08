@@ -30,10 +30,6 @@ class MapView extends React.Component {
 
   state = { mapData: {"type": "FeatureCollection", "features": []}, orgProfiles: []}
 
-  updateMapData(data) {
-    return this.setState({mapData: Convert.toGeojson(data)})
-  }
-
   updateOrgProfile(locationID) {
 
       client.query(`
