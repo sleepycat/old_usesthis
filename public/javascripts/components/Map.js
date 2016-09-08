@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom'
 import isMobile from 'ismobilejs'
 import mapboxgl from 'mapbox-gl'
 import Geocoder from 'mapbox-gl-geocoder'
-import Convert from '../convert'
 import Flash from 'mapbox-gl-flash'
 import differenceby from 'lodash.differenceby'
 
@@ -18,11 +17,9 @@ class Map extends React.Component {
     super(props)
   }
 
-  state = {mapData: []}
-
   static propTypes = {
     accessToken: PropTypes.string.isRequired,
-    data: PropTypes.array
+    data: PropTypes.object
   }
 
   componentDidMount() {
@@ -74,6 +71,8 @@ class Map extends React.Component {
         'zoom': e.target.getZoom()
       }
       this.props.onBoundsChange(boundsObj)
+
+      //TODO: is new data needed?
     }
 
     //Use touchend on mobile
@@ -85,12 +84,13 @@ class Map extends React.Component {
     }
 
     map.on("load", getBounds);
+    window.map = map
   }
 
 
   addDataLayerToMap(data) {
 
-      if(!(data === [])){
+      if(!(data.features === [])){
         try {
           this.map.removeLayer("markers")
           this.map.removeLayer("selected")
@@ -102,7 +102,7 @@ class Map extends React.Component {
 
         this.map.addSource("markers", {
           "type": "geojson",
-          "data": Convert.toGeojson(data)
+          "data": data
         });
 
 
@@ -160,7 +160,7 @@ class Map extends React.Component {
       this.map.jumpTo({center: new mapboxgl.LngLat(lng, lat), zoom: nextZoom})
     }
 
-    if(differenceby(nextProps.data, this.props.data, 'name').length !== 0){
+    if(differenceby(nextProps.data.features, this.props.data.features, (x)=> x.properties.address).length !== 0){
       this.addDataLayerToMap(nextProps.data)
     }
 

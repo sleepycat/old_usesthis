@@ -1,10 +1,17 @@
 import MediaQuery from 'react-responsive'
+import Convert from './convert'
 import summary from './summary'
 import Map from './components/Map'
 import React, { PropTypes } from 'react'
 import SummaryChart from './components/SummaryChart'
 import ReactDOM from 'react-dom'
 import Drawer from './components/Drawer'
+import bboxPolygon from 'turf-bbox-polygon'
+import point from 'turf-point'
+import polygon from 'turf-polygon'
+import inside from 'turf-inside'
+import within from 'turf-within'
+import featureCollection from 'turf-featurecollection'
 import {
   Link,
   Router,
@@ -21,11 +28,10 @@ const client = new Lokka({ transport: new Transport('/graphql') })
 
 class MapView extends React.Component {
 
-  state = { mapData: [], orgProfiles: []}
-
+  state = { mapData: {"type": "FeatureCollection", "features": []}, orgProfiles: []}
 
   updateMapData(data) {
-    return this.setState({mapData: data})
+    return this.setState({mapData: Convert.toGeojson(data)})
   }
 
   updateOrgProfile(locationID) {
@@ -70,8 +76,12 @@ class MapView extends React.Component {
     document.dispatchEvent(event)
   }
 
-  handleMapBoundsChange(newBounds) {
 
+  flashMessageOnMap(message) {
+    this.dispatchEvent('mapbox.setflash', {message, info: true, fadeout: 3})
+  }
+
+  getDataForBounds(bounds) {
     client.query(`
 	query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
 	  locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
@@ -88,13 +98,42 @@ class MapView extends React.Component {
 	    }
 	  }
 	}
-      `, newBounds).then((result) => {
-      this.setState({mapData: result.locations_within_bounds})
+      `, bounds).then((result) => {
+      this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds})
     }, (e) => {
-      this.dispatchEvent('mapbox.setflash', {message: e.message.split(':')[1], info: true, fadeout: 3})
+      this.flashMessageOnMap(e.message.split(':')[1])
     })
+  }
 
-    this.updateRoute(newBounds.zoom, newBounds.center.lat, newBounds.center.lng, this.props.location.query.highlight)
+  handleMapBoundsChange(currentBounds) {
+
+      //TODO: consider if this logic should be moved into the <Map />
+      //XXX: loop back and clean this up
+      //
+      // Do we need to fetch new data?
+      if(!(typeof this.state.bounds == 'undefined')){
+        let previousPolygon = bboxPolygon([this.previousBounds.neLng, this.previousBounds.neLat, this.previousBounds.swLng, this.previousBounds.swLat])
+        window.prev = previousPolygon
+        let currentNE = point([currentBounds.neLng, currentBounds.neLat])
+        let currentSW = point([currentBounds.swLng, currentBounds.swLat])
+        // If the current bounds are within the previous polygon
+        // we don't need new data.
+        if(!(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon))){
+          this.getDataForBounds(currentBounds)
+          this.previousBounds = currentBounds
+        } else {
+          //We don't need data but need to set bounds so the summary can
+          //use them to update.
+          this.setState({bounds: currentBounds})
+        }
+      } else {
+        //First load
+        this.getDataForBounds(currentBounds)
+        this.previousBounds = currentBounds
+      }
+
+
+    this.updateRoute(currentBounds.zoom, currentBounds.center.lat, currentBounds.center.lng, this.props.location.query.highlight)
   }
 
   updateRoute(zoom, lat, lng, highlight = '') {
@@ -105,13 +144,21 @@ class MapView extends React.Component {
     this.props.router.push(opts)
   }
 
+
   summaryLabelClickHandler(nameOnLabel) {
     this.props.router.push({pathname: this.props.location.pathname, query: {highlight: nameOnLabel}})
   }
 
   render() {
 
-    let summaryData = summary(this.state.mapData)
+    if(this.state.bounds){
+      let boundsArray = [this.state.bounds.neLng, this.state.bounds.neLat, this.state.bounds.swLng, this.state.bounds.swLat]
+      let boundsPoly = bboxPolygon(boundsArray)
+      let points = within(this.state.mapData, featureCollection([boundsPoly]))
+      var summaryData = summary(points)
+    } else {
+      var summaryData = summary(this.state.mapData)
+    }
     let highlight = this.props.location.query.highlight || ""
     let browser = {
       width: window.innerWidth || document.body.clientWidth,
