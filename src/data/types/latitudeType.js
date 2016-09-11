@@ -7,6 +7,8 @@ import { Kind } from 'graphql/language';
 
 var LatitudeType = new GraphQLScalarType({
     name: 'Latitude',
+    description: 'The Latitude type represents a north–south position of' +
+    ' a geographic coordinate. Valid values are between -90.0 and +90.0',
     serialize: Number,
     parseValue: Number,
     parseLiteral: ast => {
