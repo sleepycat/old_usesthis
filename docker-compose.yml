@@ -32,7 +32,7 @@ services:
   arangodb:
     environment:
       - "ARANGO_NO_AUTH=1"
-    image: arangodb/arangodb:3.0.5
+    image: arangodb/arangodb:3.0.8
     volumes:
       - data:/var/lib/arangodb3
 volumes:
