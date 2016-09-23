@@ -98,11 +98,17 @@ class MapView extends React.Component {
       `, bounds)
   }
 
+  makePolygons(currentBounds, previousBounds) {
+      let currentPolygon = bboxPolygon([ currentBounds.neLng, currentBounds.neLat, currentBounds.swLng, currentBounds.swLat])
+      let previousPolygon = bboxPolygon([previousBounds.neLng, previousBounds.neLat, previousBounds.swLng, previousBounds.swLat])
+    return {currentPolygon, previousPolygon}
+  }
+
   handleMapBoundsChange(currentBounds) {
 
       // Do we need to fetch new data?
       if(!(typeof this.state.bounds == 'undefined')){
-        let previousPolygon = bboxPolygon([this.state.previousBounds.neLng, this.state.previousBounds.neLat, this.state.previousBounds.swLng, this.state.previousBounds.swLat])
+        let { currentPolygon, previousPolygon } = this.makePolygons(currentBounds, this.state.previousBounds)
         let currentNE = point([currentBounds.neLng, currentBounds.neLat])
         let currentSW = point([currentBounds.swLng, currentBounds.swLat])
         // If the current bounds are within the previous polygon
