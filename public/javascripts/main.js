@@ -128,7 +128,6 @@ class MapView extends React.Component {
         this.previousBounds = currentBounds
       }
 
-
     this.updateRoute(currentBounds.zoom, currentBounds.center.lat, currentBounds.center.lng, this.props.location.query.highlight)
   }
 
@@ -145,16 +144,22 @@ class MapView extends React.Component {
     this.props.router.push({pathname: this.props.location.pathname, query: {highlight: nameOnLabel}})
   }
 
+  dataWithinBounds(data, bounds) {
+    let boundsArray = [bounds.neLng, bounds.neLat, bounds.swLng, bounds.swLat]
+    let boundsPoly = bboxPolygon(boundsArray)
+    let points = within(data, featureCollection([boundsPoly]))
+    return points
+  }
+
   render() {
 
     if(this.state.bounds){
-      let boundsArray = [this.state.bounds.neLng, this.state.bounds.neLat, this.state.bounds.swLng, this.state.bounds.swLat]
-      let boundsPoly = bboxPolygon(boundsArray)
-      let points = within(this.state.mapData, featureCollection([boundsPoly]))
+      let points = this.dataWithinBounds(this.state.mapData, this.state.bounds)
       var summaryData = summary(points)
     } else {
       var summaryData = summary(this.state.mapData)
     }
+
     let highlight = this.props.location.query.highlight || ""
 
     return (
