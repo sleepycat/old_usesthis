@@ -78,7 +78,7 @@ class MapView extends React.Component {
   }
 
   getDataForBounds(bounds) {
-    client.query(`
+    return client.query(`
 	query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
 	  locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
 	    id
@@ -94,11 +94,7 @@ class MapView extends React.Component {
 	    }
 	  }
 	}
-      `, bounds).then((result) => {
-      this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds})
-    }, (e) => {
-      this.flashMessageOnMap(e.message.split(':')[1])
-    })
+      `, bounds)
   }
 
   handleMapBoundsChange(currentBounds) {
@@ -116,6 +112,11 @@ class MapView extends React.Component {
         // we don't need new data.
         if(!(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon))){
           this.getDataForBounds(currentBounds)
+          .then((result) => {
+            this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds})
+          }, (e) => {
+            this.flashMessageOnMap(e.message.split(':')[1])
+          })
           this.previousBounds = currentBounds
         } else {
           //We don't need data but need to set bounds so the summary can
@@ -125,6 +126,11 @@ class MapView extends React.Component {
       } else {
         //First load
         this.getDataForBounds(currentBounds)
+        .then((result) => {
+          this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds})
+        }, (e) => {
+          this.flashMessageOnMap(e.message.split(':')[1])
+        })
         this.previousBounds = currentBounds
       }
 
