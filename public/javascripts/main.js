@@ -11,6 +11,7 @@ import point from 'turf-point'
 import polygon from 'turf-polygon'
 import inside from 'turf-inside'
 import within from 'turf-within'
+import area from 'turf-area'
 import featureCollection from 'turf-featurecollection'
 import {
   Link,
@@ -99,13 +100,9 @@ class MapView extends React.Component {
 
   handleMapBoundsChange(currentBounds) {
 
-      //TODO: consider if this logic should be moved into the <Map />
-      //XXX: loop back and clean this up
-      //
       // Do we need to fetch new data?
       if(!(typeof this.state.bounds == 'undefined')){
-        let previousPolygon = bboxPolygon([this.previousBounds.neLng, this.previousBounds.neLat, this.previousBounds.swLng, this.previousBounds.swLat])
-        window.prev = previousPolygon
+        let previousPolygon = bboxPolygon([this.state.previousBounds.neLng, this.state.previousBounds.neLat, this.state.previousBounds.swLng, this.state.previousBounds.swLat])
         let currentNE = point([currentBounds.neLng, currentBounds.neLat])
         let currentSW = point([currentBounds.swLng, currentBounds.swLat])
         // If the current bounds are within the previous polygon
@@ -117,7 +114,6 @@ class MapView extends React.Component {
           }, (e) => {
             this.flashMessageOnMap(e.message.split(':')[1])
           })
-          this.previousBounds = currentBounds
         } else {
           //We don't need data but need to set bounds so the summary can
           //use them to update.
@@ -127,11 +123,10 @@ class MapView extends React.Component {
         //First load
         this.getDataForBounds(currentBounds)
         .then((result) => {
-          this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds})
+          this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds, previousBounds: currentBounds})
         }, (e) => {
           this.flashMessageOnMap(e.message.split(':')[1])
         })
-        this.previousBounds = currentBounds
       }
 
     this.updateRoute(currentBounds.zoom, currentBounds.center.lat, currentBounds.center.lng, this.props.location.query.highlight)
