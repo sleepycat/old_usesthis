@@ -97,32 +97,34 @@ class MapView extends React.Component {
   handleMapBoundsChange(currentBounds) {
 
       // Do we need to fetch new data?
-      if(!(typeof this.state.bounds == 'undefined')){
-        let { currentPolygon, previousPolygon } = this.makePolygons(currentBounds, this.state.previousBounds)
-        let currentNE = point([currentBounds.neLng, currentBounds.neLat])
-        let currentSW = point([currentBounds.swLng, currentBounds.swLat])
-        // If the current bounds are within the previous polygon
-        // we don't need new data.
-        if(!(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon))){
-          this.getDataForBounds(currentBounds)
-          .then((result) => {
-            this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds})
-          }, (e) => {
-            this.flashMessageOnMap(e.message.split(':')[1])
-          })
-        } else {
-          //We don't need data but need to set bounds so the summary can
-          //use them to update.
-          this.setState({bounds: currentBounds})
-        }
-      } else {
-        //First load
+      if(typeof this.state.bounds == 'undefined'){
+        //First load, so we need data
         this.getDataForBounds(currentBounds)
         .then((result) => {
           this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds, previousBounds: currentBounds})
         }, (e) => {
           this.flashMessageOnMap(e.message.split(':')[1])
         })
+      } else {
+        //Panning and zooming is happening
+        //We have existing data loaded. Should we update?
+        let { currentPolygon, previousPolygon } = this.makePolygons(currentBounds, this.state.previousBounds)
+        let currentNE = point([currentBounds.neLng, currentBounds.neLat])
+        let currentSW = point([currentBounds.swLng, currentBounds.swLat])
+
+        if(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon)){
+          //No data update because the data we have loaded already covers these bounds.
+          //No updating previousBounds because we only want to update them with bigger bounds
+          //Update bounds so Summary can update itself.
+          this.setState({bounds: currentBounds})
+        } else {
+          this.getDataForBounds(currentBounds)
+          .then((result) => {
+            this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds, previousBounds: currentBounds})
+          }, (e) => {
+            this.flashMessageOnMap(e.message.split(':')[1])
+          })
+        }
       }
 
     this.updateRoute(currentBounds.zoom, currentBounds.center.lat, currentBounds.center.lng, this.props.location.query.highlight)
