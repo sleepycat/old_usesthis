@@ -2,8 +2,9 @@ import MediaQuery from 'react-responsive'
 import Convert from '../convert'
 import summary from '../summary'
 import Map from './Map'
-import React, { PropTypes } from 'react'
+import React, { PropTypes, Component } from 'react'
 import SummaryChart from './SummaryChart'
+import MyPosition from './MyPosition'
 import Drawer from './Drawer'
 import bboxPolygon from 'turf-bbox-polygon'
 import point from 'turf-point'
@@ -15,7 +16,9 @@ import featureCollection from 'turf-featurecollection'
 import Lokka from 'lokka'
 import Transport from 'lokka-transport-http'
 
+
 const client = new Lokka({ transport: new Transport('/graphql') })
+
 
 class MapView extends React.Component {
 
@@ -138,6 +141,15 @@ class MapView extends React.Component {
     this.props.router.push(opts)
   }
 
+  setPosition() {
+    window.navigator.geolocation.getCurrentPosition((position) => {
+      let { latitude, longitude } = position.coords
+
+      this.updateRoute(this.props.params.zoom, latitude, longitude, this.props.location.query.highlight)
+
+    })
+  }
+
 
   summaryLabelClickHandler(nameOnLabel) {
     this.props.router.push({pathname: this.props.location.pathname, query: {highlight: nameOnLabel}})
@@ -190,6 +202,7 @@ class MapView extends React.Component {
           />
         </MediaQuery>
         <MediaQuery query='(max-width: 60em)'>
+          <MyPosition locate={ ::this.setPosition } />
           <section id="sidebar">
             <div id='title'>
               Usesth.is

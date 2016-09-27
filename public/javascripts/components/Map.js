@@ -47,10 +47,12 @@ class Map extends React.Component {
     map.component = this
     this.map = map
 
-    map.addControl(new Geocoder({
-      container: 'geocoder-container',
-      placeholder: 'Zoom to your city'
-    }));
+    if(!isMobile.any){
+      map.addControl(new Geocoder({
+	container: 'geocoder-container',
+	placeholder: 'Zoom to your city'
+      }));
+    }
 
 
     map.addControl(new Flash());
@@ -71,8 +73,6 @@ class Map extends React.Component {
         'zoom': e.target.getZoom()
       }
       this.props.onBoundsChange(boundsObj)
-
-      //TODO: is new data needed?
     }
 
     //Use touchend on mobile
