@@ -82,11 +82,23 @@ class Map extends React.Component {
     } else {
       map.on("moveend", getBounds);
     }
+    map.on("zoomend", getBounds);
 
     map.on("load", getBounds);
-    window.map = map
   }
 
+  getBounds() {
+      let bounds = this.map.getBounds()
+      let boundsObj = {
+        'neLat': bounds.getNorthEast().lat,
+        'neLng': bounds.getNorthEast().lng,
+        'swLat': bounds.getSouthWest().lat,
+        'swLng': bounds.getSouthWest().lng,
+        'center': this.map.getCenter(),
+        'zoom': this.map.getZoom()
+      }
+    return boundsObj
+  }
 
   addDataLayerToMap(data) {
 
@@ -143,6 +155,10 @@ class Map extends React.Component {
 
 
       }
+  }
+
+  setCenter(lat,lng,zoom) {
+    this.map.jumpTo({center: new mapboxgl.LngLat(lng, lat), zoom: zoom})
   }
 
   shouldComponentUpdate(nextProps, nextState) {

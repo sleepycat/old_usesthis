@@ -142,11 +142,16 @@ class MapView extends React.Component {
   }
 
   setPosition() {
+    //TODO: this is pretty ugly.
+    //we've only been operating with
+    //bounds. Now we get only a lat/lng point and then it causes a
+    //hot mess...
     window.navigator.geolocation.getCurrentPosition((position) => {
       let { latitude, longitude } = position.coords
+      this.mapComponent.setCenter(latitude, longitude, this.props.params.zoom)
+      let bounds = this.mapComponent.getBounds()
 
-      this.updateRoute(this.props.params.zoom, latitude, longitude, this.props.location.query.highlight)
-
+      this.handleMapBoundsChange(bounds)
     })
   }
 
@@ -186,7 +191,6 @@ class MapView extends React.Component {
           </section>
           <Map
             data={ this.state.mapData }
-            router={this.props.router}
             accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
@@ -199,6 +203,7 @@ class MapView extends React.Component {
             zoom={this.props.params.zoom}
             onBoundsChange={ ::this.handleMapBoundsChange }
             showOrganizationProfile={ ::this.updateOrgProfile }
+            ref={(map) => this.mapComponent = map}
           />
         </MediaQuery>
         <MediaQuery query='(max-width: 60em)'>
@@ -212,7 +217,6 @@ class MapView extends React.Component {
           </section>
           <Map
             data={ this.state.mapData }
-            router={this.props.router}
             accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
@@ -225,6 +229,7 @@ class MapView extends React.Component {
             zoom={this.props.params.zoom}
             onBoundsChange={ ::this.handleMapBoundsChange }
             showOrganizationProfile={ ::this.updateOrgProfile }
+            ref={(map) => this.mapComponent = map}
           />
         </MediaQuery>
       </div>
