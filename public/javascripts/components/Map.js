@@ -8,6 +8,12 @@ import mapboxgl from 'mapbox-gl'
 import Geocoder from 'mapbox-gl-geocoder'
 import Flash from 'mapbox-gl-flash'
 import differenceby from 'lodash.differenceby'
+import bboxPolygon from 'turf-bbox-polygon'
+import point from 'turf-point'
+import polygon from 'turf-polygon'
+import inside from 'turf-inside'
+import within from 'turf-within'
+import area from 'turf-area'
 
 const client = new Lokka({ transport: new Transport('/graphql') })
 
@@ -20,6 +26,12 @@ class Map extends React.Component {
   static propTypes = {
     accessToken: PropTypes.string.isRequired,
     data: PropTypes.object
+  }
+
+  makePolygons(currentBounds, previousBounds) {
+      let currentPolygon = bboxPolygon([ currentBounds.neLng, currentBounds.neLat, currentBounds.swLng, currentBounds.swLat])
+      let previousPolygon = bboxPolygon([previousBounds.neLng, previousBounds.neLat, previousBounds.swLng, previousBounds.swLat])
+    return {currentPolygon, previousPolygon}
   }
 
   componentDidMount() {
@@ -63,6 +75,7 @@ class Map extends React.Component {
     map.on("click", this.handleClick);
 
     let getBounds = (e) => {
+
       let bounds = e.target.getBounds()
       let boundsObj = {
         'neLat': bounds.getNorthEast().lat,
@@ -72,7 +85,35 @@ class Map extends React.Component {
         'center': e.target.getCenter(),
         'zoom': e.target.getZoom()
       }
-      this.props.onBoundsChange(boundsObj)
+
+      if(typeof this.previousBounds == 'undefined'){
+        //No previousBounds set?
+        //First load, so we need data
+        if(this.props.onDataNeeded) {
+          this.props.onDataNeeded(boundsObj)
+        }
+        this.previousBounds = boundsObj
+      } else {
+        //Panning and zooming is happening
+        //We have existing data loaded. Should we update?
+        let { currentPolygon, previousPolygon } = this.makePolygons(boundsObj, this.previousBounds)
+        let currentNE = point([boundsObj.neLng, boundsObj.neLat])
+        let currentSW = point([boundsObj.swLng, boundsObj.swLat])
+
+        if(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon)){
+          //No data update because the data we have loaded already covers these bounds.
+          //No updating previousBounds because we only want to update them with bigger bounds
+        } else {
+          //need data
+          if(this.props.onDataNeeded) {
+            this.props.onDataNeeded(boundsObj)
+          }
+          this.previousBounds = boundsObj
+        }
+      }
+      if(this.props.onBoundsChange) {
+        this.props.onBoundsChange(boundsObj)
+      }
     }
 
     //Use touchend on mobile

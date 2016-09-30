@@ -7,11 +7,7 @@ import SummaryChart from './SummaryChart'
 import MyPosition from './MyPosition'
 import Drawer from './Drawer'
 import bboxPolygon from 'turf-bbox-polygon'
-import point from 'turf-point'
-import polygon from 'turf-polygon'
-import inside from 'turf-inside'
 import within from 'turf-within'
-import area from 'turf-area'
 import featureCollection from 'turf-featurecollection'
 import Lokka from 'lokka'
 import Transport from 'lokka-transport-http'
@@ -91,46 +87,18 @@ class MapView extends React.Component {
       `, bounds)
   }
 
-  makePolygons(currentBounds, previousBounds) {
-      let currentPolygon = bboxPolygon([ currentBounds.neLng, currentBounds.neLat, currentBounds.swLng, currentBounds.swLat])
-      let previousPolygon = bboxPolygon([previousBounds.neLng, previousBounds.neLat, previousBounds.swLng, previousBounds.swLat])
-    return {currentPolygon, previousPolygon}
+  handleDataNeeded(currentBounds) {
+    this.getDataForBounds(currentBounds)
+      .then((result) => {
+        this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds})
+      }, (e) => {
+        this.flashMessageOnMap(e.message.split(':')[1])
+      })
   }
 
-  handleMapBoundsChange(currentBounds) {
-
-      // Do we need to fetch new data?
-      if(typeof this.state.bounds == 'undefined'){
-        //First load, so we need data
-        this.getDataForBounds(currentBounds)
-        .then((result) => {
-          this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds, previousBounds: currentBounds})
-        }, (e) => {
-          this.flashMessageOnMap(e.message.split(':')[1])
-        })
-      } else {
-        //Panning and zooming is happening
-        //We have existing data loaded. Should we update?
-        let { currentPolygon, previousPolygon } = this.makePolygons(currentBounds, this.state.previousBounds)
-        let currentNE = point([currentBounds.neLng, currentBounds.neLat])
-        let currentSW = point([currentBounds.swLng, currentBounds.swLat])
-
-        if(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon)){
-          //No data update because the data we have loaded already covers these bounds.
-          //No updating previousBounds because we only want to update them with bigger bounds
-          //Update bounds so Summary can update itself.
-          this.setState({bounds: currentBounds})
-        } else {
-          this.getDataForBounds(currentBounds)
-          .then((result) => {
-            this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds, previousBounds: currentBounds})
-          }, (e) => {
-            this.flashMessageOnMap(e.message.split(':')[1])
-          })
-        }
-      }
-
+  handleBoundsChange(currentBounds) {
     this.updateRoute(currentBounds.zoom, currentBounds.center.lat, currentBounds.center.lng, this.props.location.query.highlight)
+    this.setState({bounds: currentBounds})
   }
 
   updateRoute(zoom, lat, lng, highlight = '') {
@@ -201,7 +169,8 @@ class MapView extends React.Component {
             highlight={ highlight }
             center= {[this.props.params.lng, this.props.params.lat]}
             zoom={this.props.params.zoom}
-            onBoundsChange={ ::this.handleMapBoundsChange }
+            onBoundsChange={ ::this.handleBoundsChange }
+            onDataNeeded={ ::this.handleDataNeeded }
             showOrganizationProfile={ ::this.updateOrgProfile }
             ref={(map) => this.mapComponent = map}
           />
@@ -227,7 +196,8 @@ class MapView extends React.Component {
             highlight={ highlight }
             center= {[this.props.params.lng, this.props.params.lat]}
             zoom={this.props.params.zoom}
-            onBoundsChange={ ::this.handleMapBoundsChange }
+            onBoundsChange={ ::this.handleBoundsChange }
+            onDataNeeded={ ::this.handleDataNeeded }
             showOrganizationProfile={ ::this.updateOrgProfile }
             ref={(map) => this.mapComponent = map}
           />
