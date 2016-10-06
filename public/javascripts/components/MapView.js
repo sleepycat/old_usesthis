@@ -171,7 +171,7 @@ class MapView extends React.Component {
             zoom={this.props.params.zoom}
             onBoundsChange={ ::this.handleBoundsChange }
             onDataNeeded={ ::this.handleDataNeeded }
-            showOrganizationProfile={ ::this.updateOrgProfile }
+            onClick={ ::this.updateOrgProfile }
             ref={(map) => this.mapComponent = map}
           />
         </MediaQuery>
@@ -198,7 +198,7 @@ class MapView extends React.Component {
             zoom={this.props.params.zoom}
             onBoundsChange={ ::this.handleBoundsChange }
             onDataNeeded={ ::this.handleDataNeeded }
-            showOrganizationProfile={ ::this.updateOrgProfile }
+            onClick={ ::this.updateOrgProfile }
             ref={(map) => this.mapComponent = map}
           />
         </MediaQuery>

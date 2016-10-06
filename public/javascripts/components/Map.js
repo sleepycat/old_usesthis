@@ -240,7 +240,7 @@ class Map extends React.Component {
     // need to check if the source is mapbox.
     if (features.length > 0 && features[0].layer.source !== 'mapbox') {
       // send location id to owner
-      this.component.props.showOrganizationProfile(features[0].properties.id)
+      this.component.props.onClick(features[0].properties.id)
     }
 
   }
