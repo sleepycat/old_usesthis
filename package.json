@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "build:start": "build:server && node ./bin/www",
+    "build": "NODE_ENV=production webpack -p && docker build -t mikewilliamson/usesthis .",
     "test": "NODE_ENV=test mocha --timeout 2000 --recursive --require babel-core/register test",
     "dump": "arangodump --server.database usesthis_development --output-directory arango_dump_system --overwrite true --include-system-collections true",
     "load": "arangorestore --server.endpoint 'tcp://ec2-54-213-157-146.us-west-2.compute.amazonaws.com:8529' --server.database usesthis_production --input-directory arango_dump_system --overwrite true --include-system-collections true",
