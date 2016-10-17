@@ -74,8 +74,7 @@ class Map extends React.Component {
 
     map.on("click", this.handleClick);
 
-    let getBounds = (e) => {
-
+    let handleMapMove = (e) => {
 
       let bounds = e.target.getBounds()
       let boundsObj = {
@@ -86,42 +85,52 @@ class Map extends React.Component {
         'center': e.target.getCenter(),
         'zoom': e.target.getZoom()
       }
+      // Bounds changed, if there is a handler, call it.
+      if(this.props.onBoundsChange) {
+        this.props.onBoundsChange(boundsObj)
+      }
 
-      let mapBounds = [boundsObj.neLng, boundsObj.neLat, boundsObj.swLng, boundsObj.swLat]
-      let mapBoundsPoly = bboxPolygon(mapBounds)
-      if (this.props.data.features && this.props.data.features.length > 0) {
-	//If we create an polygon around the data, are the points that define
-	// the NE/SW of the map bounds that polygon?
-	let dataExtent = extent(this.props.data)
-	let { features } = within(explode(mapBoundsPoly) ,featureCollection([bboxPolygon(dataExtent)]))
+      // A trickier question: Do we need data?
+      // This translates to: does the data we have loaded cover the map
+      // bounds?
+      let boundsArray = [boundsObj.neLng, boundsObj.neLat, boundsObj.swLng, boundsObj.swLat]
+      let mapCorners = explode(bboxPolygon(boundsArray))
+      if (this.hasData()) {
+	// Create an polygon around the data
+	let dataExtent = featureCollection([bboxPolygon(extent(this.props.data))])
+        // Are the mapCorners inside the area covered by the dataExtent?
+	let { features } = within(mapCorners, dataExtent)
+        // No corners within the area covered by data? Do we have a function to call?
 	if (features.length === 0 && typeof this.props.onDataNeeded === 'function') {
-          // If we get here it's because our mapbounds are larger than the area our data covers.
-          // call the onDataNeeded function.
 	  this.props.onDataNeeded(boundsObj)
 	}
       } else {
-        // First load
+        // No data? Need some.
 	if(this.props.onDataNeeded) {
 	  this.props.onDataNeeded(boundsObj)
 	}
       }
 
-
-      if(this.props.onBoundsChange) {
-        this.props.onBoundsChange(boundsObj)
-      }
     }
 
     //Use touchend on mobile
     //otherwise you get WAY to many events
     if(isMobile.any){
-      map.on("touchend", getBounds);
+      map.on("touchend", handleMapMove)
     } else {
-      map.on("moveend", getBounds);
+      map.on("moveend", handleMapMove)
     }
-    map.on("zoomend", getBounds);
+    map.on("zoomend", handleMapMove)
 
-    map.on("load", getBounds);
+    map.on("load", handleMapMove)
+  }
+
+  hasData() {
+    if (this.props.data.features && this.props.data.features.length > 0) {
+      return true
+    } else {
+      return false
+    }
   }
 
   getBounds() {
