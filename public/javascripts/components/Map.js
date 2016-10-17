@@ -9,11 +9,11 @@ import Geocoder from 'mapbox-gl-geocoder'
 import Flash from 'mapbox-gl-flash'
 import differenceby from 'lodash.differenceby'
 import bboxPolygon from 'turf-bbox-polygon'
-import point from 'turf-point'
-import polygon from 'turf-polygon'
 import inside from 'turf-inside'
 import within from 'turf-within'
-import area from 'turf-area'
+import explode from 'turf-explode'
+import extent from 'turf-extent'
+import featureCollection from 'turf-featurecollection'
 
 const client = new Lokka({ transport: new Transport('/graphql') })
 
@@ -76,6 +76,7 @@ class Map extends React.Component {
 
     let getBounds = (e) => {
 
+
       let bounds = e.target.getBounds()
       let boundsObj = {
         'neLat': bounds.getNorthEast().lat,
@@ -86,31 +87,26 @@ class Map extends React.Component {
         'zoom': e.target.getZoom()
       }
 
-      if(typeof this.previousBounds == 'undefined'){
-        //No previousBounds set?
-        //First load, so we need data
-        if(this.props.onDataNeeded) {
-          this.props.onDataNeeded(boundsObj)
-        }
-        this.previousBounds = boundsObj
+      let mapBounds = [boundsObj.neLng, boundsObj.neLat, boundsObj.swLng, boundsObj.swLat]
+      let mapBoundsPoly = bboxPolygon(mapBounds)
+      if (this.props.data.features && this.props.data.features.length > 0) {
+	//If we create an polygon around the data, are the points that define
+	// the NE/SW of the map bounds that polygon?
+	let dataExtent = extent(this.props.data)
+	let { features } = within(explode(mapBoundsPoly) ,featureCollection([bboxPolygon(dataExtent)]))
+	if (features.length === 0 && typeof this.props.onDataNeeded === 'function') {
+          // If we get here it's because our mapbounds are larger than the area our data covers.
+          // call the onDataNeeded function.
+	  this.props.onDataNeeded(boundsObj)
+	}
       } else {
-        //Panning and zooming is happening
-        //We have existing data loaded. Should we update?
-        let { currentPolygon, previousPolygon } = this.makePolygons(boundsObj, this.previousBounds)
-        let currentNE = point([boundsObj.neLng, boundsObj.neLat])
-        let currentSW = point([boundsObj.swLng, boundsObj.swLat])
-
-        if(inside(currentNE, previousPolygon) && inside(currentSW, previousPolygon)){
-          //No data update because the data we have loaded already covers these bounds.
-          //No updating previousBounds because we only want to update them with bigger bounds
-        } else {
-          //need data
-          if(this.props.onDataNeeded) {
-            this.props.onDataNeeded(boundsObj)
-          }
-          this.previousBounds = boundsObj
-        }
+        // First load
+	if(this.props.onDataNeeded) {
+	  this.props.onDataNeeded(boundsObj)
+	}
       }
+
+
       if(this.props.onBoundsChange) {
         this.props.onBoundsChange(boundsObj)
       }
