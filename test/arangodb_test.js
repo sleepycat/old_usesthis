@@ -1,11 +1,11 @@
-require("babel-polyfill");
+require("babel-polyfill")
 import request from 'supertest'
 import expect from 'expect'
 import { db } from '../src/data/database'
 
 let vertices = db.collection('vertices')
 let edges = db.collection('edges')
-var aqlQuery = require('arangojs').aqlQuery;
+var aqlQuery = require('arangojs').aqlQuery
 
 describe('Arangodb', () => {
 
@@ -20,38 +20,33 @@ describe('Arangodb', () => {
     await db.truncate()
   })
 
-  it('find vertices and edges collections', async (done) => {
-    let collections = await db.collections();
-    let collectionNames = collections.map((c) => {return c.name});
-    expect(collectionNames).toInclude('vertices');
-    expect(collectionNames).toInclude('edges');
-    done();
-  });
-
-  it('can query the database with AQL', async (done) => {
-    let vertices = await db.collection('vertices');
-    await vertices.save({hello: 'world'});
-
-    let cursor = await db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc');
-    let result = await cursor.next();
-
-    expect(result.hello).toEqual("world");
-    done();
+  it('find vertices and edges collections', async () => {
+    let collections = await db.collections()
+    let collectionNames = collections.map((c) => {return c.name})
+    expect(collectionNames).toInclude('vertices')
+    expect(collectionNames).toInclude('edges')
   })
 
-  it('can insert data', async (done) => {
+  it('can query the database with AQL', async () => {
+    let vertices = await db.collection('vertices')
+    await vertices.save({hello: 'world'})
+    let cursor = await db.query('FOR doc IN vertices FILTER doc.hello == "world" RETURN doc')
+    let result = await cursor.next()
+    expect(result.hello).toEqual("world")
+  })
+
+  it('can insert data', async () => {
     let latLng = {"lat":45.4292652,"lng":-75.6900505}
-    let location = {"lat":45.4292652,"lng":-75.6900505,"type":"location","address":"126 York Street, Ottawa, ON K1N, Canada"};
+    let location = {"lat":45.4292652,"lng":-75.6900505,"type":"location","address":"126 York Street, Ottawa, ON K1N, Canada"}
     let aql = aqlQuery`
       UPSERT ${latLng} INSERT ${location} UPDATE {} IN vertices RETURN NEW
     `
-    let cursor = await db.query(aql);
-    let result = await cursor.all();
-    expect(result[0].lat).toEqual(45.4292652);
-    done();
-  });
+    let cursor = await db.query(aql)
+    let result = await cursor.all()
+    expect(result[0].lat).toEqual(45.4292652)
+  })
 
-});
+})
 
 
 

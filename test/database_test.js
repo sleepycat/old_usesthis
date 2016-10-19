@@ -1,4 +1,4 @@
-require("babel-polyfill");
+require("babel-polyfill")
 
 import expect from 'expect'
 import {
@@ -61,14 +61,13 @@ describe('database functions', () => {
 
   describe('languagesForOrganization()', () => {
 
-    it('returns the languages in use for the specified organization', async (done) => {
+    it('returns the languages in use for the specified organization', async () => {
       let technologies = await languagesForOrganization(shopify)
       let categories = technologies.map((tech) => { return tech.category })
       expect(categories).toContain("language")
       expect(categories).toNotContain("tool")
       expect(categories).toNotContain("storage")
       expect(categories).toNotContain("os")
-      done();
     })
 
   })
