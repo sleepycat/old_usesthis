@@ -1,4 +1,3 @@
-require("babel-polyfill")
 import request from 'supertest'
 import expect from 'expect'
 import { db } from '../src/data/database'

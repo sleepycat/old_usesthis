@@ -1,4 +1,3 @@
-require("babel-polyfill");
 import expect from 'expect'
 import summary from '../public/javascripts/summary'
 import Convert from '../public/javascripts/convert'

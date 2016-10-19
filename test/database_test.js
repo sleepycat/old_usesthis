@@ -1,5 +1,3 @@
-require("babel-polyfill")
-
 import expect from 'expect'
 import {
   technologiesForOrganization,

@@ -1,4 +1,3 @@
-require("babel-polyfill");
 import { db } from '../src/data/database'
 
 let request = require('supertest')

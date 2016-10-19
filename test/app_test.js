@@ -1,5 +1,3 @@
-require("babel-polyfill");
-
 let request = require('supertest')
   , app = require('../src/app');
 
