@@ -34,10 +34,10 @@ A third variable `PORT` is only used in production.
 ### Getting the application going
 
 ```sh
-git clone https://github.com/sleepycat/usesthis_v2.git
-cd usesthis_v2
-npm install
-npm start
+git clone https://github.com/sleepycat/usesthis.git
+cd usesthis
+yarn
+yarn start
 ```
 
 This should be sufficient to bring up the application listening on port
@@ -68,7 +68,7 @@ arangorestore --server.endpoint 'tcp://127.0.0.1:8529' --create-database true --
 The server side code has tests that can be run like this:
 
 ```sh
-mike@longshot:~/projects/usesthis☺  npm test
+mike@longshot:~/projects/usesthis☺  yarn test
 ```
 
 ## Deployment
@@ -77,14 +77,14 @@ Deployment is currently on a single AWS EC2 micro instance.
 The first step is to build for production:
 
 ```sh
-# NODE_ENV here is required to build React for prod
-NODE_ENV=production webpack -p
-# then build a new docker image
-docker build -t mikewilliamson/usesthis .
+yarn run build
+# When the bundle is created and the image is built:
 docker push mikewilliamson/usesthis
 ```
+
 SSH into the production instance and docker pull the new image.
 Starting everthing with docker-compose looks like this:
+
 ```sh
 USESTHIS_PRODUCTION_DB_NAME="usesthis_production" USESTHIS_PRODUCTION_DB_URL="http://u:p@arangodb:8529" PORT=80 docker-compose up -d
 ```
