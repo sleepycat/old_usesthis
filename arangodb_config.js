@@ -13,7 +13,7 @@ module.exports = {
   },
   "test" : {
     "databaseName": "usesthis_test",
-    "url": "http://127.0.0.1:8529",
+    "url": process.env.USESTHIS_TEST_DB_URL,
     "graph": "test",
     "arangoVersion": 30000
   },
