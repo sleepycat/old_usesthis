@@ -1,5 +1,5 @@
 import request from 'supertest'
-import expect from 'expect'
+
 import { db } from '../src/data/database'
 
 let vertices = db.collection('vertices')
@@ -22,8 +22,8 @@ describe('Arangodb', () => {
   it('find vertices and edges collections', async () => {
     let collections = await db.collections()
     let collectionNames = collections.map((c) => {return c.name})
-    expect(collectionNames).toInclude('vertices')
-    expect(collectionNames).toInclude('edges')
+    expect(collectionNames).toContain('vertices')
+    expect(collectionNames).toContain('edges')
   })
 
   it('can query the database with AQL', async () => {

@@ -1,6 +1,6 @@
 require("babel-polyfill");
 
-import expect from 'expect'
+
 import {
   graphql,
   GraphQLSchema,
@@ -69,7 +69,7 @@ describe('The YearType', () => {
 
     let result = await graphql(schema, query);
     //Year gets stringifed on the way out.
-    expect(result.data.add_year.year).toEqual("1993");
+    expect(result.data.add_year.year).toEqual(1993)
   })
 
   it('rejects non-numeric values', async () => {
@@ -84,8 +84,8 @@ describe('The YearType', () => {
 
     let result = await graphql(schema, query);
     //Year gets stringifed on the way out.
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude('Must be an integer');
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain('Must be an integer');
   })
 
   it('rejects non-integer values', async () => {
@@ -100,8 +100,8 @@ describe('The YearType', () => {
 
     let result = await graphql(schema, query);
     //Year gets stringifed on the way out.
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude('Must be an integer');
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain('Must be an integer');
   })
 
   it('rejects values with fewer than 4 digits', async () => {
@@ -115,8 +115,8 @@ describe('The YearType', () => {
     `;
 
     let result = await graphql(schema, query);
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude('Must have 4 digits');
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain('Must have 4 digits');
   })
 
   it('rejects values with greater than 4 digits', async () => {
@@ -132,7 +132,7 @@ describe('The YearType', () => {
     `;
 
     let result = await graphql(schema, query);
-    expect(result.errors).toExist();
+    expect(result.errors).toBeTruthy();
   })
 
 })

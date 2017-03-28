@@ -1,6 +1,6 @@
 require("babel-polyfill");
 
-import expect from 'expect'
+
 import {
   graphql,
   GraphQLSchema,
@@ -84,8 +84,8 @@ describe('The UrlType', () => {
     `;
 
     let result = await graphql(schema, query);
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude("Not a valid URL");
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain("Not a valid URL");
   })
 
 })

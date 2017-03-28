@@ -1,6 +1,6 @@
 require("babel-polyfill");
 
-import expect from 'expect'
+
 import {
   graphql,
   GraphQLSchema,
@@ -84,8 +84,8 @@ describe('LatitudeType', () => {
     `;
 
     let result = await graphql(schema, query);
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude("A valid latitude is between +90 and -90");
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain("A valid latitude is between +90 and -90");
   })
 
   it('90 exactly is OK', async () => {
@@ -113,8 +113,8 @@ describe('LatitudeType', () => {
     `;
 
     let result = await graphql(schema, query);
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude("A valid latitude is between +90 and -90");
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain("A valid latitude is between +90 and -90");
   })
 })
 

@@ -1,4 +1,4 @@
-import expect from 'expect'
+
 import {
   technologiesForOrganization,
   languagesForOrganization,
@@ -36,9 +36,9 @@ describe('database functions', () => {
       let technologies = orgs.reduce((prev, curr) => { return prev.concat(curr.technologies)}, [])
       let categories = technologies.map((tech) => { return tech.category })
       expect(categories).toContain("language")
-      expect(categories).toNotContain("tool")
-      expect(categories).toNotContain("storage")
-      expect(categories).toNotContain("os")
+      expect(categories).not.toContain("tool")
+      expect(categories).not.toContain("storage")
+      expect(categories).not.toContain("os")
     })
 
   })
@@ -63,9 +63,9 @@ describe('database functions', () => {
       let technologies = await languagesForOrganization(shopify)
       let categories = technologies.map((tech) => { return tech.category })
       expect(categories).toContain("language")
-      expect(categories).toNotContain("tool")
-      expect(categories).toNotContain("storage")
-      expect(categories).toNotContain("os")
+      expect(categories).not.toContain("tool")
+      expect(categories).not.toContain("storage")
+      expect(categories).not.toContain("os")
     })
 
   })

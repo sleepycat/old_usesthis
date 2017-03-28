@@ -1,6 +1,6 @@
 require("babel-polyfill");
 
-import expect from 'expect'
+
 import {
   graphql,
   GraphQLSchema,
@@ -80,8 +80,8 @@ describe('The CategoryType', () => {
 
     let result = await graphql(schema, query);
     //Year gets stringifed on the way out.
-    expect(result.errors).toExist();
-    expect(result.errors[0].message).toInclude('has invalid value');
+    expect(result.errors).toBeTruthy();
+    expect(result.errors[0].message).toContain('has invalid value');
   })
 
 })

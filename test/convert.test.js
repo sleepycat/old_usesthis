@@ -1,10 +1,10 @@
-import expect from 'expect'
+
 import Convert from '../public/javascripts/convert'
 
 describe('Convert', () => {
 
   it('is has a toGeojson method', () => {
-    expect(Convert.toGeojson).toExist()
+    expect(Convert.toGeojson).toBeTruthy()
   })
 
   describe('.toGeojson', () => {

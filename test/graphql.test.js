@@ -22,7 +22,7 @@ function urlString(urlParams?: ?Object) {
 
 describe('Using graphql middleware', () => {
 
-  before(() => {
+  beforeEach(() => {
     var testSchema = new GraphQLSchema({
       query: new GraphQLObjectType({
         name: 'Root',

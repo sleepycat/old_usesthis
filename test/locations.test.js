@@ -1,6 +1,6 @@
 import { db } from '../src/data/database'
 import request from 'supertest'
-import expect from 'expect'
+
 import app from '../src/app'
 
 describe('location queries', () => {
@@ -57,7 +57,7 @@ describe('location queries', () => {
       .send('{"query": "{ location(id: 2733712293){id lat lng address} }"}')
 
     let location = body.data.location
-    expect(location.id).toExist()
+    expect(location.id).toBeTruthy()
   })
 
   it('it shows details of the type', async () => {
@@ -96,7 +96,7 @@ describe('location queries', () => {
       .set('Content-Type', 'application/json; charset=utf-8')
       .send({"query": "{ locations_within_bounds(sw_lat: -58.303625959817744, sw_lng: -203.8709457158272, ne_lat: 82.34832466131675, ne_lng:243.65914906226857){address} }"})
 
-    expect(body.errors).toExist()
+    expect(body.errors).toBeTruthy()
   })
 
 })

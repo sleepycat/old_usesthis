@@ -1,6 +1,6 @@
 import { db } from '../src/data/database'
 import request from 'supertest'
-import expect from 'expect'
+
 import app from '../src/app'
 
 describe('organization queries', () => {
@@ -35,7 +35,7 @@ describe('organization queries', () => {
 	.send(`query { organization(name: "Shopify"){technologies{name}} }`)
 
       let shopify = body.data.organization
-      expect(shopify.technologies).toInclude({name: 'ruby'})
+      expect(shopify.technologies).toContainEqual({name: 'ruby'})
     })
 
 })
