@@ -8,12 +8,12 @@ import mapboxgl from 'mapbox-gl'
 import Geocoder from 'mapbox-gl-geocoder'
 import Flash from 'mapbox-gl-flash'
 import differenceby from 'lodash.differenceby'
-import bboxPolygon from 'turf-bbox-polygon'
+import bboxPolygon from '@turf/bbox-polygon'
 import inside from 'turf-inside'
 import within from 'turf-within'
 import explode from 'turf-explode'
 import extent from 'turf-extent'
-import featureCollection from 'turf-featurecollection'
+import { featureCollection } from '@turf/helpers'
 
 const client = new Lokka({ transport: new Transport('/graphql') })
 

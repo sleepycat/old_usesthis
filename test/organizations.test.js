@@ -6,6 +6,8 @@ import app from '../src/app'
 describe('organization queries', () => {
 
     beforeEach(async () => {
+      await db.truncate()
+
       let vertex_data = require('./data/vertices').vertices
       let edge_data = require('./data/edges').edges
       let vertices = await db.collection('vertices')

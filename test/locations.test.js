@@ -6,6 +6,8 @@ import app from '../src/app'
 describe('location queries', () => {
 
   beforeEach(async () => {
+    await db.truncate()
+
     let vertex_data = require('./data/vertices').vertices
     let edge_data = require('./data/edges').edges
     let vertices = await db.collection('vertices')
@@ -92,10 +94,19 @@ describe('location queries', () => {
     // Ask for the whole world
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ locations_within_bounds(sw_lat: -58.303625959817744, sw_lng: -203.8709457158272, ne_lat: 82.34832466131675, ne_lng:243.65914906226857){address} }"})
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`{
+	locations_within_bounds(
+	  sw_lat: -58.303625959817744
+	  sw_lng: -203.8709457158272
+	  ne_lat: 82.34832466131675
+	  ne_lng:243.65914906226857
+	){
+	  address
+	}
+      }`)
 
-    expect(body.errors).toBeTruthy()
+    expect(body.errors).toBeDefined()
   })
 
 })

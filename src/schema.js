@@ -1,5 +1,7 @@
-import area from 'turf-area'
-import bboxPolygon from 'turf-bbox-polygon'
+import area from '@turf/area'
+import bbox from '@turf/bbox'
+import bboxPolygon from '@turf/bbox-polygon'
+import { featureCollection, point } from '@turf/helpers'
 
 import {
   organizationByName,
@@ -73,16 +75,16 @@ var query = new GraphQLObjectType({
           description: 'The longitude of the northeast corner of the bounding box.',
         },
       },
-      resolve: (source, args, ast) => {
+      resolve (source, args, ast) {
 
 	// Check the incoming request bounds
         // If they are to big return an error.
-	var bbox = [args.sw_lng, args.sw_lat, args.ne_lng, args.ne_lat];
-	var poly = bboxPolygon(bbox);
-	var requestedArea = area(poly);
+        let feature = featureCollection([point([args.sw_lng, args.sw_lat]), point([args.ne_lng, args.ne_lat])])
+	var requestedArea = area(bboxPolygon(bbox(feature)))
+
 	if(requestedArea > 12427311001.261375) throw new Error(`The requested area is too large.`)
 
-        return locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
+	return locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
       }
     }
   }
