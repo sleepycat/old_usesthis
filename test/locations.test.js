@@ -83,7 +83,6 @@ describe('location queries', () => {
       .set('Content-Type', 'application/json; charset=utf-8')
       .send({"query": "{ locations_within_bounds(sw_lat:45.41670820924417, sw_lng: -75.75180530548096, ne_lat:45.436104879546555, ne_lng:-75.66940784454347){address} }"})
 
-    console.log('response body: ', JSON.stringify(body))
     let locations = body.data.locations_within_bounds
     expect(locations.length).toEqual(1)
     expect(locations[0].address).toEqual('126 York Street, Ottawa, ON K1N, Canada')
