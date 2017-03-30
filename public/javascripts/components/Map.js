@@ -11,7 +11,7 @@ import differenceby from 'lodash.differenceby'
 import bboxPolygon from '@turf/bbox-polygon'
 import inside from 'turf-inside'
 import within from 'turf-within'
-import explode from 'turf-explode'
+import explode from '@turf/explode'
 import extent from 'turf-extent'
 import { featureCollection } from '@turf/helpers'
 
