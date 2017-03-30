@@ -3,7 +3,10 @@ var path = require('path')
 
 module.exports = {
   entry: './public/javascripts/main.js',
-  output: { path: "public/javascripts", filename: 'bundle.js' },
+  output: {
+    path: __dirname + '/public/javascripts/',
+    filename: 'bundle.js'
+  },
   node: {
     console: true,
     fs: 'empty',
