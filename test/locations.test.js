@@ -7,17 +7,12 @@ describe('location queries', () => {
 
   beforeEach(async () => {
     await db.truncate()
-
     let vertex_data = require('./data/vertices').vertices
     let edge_data = require('./data/edges').edges
-    let vertices = await db.collection('vertices')
+    let vertices =  db.collection('vertices')
     await vertices.import(vertex_data)
     let edges = db.collection('edges')
     await edges.import(edge_data)
-  })
-
-  afterEach(async () => {
-    await db.truncate()
   })
 
   it('serves a specified location', async () => {

@@ -1,4 +1,4 @@
-
+import { aql } from 'arangojs'
 import {
   technologiesForOrganization,
   languagesForOrganization,
@@ -11,10 +11,19 @@ import {
   db
 } from '../src/data/database'
 
-let _126_york = "vertices/2733712293"
-let shopify = "vertices/2731811749"
+async function findVertex(attribute, value) {
+    let response = await db.query(aql`
+      FOR vertex IN vertices
+        FILTER vertex.${ attribute } == ${ value }
+	  LIMIT 1
+	  RETURN vertex
+    `)
+    return response.next()
+}
 
 describe('database functions', () => {
+
+  let _126_york, shopify
 
   beforeEach(async () => {
     let vertex_data = require('./data/vertices').vertices
@@ -23,6 +32,9 @@ describe('database functions', () => {
     await vertices.import(vertex_data)
     let edges = db.collection('edges')
     await edges.import(edge_data)
+
+    shopify = await findVertex('name', 'Shopify')
+    _126_york = await findVertex('address', '126 York Street, Ottawa, ON K1N, Canada')
   })
 
   afterEach(async () => {

@@ -1,10 +1,9 @@
 import request from 'supertest'
-
+import { aql } from 'arangojs'
 import { db } from '../src/data/database'
 
 let vertices = db.collection('vertices')
 let edges = db.collection('edges')
-var aqlQuery = require('arangojs').aqlQuery
 
 describe('Arangodb', () => {
 
@@ -37,10 +36,10 @@ describe('Arangodb', () => {
   it('can insert data', async () => {
     let latLng = {"lat":45.4292652,"lng":-75.6900505}
     let location = {"lat":45.4292652,"lng":-75.6900505,"type":"location","address":"126 York Street, Ottawa, ON K1N, Canada"}
-    let aql = aqlQuery`
+    let query = aql`
       UPSERT ${latLng} INSERT ${location} UPDATE {} IN vertices RETURN NEW
     `
-    let cursor = await db.query(aql)
+    let cursor = await db.query(query)
     let result = await cursor.all()
     expect(result[0].lat).toEqual(45.4292652)
   })
