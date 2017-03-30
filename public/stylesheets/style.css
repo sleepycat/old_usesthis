@@ -4,17 +4,6 @@
   transition-property: background-color;
 }
 
-.repo_link {
-  margin-left: 1em;
-}
-
-.organization-detail a, .profile_section_heading {
-  color: #4682B4;
-}
-
-.profile_section_heading {
-}
-
 body {
  width: 100%;
  overflow: hidden;
@@ -22,10 +11,6 @@ body {
 
 .explanation {
   padding: 2em;
-}
-
-.organization-detail {
-  padding: 1em;
 }
 
 .flash-message {
@@ -91,7 +76,6 @@ body {
   fill: #000;
 }
 
-
 #sidebar {
   z-index: 1;
   pointer-events: none;
@@ -116,22 +100,6 @@ body {
   font-family: sans-serif;
   font-size: 1.5em;
   color: steelblue;
-}
-
-.technology {
-  list-style-type: none;
-  color: #eee;
-  padding: 0;
-  background-color: #4682B4;
-  border-bottom: 1px solid #B3CEE1;
-  border-right: 1px solid #B3CEE1;
-  padding: 3px 4px;
-  margin: 2px 2px 2px 0px;
-  text-decoration: none;
-  font-size: 90%;
-  line-height: 1.4;
-  white-space: nowrap;
-  display: inline-block;
 }
 
 @media screen and (min-width: 60em) {
