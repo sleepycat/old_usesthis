@@ -14,7 +14,7 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   ],
   node: {
     console: true,
@@ -27,20 +27,20 @@ module.exports = {
     poll: true
   },
   resolve: {
-    extensions: ['', '.js', '.jsx'],
+    extensions: ['.js', '.jsx'],
     alias: {
       webworkify: 'webworkify-webpack'
     }
   },
   module: {
     noParse: /node_modules\/json-schema\/lib\/validate\.js/,
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         exclude: /node_modules/,
         query: {
-          presets: ['es2015', 'stage-0', 'react']
+          presets: [['es2015', { "modules": false }], 'stage-0', 'react']
         }
       },
       {
@@ -54,15 +54,15 @@ module.exports = {
       },
       {
         test: /mapbox-gl.+\.js$/,
-        loader: 'transform/cacheable?brfs'
+        loader: 'transform-loader/cacheable?brfs'
       },
       {
         test: require.resolve("mapbox-gl-geocoder"),
-        loader: "imports?mapboxgl=mapbox-gl"
+        loader: "imports-loader?mapboxgl=mapbox-gl"
       },
       {
         test: require.resolve("mapbox-gl-flash"),
-        loader: "imports?mapboxgl=mapbox-gl"
+        loader: "imports-loader?mapboxgl=mapbox-gl"
       }
     ]
   },
