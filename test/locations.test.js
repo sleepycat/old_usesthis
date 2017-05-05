@@ -18,8 +18,14 @@ describe('location queries', () => {
   it('serves a specified location', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send('{"query": "{ location(id: 2733712293){address} }"}')
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query {
+        location(
+          id: 2733712293
+        ){
+          address
+        }
+      }`)
 
     let location = body.data.location
     expect(location.address).toEqual("126 York Street, Ottawa, ON K1N, Canada")
@@ -28,8 +34,18 @@ describe('location queries', () => {
   it('returns the 2 organizations for the specified location', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ location(id: 2733712293){address organizations {name url}} }"})
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query {
+        location(
+          id: 2733712293
+        ){
+          address
+          organizations {
+            name
+            url
+          }
+        }
+      }`)
 
     let organizations = body.data.location.organizations;
     expect(organizations.length).toEqual(2)
@@ -39,8 +55,20 @@ describe('location queries', () => {
   it('returns the organizations and technologies for the specified location', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ location(id:2733712293){address organizations {name url technologies {name}}} }"})
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query {
+        location(
+          id: 2733712293
+        ){
+          address
+          organizations {
+            name
+            technologies {
+              name
+            }
+          }
+        }
+      }`)
 
     let organizations = body.data.location.organizations
     expect(organizations.length).toBeGreaterThan(0)
@@ -50,8 +78,14 @@ describe('location queries', () => {
   it('it has an id instead of the Arangodb _key', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send('{"query": "{ location(id: 2733712293){id lat lng address} }"}')
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query {
+        location(
+          id: 2733712293
+        ){
+          id
+        }
+      }`)
 
     let location = body.data.location
     expect(location.id).toBeTruthy()
@@ -60,8 +94,14 @@ describe('location queries', () => {
   it('it shows details of the type', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ __type(name: \"Location\"){ name } }"})
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`query {
+        __type(
+          name: "Location"
+        ){
+          name
+        }
+      }`)
 
     let type = body.data.__type
     expect(type.name).toEqual("Location")
@@ -77,8 +117,17 @@ describe('location queries', () => {
 
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/json; charset=utf-8')
-      .send({"query": "{ locations_within_bounds(sw_lat:45.41670820924417, sw_lng: -75.75180530548096, ne_lat:45.436104879546555, ne_lng:-75.66940784454347){address} }"})
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(`{
+        locations_within_bounds(
+          sw_lat: 45.41670820924417
+          sw_lng: -75.75180530548096
+          ne_lat:45.436104879546555
+          ne_lng:-75.66940784454347
+        ){
+          address
+        }
+      }`)
 
     let locations = body.data.locations_within_bounds
     expect(locations.length).toEqual(1)
@@ -91,14 +140,14 @@ describe('location queries', () => {
       .post('/graphql')
       .set('Content-Type', 'application/graphql; charset=utf-8')
       .send(`{
-	locations_within_bounds(
-	  sw_lat: -58.303625959817744
-	  sw_lng: -203.8709457158272
-	  ne_lat: 82.34832466131675
-	  ne_lng:243.65914906226857
-	){
-	  address
-	}
+        locations_within_bounds(
+          sw_lat: -58.303625959817744
+          sw_lng: -203.8709457158272
+          ne_lat: 82.34832466131675
+          ne_lng:243.65914906226857
+        ){
+          address
+        }
       }`)
 
     expect(body.errors).toBeDefined()
