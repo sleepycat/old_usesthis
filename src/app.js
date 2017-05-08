@@ -7,7 +7,18 @@ import bodyParser from 'body-parser'
 import exphbs from 'express-handlebars'
 import graphqlHTTP from 'express-graphql'
 import routes from './routes/index'
+import {
+  organizationByName,
+  locationByID,
+  locationsWithinBounds,
+  addOrganization,
+  technologiesForOrganization,
+  languagesForOrganization,
+  orgsAndTechnologiesForLocation,
+  orgsForLocation
+} from './data/database'
 import { schema } from './schema'
+
 
 const app = express()
 //Webpack hot reloading for dev.
@@ -42,7 +53,23 @@ app.set('view engine', '.hbs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use('/graphql', graphqlHTTP(req => {
-  return { schema: schema , pretty: true, graphiql: true}
+  return {
+    schema,
+    pretty: true,
+    graphiql: true,
+    context: {
+      db: {
+        organizationByName,
+        locationByID,
+        locationsWithinBounds,
+        addOrganization,
+        technologiesForOrganization,
+        languagesForOrganization,
+        orgsAndTechnologiesForLocation,
+        orgsForLocation
+      }
+    }
+  }
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

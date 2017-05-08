@@ -2,14 +2,6 @@ import area from '@turf/area'
 import bbox from '@turf/bbox'
 import bboxPolygon from '@turf/bbox-polygon'
 import { featureCollection, point } from '@turf/helpers'
-
-import {
-  organizationByName,
-  locationByID,
-  locationsWithinBounds,
-  addOrganization
-} from './data/database'
-
 import UrlType from './data/types/urlType'
 import YearType from './data/types/yearType'
 import Location from './data/types/location'
@@ -39,8 +31,8 @@ var query = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: (source, args, ast) => {
-        return locationByID(args.id)
+      resolve: (source, args, { db }, ast) => {
+        return db.locationByID(args.id)
       },
     },
     organization: {
@@ -51,8 +43,8 @@ var query = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString)
         }
       },
-      resolve: async (source, args, ast) => {
-        return organizationByName(args.name)
+      resolve: async (source, args, { db }, ast) => {
+        return db.organizationByName(args.name)
       }
     },
     locations_within_bounds: {
@@ -75,7 +67,7 @@ var query = new GraphQLObjectType({
           description: 'The longitude of the northeast corner of the bounding box.',
         },
       },
-      resolve (source, args, ast) {
+      resolve (source, args, { db },  ast) {
 
         // Check the incoming request bounds
         // If they are to big return an error.
@@ -84,7 +76,7 @@ var query = new GraphQLObjectType({
 
         if(requestedArea > 12427311001.261375) throw new Error(`The requested area is too large.`)
 
-        return locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
+        return db.locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
       }
     }
   }
@@ -106,7 +98,7 @@ const mutation = new GraphQLObjectType({
         locations: { type: new GraphQLList(LocationInput) },
         technologies: { type: new GraphQLList(TechnologyInput) }
       },
-      resolve: async (source, args) => {
+      resolve(source, args, { db }) {
         if(args.technologies.length === 0){
           throw new Error('You must supply at least 1 technology.');
         }
@@ -122,8 +114,7 @@ const mutation = new GraphQLObjectType({
           }
         }
 
-
-        return  await addOrganization(args)
+        return db.addOrganization(args)
       }
     }
   })

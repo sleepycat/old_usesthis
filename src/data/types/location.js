@@ -1,9 +1,4 @@
 import {
-  orgsAndTechnologiesForLocation,
-  orgsForLocation,
-} from '../database'
-
-import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
@@ -39,16 +34,16 @@ var Location = new GraphQLObjectType({
     organizations: {
       type: new GraphQLList(Organization),
       description: 'An array of organizations associated with that location.',
-      resolve: (source, args, root, ast) => {
+      resolve(root, args, { db }, ast) {
 
         let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
         //TODO: is it actually faster to do organizations and
         //technologies in a single query? Test this assumption.
         if(requestedFields.includes('technologies')) {
-          return orgsAndTechnologiesForLocation(source._id)
+          return db.orgsAndTechnologiesForLocation(root._id)
         } else {
-          return orgsForLocation(source._id)
+          return db.orgsForLocation(root._id)
         }
       }
     }
