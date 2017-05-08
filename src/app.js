@@ -1,24 +1,24 @@
-var express = require('express')
-  , path = require('path')
-  , favicon = require('serve-favicon')
-  , logger = require('morgan')
-  , cookieParser = require('cookie-parser')
-  , bodyParser = require('body-parser')
-  , exphbs = require('express-handlebars')
-  , routes = require('./routes/index')
-  , app = express()
-  , schema = require('./schema').schema
-  , graphqlHTTP = require('express-graphql');
+import express from 'express'
+import path from 'path'
+import favicon from 'serve-favicon'
+import logger from 'morgan'
+import cookieParser from 'cookie-parser'
+import bodyParser from 'body-parser'
+import exphbs from 'express-handlebars'
+import graphqlHTTP from 'express-graphql'
+import routes from './routes/index'
+import { schema } from './schema'
 
+const app = express()
 //Webpack hot reloading for dev.
 if(app.get('env') == 'development') {
 
-  var webpack = require('webpack')
-  var webpackDevMiddleware = require('webpack-dev-middleware')
-  var webpackHotMiddleware = require('webpack-hot-middleware')
-  var config = require('../webpack.dev.config')
+  let webpack = require('webpack')
+  let webpackDevMiddleware = require('webpack-dev-middleware')
+  let webpackHotMiddleware = require('webpack-hot-middleware')
+  let config = require('../webpack.dev.config')
 
-  var compiler = webpack(config)
+  let compiler = webpack(config)
 
   app.use(webpackDevMiddleware(compiler, {
     publicPath: config.output.publicPath,
@@ -51,38 +51,37 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', routes);
 
+// error handlers
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  let err = new Error('Not Found')
   err.status = 404;
   next(err);
 });
-
-// error handlers
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development' || app.get('env') === 'test') {
   app.use(function(err, req, res, next) {
     console.log(` XXX: ${err.message}`)
-    res.status(err.status || 500);
+    res.status(err.status || 500)
     res.render('error', {
       message: err.message,
       error: err
-    });
-  });
+    })
+  })
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
+  res.status(err.status || 500)
   res.render('error', {
     message: err.message,
     error: {}
-  });
-});
+  })
+})
 
 
-module.exports = app;
+module.exports = app
