@@ -26,7 +26,7 @@ if(app.get('env') == 'development') {
   }))
 
   app.use(webpackHotMiddleware(compiler, {
-        log: console.log
+    log: console.log
   }))
 
 }
