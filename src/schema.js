@@ -52,7 +52,7 @@ var query = new GraphQLObjectType({
         }
       },
       resolve: async (source, args, ast) => {
-         return organizationByName(args.name)
+        return organizationByName(args.name)
       }
     },
     locations_within_bounds: {
@@ -77,14 +77,14 @@ var query = new GraphQLObjectType({
       },
       resolve (source, args, ast) {
 
-	// Check the incoming request bounds
+        // Check the incoming request bounds
         // If they are to big return an error.
         let feature = featureCollection([point([args.sw_lng, args.sw_lat]), point([args.ne_lng, args.ne_lat])])
-	var requestedArea = area(bboxPolygon(bbox(feature)))
+        var requestedArea = area(bboxPolygon(bbox(feature)))
 
-	if(requestedArea > 12427311001.261375) throw new Error(`The requested area is too large.`)
+        if(requestedArea > 12427311001.261375) throw new Error(`The requested area is too large.`)
 
-	return locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
+        return locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
       }
     }
   }
@@ -99,19 +99,19 @@ const mutation = new GraphQLObjectType({
     createOrganization: {
       type: Organization,
       args: {
-	name: { type: new GraphQLNonNull(GraphQLString) },
-	founding_year: { type: YearType },
-	url: { type: new GraphQLNonNull(UrlType) },
-	code: { type: UrlType },
-	locations: { type: new GraphQLList(LocationInput) },
-	technologies: { type: new GraphQLList(TechnologyInput) }
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        founding_year: { type: YearType },
+        url: { type: new GraphQLNonNull(UrlType) },
+        code: { type: UrlType },
+        locations: { type: new GraphQLList(LocationInput) },
+        technologies: { type: new GraphQLList(TechnologyInput) }
       },
       resolve: async (source, args) => {
         if(args.technologies.length === 0){
-	  throw new Error('You must supply at least 1 technology.');
+          throw new Error('You must supply at least 1 technology.');
         }
         if(args.locations.length === 0){
-	  throw new Error('You must supply at least 1 location.');
+          throw new Error('You must supply at least 1 location.');
         }
 
         if(typeof args.founding_year !== 'undefined'){
