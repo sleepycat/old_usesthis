@@ -9,7 +9,7 @@ let app, vertex_data, edge_data
 describe('location queries', () => {
 
   beforeAll(async () => {
-    app = await App()
+    app = await App(db)
     vertex_data = require('./data/vertices').vertices
     edge_data = require('./data/edges').edges
   })

@@ -8,15 +8,10 @@ import exphbs from 'express-handlebars'
 import graphqlHTTP from 'express-graphql'
 import routes from './routes/index'
 import { schema } from './schema'
-
-let env = process.env.NODE_ENV || "development"
-let dbConfig = require('../arangodb_config')[env]
-
-let db = require('arangojs')(dbConfig)
-
+import { Database } from 'arangojs'
 import dbinit from './data/database'
 
-export default async function App () {
+export default async function App (db) {
 
   let dbfunctions = await dbinit(db)
 
