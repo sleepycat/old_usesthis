@@ -1,10 +1,9 @@
 import request from 'supertest'
 import { Database, aql } from 'arangojs'
-import App from '../src/app'
 
 const dbconfig = require('../arangodb_config')['test']
 const db = new Database(dbconfig)
-let app, vertex_data, edge_data
+let vertex_data, edge_data
 
 let vertices = db.collection('vertices')
 let edges = db.collection('edges')
@@ -12,7 +11,6 @@ let edges = db.collection('edges')
 describe('Arangodb', () => {
 
   beforeAll(async () => {
-    app = await App()
     vertex_data = require('./data/vertices').vertices
     edge_data = require('./data/edges').edges
   })
