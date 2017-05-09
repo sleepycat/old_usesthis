@@ -1,18 +1,28 @@
-import { db } from '../src/data/database'
 import request from 'supertest'
+import { Database } from 'arangojs'
+import App from '../src/app'
 
-import app from '../src/app'
+const dbconfig = require('../arangodb_config')['test']
+const db = new Database(dbconfig)
+let app, vertex_data, edge_data
 
 describe('location queries', () => {
 
+  beforeAll(async () => {
+    app = await App()
+    vertex_data = require('./data/vertices').vertices
+    edge_data = require('./data/edges').edges
+  })
+
   beforeEach(async () => {
-    await db.truncate()
-    let vertex_data = require('./data/vertices').vertices
-    let edge_data = require('./data/edges').edges
     let vertices =  db.collection('vertices')
     await vertices.import(vertex_data)
     let edges = db.collection('edges')
     await edges.import(edge_data)
+  })
+
+  afterEach(async () => {
+    await db.truncate()
   })
 
   it('serves a specified location', async () => {

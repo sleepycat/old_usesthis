@@ -1,15 +1,23 @@
 import request from 'supertest'
-import { aql } from 'arangojs'
-import { db } from '../src/data/database'
+import { Database, aql } from 'arangojs'
+import App from '../src/app'
+
+const dbconfig = require('../arangodb_config')['test']
+const db = new Database(dbconfig)
+let app, vertex_data, edge_data
 
 let vertices = db.collection('vertices')
 let edges = db.collection('edges')
 
 describe('Arangodb', () => {
 
+  beforeAll(async () => {
+    app = await App()
+    vertex_data = require('./data/vertices').vertices
+    edge_data = require('./data/edges').edges
+  })
+
   beforeEach(async ()=>{
-    let vertex_data = require('./data/vertices').vertices
-    let edge_data = require('./data/edges').edges
     await vertices.import(vertex_data)
     await edges.import(edge_data)
   })

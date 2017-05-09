@@ -1,14 +1,20 @@
-import { db } from '../src/data/database'
+import request from 'supertest'
+import { Database } from 'arangojs'
+import App from '../src/app'
 
-let request = require('supertest')
-  , app = require('../src/app');
+const dbConfig = require('../arangodb_config')['test']
+const db = new Database(dbConfig)
+let app, vertex_data, edge_data
 
 describe('Mutations', () => {
 
-  beforeEach(async () => {
-    let vertex_data = require('./data/vertices').vertices
-    let edge_data = require('./data/edges').edges
+  beforeAll(async () => {
+    app = await App()
+    vertex_data = require('./data/vertices').vertices
+    edge_data = require('./data/edges').edges
+  })
 
+  beforeEach(async () => {
     let vertices = db.collection('vertices')
     await vertices.import(vertex_data)
     let edges = db.collection('edges')
