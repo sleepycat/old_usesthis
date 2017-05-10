@@ -7,7 +7,7 @@
     "build:start": "build:server && node ./bin/www",
     "bundle": "NODE_ENV=production webpack -p",
     "dockerize": "docker build -t mikewilliamson/usesthis .",
-    "test": "jest",
+    "test": "jest --runInBand",
     "dump": "arangodump --server.database usesthis_development --output-directory arango_dump_system --overwrite true --include-system-collections true",
     "load": "arangorestore --server.endpoint 'tcp://db.usesth.is:8529' --server.database usesthis_production --input-directory arango_dump_system --overwrite true --include-system-collections true",
     "todos": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} TODO public/",
