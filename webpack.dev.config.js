@@ -57,7 +57,7 @@ module.exports = {
         loader: 'transform-loader/cacheable?brfs'
       },
       {
-        test: require.resolve("mapbox-gl-geocoder"),
+        test: require.resolve("@mapbox/mapbox-gl-geocoder"),
         loader: "imports-loader?mapboxgl=mapbox-gl"
       },
       {

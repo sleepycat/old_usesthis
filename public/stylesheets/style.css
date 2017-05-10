@@ -4,6 +4,10 @@
   transition-property: background-color;
 }
 
+.mapboxgl-ctrl-compass {
+  display: none !important;
+}
+
 body {
  width: 100%;
  overflow: hidden;

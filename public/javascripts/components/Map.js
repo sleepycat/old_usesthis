@@ -5,7 +5,6 @@ import equal from 'deep-equal'
 import ReactDOM from 'react-dom'
 import isMobile from 'ismobilejs'
 import mapboxgl from 'mapbox-gl'
-import Geocoder from 'mapbox-gl-geocoder'
 import Flash from 'mapbox-gl-flash'
 import differenceby from 'lodash.differenceby'
 import bboxPolygon from '@turf/bbox-polygon'
@@ -14,6 +13,7 @@ import within from '@turf/within'
 import explode from '@turf/explode'
 import extent from 'turf-extent'
 import { featureCollection } from '@turf/helpers'
+var MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
 
 const client = new Lokka({ transport: new Transport('/graphql') })
 
@@ -60,16 +60,18 @@ class Map extends React.Component {
     this.map = map
 
     if(!isMobile.any){
-      map.addControl(new Geocoder({
-	container: 'geocoder-container',
-	placeholder: 'Zoom to your city'
-      }));
+      window.geocoder = new MapboxGeocoder({
+        placeholder: 'Zoom to your city',
+        accessToken: mapboxgl.accessToken
+      })
+      document.getElementById('geocoder-container').appendChild(geocoder.onAdd(map))
     }
 
 
     map.addControl(new Flash());
     if(!isMobile.any){
-      map.addControl(new mapboxgl.Navigation());
+      var nav = new mapboxgl.NavigationControl();
+      map.addControl(nav, 'top-right');
     }
 
     map.on("click", this.handleClick);
@@ -148,14 +150,15 @@ class Map extends React.Component {
 
   addDataLayerToMap(data) {
 
-      if(!(data.features === [])){
-        try {
-          this.map.removeLayer("markers")
-          this.map.removeLayer("selected")
-          this.map.removeSource("markers")
+      if(data.features !== []){
+        if(this.map.getLayer('markers')) {
+          this.map.removeLayer('markers')
         }
-        catch (e){
-          // move along. Nothing to see here.
+        if(this.map.getLayer('selected')) {
+          this.map.removeLayer('selected')
+        }
+        if(this.map.getSource("markers")) {
+          this.map.removeSource("markers")
         }
 
         this.map.addSource("markers", {
@@ -229,7 +232,6 @@ class Map extends React.Component {
     if(nextProps.highlight !==  currentHighlight){
       this.map.setFilter("selected", ["==", nextProps.highlight, true])
     }
-
 
     return false
   }
