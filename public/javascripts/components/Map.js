@@ -1,6 +1,7 @@
 import Lokka from 'lokka'
 import Transport from 'lokka-transport-http'
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import equal from 'deep-equal'
 import ReactDOM from 'react-dom'
 import isMobile from 'ismobilejs'

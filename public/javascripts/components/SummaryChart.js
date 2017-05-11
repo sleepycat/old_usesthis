@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import ReactFauxDOM from 'react-faux-dom'
 import {format} from 'd3-format'
 import {
@@ -25,8 +26,8 @@ import {
 
 export default class SummaryChart extends Component {
 
-  propTypes: {
-    data: PropTypes.array
+  static propTypes = {
+    data: PropTypes.object
   }
 
   render() {
