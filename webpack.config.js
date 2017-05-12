@@ -32,7 +32,7 @@ module.exports = {
     })
   ],
   module: {
-    noParse: /node_modules\/json-schema\/lib\/validate\.js/,
+    noParse: [/(mapbox-gl)\.js$/, /node_modules\/json-schema\/lib\/validate\.js/],
     rules: [
       {
         test: /\.jsx?$/,
