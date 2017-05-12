@@ -34,9 +34,8 @@ var Location = new GraphQLObjectType({
     organizations: {
       type: new GraphQLList(Organization),
       description: 'An array of organizations associated with that location.',
-      resolve(root, args, { db }, ast) {
-
-        let requestedFields = ast.fieldASTs[0].selectionSet.selections.map((obj)=> { return obj.name.value });
+      resolve(root, args, { db }, info) {
+        let requestedFields = info.fieldNodes[0].selectionSet.selections.map((obj)=> { return obj.name.value });
 
         //TODO: is it actually faster to do organizations and
         //technologies in a single query? Test this assumption.
