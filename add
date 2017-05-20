@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require "net/http"
-require "pry"
 require "uri"
 require "skrape"
 require "json"
