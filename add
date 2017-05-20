@@ -115,6 +115,7 @@ begin
       puts "---> #{loc}"
       puts '1) enter a corrected address'
       puts '2) enter a comma separated lat,lng'
+      puts '3) skip this address'
       choice = STDIN.gets.strip
       if choice.to_i == 1
         puts "Enter a corrected address: "
@@ -127,6 +128,8 @@ begin
         location[:lat] = lat.chomp.to_f
         location[:lng] = lng.chomp.to_f
         location[:address] = loc
+      elsif choice.to_i == 3
+        next
       end
     else
       location[:lat], location[:lng] = geo_result.first.coordinates
