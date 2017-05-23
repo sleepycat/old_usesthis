@@ -26,8 +26,8 @@ class Map extends React.Component {
   }
 
   makePolygons(currentBounds, previousBounds) {
-      let currentPolygon = bboxPolygon([ currentBounds.neLng, currentBounds.neLat, currentBounds.swLng, currentBounds.swLat])
-      let previousPolygon = bboxPolygon([previousBounds.neLng, previousBounds.neLat, previousBounds.swLng, previousBounds.swLat])
+    let currentPolygon = bboxPolygon([ currentBounds.neLng, currentBounds.neLat, currentBounds.swLng, currentBounds.swLat])
+    let previousPolygon = bboxPolygon([previousBounds.neLng, previousBounds.neLat, previousBounds.swLng, previousBounds.swLat])
     return {currentPolygon, previousPolygon}
   }
 
@@ -46,11 +46,11 @@ class Map extends React.Component {
 
     mapboxgl.accessToken = accessToken
     let map = new mapboxgl.Map({
-	container: this.element,
-	style: styleURI,
-	center: center,
-        zoom: zoom,
-        trackResize: true
+      container: this.element,
+      style: styleURI,
+      center: center,
+      zoom: zoom,
+      trackResize: true
     });
 
     map.component = this
@@ -95,19 +95,19 @@ class Map extends React.Component {
       let boundsArray = [boundsObj.neLng, boundsObj.neLat, boundsObj.swLng, boundsObj.swLat]
       let mapCorners = explode(bboxPolygon(boundsArray))
       if (this.hasData()) {
-	// Create an polygon around the data
-	let dataExtent = featureCollection([bboxPolygon(extent(this.props.data))])
+        // Create an polygon around the data
+        let dataExtent = featureCollection([bboxPolygon(extent(this.props.data))])
         // Are the mapCorners inside the area covered by the dataExtent?
-	let { features } = within(mapCorners, dataExtent)
+        let { features } = within(mapCorners, dataExtent)
         // No corners within the area covered by data? Do we have a function to call?
-	if (features.length === 0 && typeof this.props.onDataNeeded === 'function') {
-	  this.props.onDataNeeded(boundsObj)
-	}
+        if (features.length === 0 && typeof this.props.onDataNeeded === 'function') {
+          this.props.onDataNeeded(boundsObj)
+        }
       } else {
         // No data? Need some.
-	if(this.props.onDataNeeded) {
-	  this.props.onDataNeeded(boundsObj)
-	}
+        if(this.props.onDataNeeded) {
+          this.props.onDataNeeded(boundsObj)
+        }
       }
 
     }
@@ -133,74 +133,74 @@ class Map extends React.Component {
   }
 
   getBounds() {
-      let bounds = this.map.getBounds()
-      let boundsObj = {
-        'neLat': bounds.getNorthEast().lat,
-        'neLng': bounds.getNorthEast().lng,
-        'swLat': bounds.getSouthWest().lat,
-        'swLng': bounds.getSouthWest().lng,
-        'center': this.map.getCenter(),
-        'zoom': this.map.getZoom()
-      }
+    let bounds = this.map.getBounds()
+    let boundsObj = {
+      'neLat': bounds.getNorthEast().lat,
+      'neLng': bounds.getNorthEast().lng,
+      'swLat': bounds.getSouthWest().lat,
+      'swLng': bounds.getSouthWest().lng,
+      'center': this.map.getCenter(),
+      'zoom': this.map.getZoom()
+    }
     return boundsObj
   }
 
   addDataLayerToMap(data) {
 
-      if(data.features !== []){
-        if(this.map.getLayer('markers')) {
-          this.map.removeLayer('markers')
-        }
-        if(this.map.getLayer('selected')) {
-          this.map.removeLayer('selected')
-        }
-        if(this.map.getSource("markers")) {
-          this.map.removeSource("markers")
-        }
-
-        this.map.addSource("markers", {
-          "type": "geojson",
-          "data": data
-        });
-
-
-        this.map.addLayer({
-          "id": "markers",
-          "type": "symbol",
-          "interactive": true,
-          "source": "markers",
-          "paint": {
-          },
-          "layout": {
-            "icon-image": "marker-stroked-24",
-            "text-field": "{title}",
-            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 0.6],
-            "text-anchor": "top"
-          }
-        });
-
-
-        this.map.addLayer({
-          "id": "selected",
-          "type": "symbol",
-          "interactive": true,
-          "source": "markers",
-          "filter": ["==", this.props.highlight, true],
-          "paint": {
-            "icon-color": "#0000ff" //XXX: why does this not work?
-          },
-          "layout": {
-            "icon-image": "{marker-symbol}-24",
-            "text-field": "{title}",
-            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 0.6],
-            "text-anchor": "top"
-          }
-        });
-
-
+    if(data.features !== []){
+      if(this.map.getLayer('markers')) {
+        this.map.removeLayer('markers')
       }
+      if(this.map.getLayer('selected')) {
+        this.map.removeLayer('selected')
+      }
+      if(this.map.getSource("markers")) {
+        this.map.removeSource("markers")
+      }
+
+      this.map.addSource("markers", {
+        "type": "geojson",
+        "data": data
+      });
+
+
+      this.map.addLayer({
+        "id": "markers",
+        "type": "symbol",
+        "interactive": true,
+        "source": "markers",
+        "paint": {
+        },
+        "layout": {
+          "icon-image": "marker-stroked-24",
+          "text-field": "{title}",
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-offset": [0, 0.6],
+          "text-anchor": "top"
+        }
+      });
+
+
+      this.map.addLayer({
+        "id": "selected",
+        "type": "symbol",
+        "interactive": true,
+        "source": "markers",
+        "filter": ["==", this.props.highlight, true],
+        "paint": {
+          "icon-color": "#0000ff" //XXX: why does this not work?
+        },
+        "layout": {
+          "icon-image": "{marker-symbol}-24",
+          "text-field": "{title}",
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-offset": [0, 0.6],
+          "text-anchor": "top"
+        }
+      });
+
+
+    }
   }
 
   setCenter(lat,lng,zoom) {
