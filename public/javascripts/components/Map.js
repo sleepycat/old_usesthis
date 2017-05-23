@@ -1,5 +1,3 @@
-import Lokka from 'lokka'
-import Transport from 'lokka-transport-http'
 import React from 'react'
 import PropTypes from 'prop-types'
 import equal from 'deep-equal'
@@ -15,8 +13,6 @@ import explode from '@turf/explode'
 import extent from 'turf-extent'
 import { featureCollection } from '@turf/helpers'
 var MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-
-const client = new Lokka({ transport: new Transport('/graphql') })
 
 class Map extends React.Component {
 

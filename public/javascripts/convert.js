@@ -1,7 +1,8 @@
 
 let locationToFeature = (location) => {
-  location["marker-symbol"] = "marker"
-  location.title = location.organizations.reduce((prev, curr) => { return prev === "" ? prev + curr.name : prev + " & " + curr.name}, "")
+  let loc = Object.assign({}, location)
+  loc["marker-symbol"] = "marker"
+  loc.title = location.organizations.reduce((prev, curr) => { return prev === "" ? prev + curr.name : prev + " & " + curr.name}, "")
 
   let technologies = location.organizations.reduce((prev, curr) => { return prev.concat(curr.technologies.map((tech)=> {return tech.name}))}, [])
 
@@ -10,12 +11,12 @@ let locationToFeature = (location) => {
   // https://www.mapbox.com/mapbox-gl-style-spec/#types-filter
   // Since we can only match against simple stuff:
   technologies.forEach((technology) => {
-    location[technology] = true
+    loc[technology] = true
   })
 
   return {
     "type": "Feature",
-    "properties": location,
+    "properties": loc,
     geometry: {
       "type": "Point",
       coordinates: [ location.lng, location.lat ]

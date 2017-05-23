@@ -9,11 +9,11 @@ import Drawer from './Drawer'
 import bboxPolygon from '@turf/bbox-polygon'
 import within from '@turf/within'
 import { featureCollection } from '@turf/helpers'
-import Lokka from 'lokka'
-import Transport from 'lokka-transport-http'
+import ApolloClient from 'apollo-client'
+import gql from 'graphql-tag'
 
+const client = new ApolloClient()
 
-const client = new Lokka({ transport: new Transport('/graphql') })
 
 
 class MapView extends React.Component {
@@ -22,7 +22,7 @@ class MapView extends React.Component {
 
   updateOrgProfile(locationID) {
 
-      client.query(`
+    let query = gql`
           query getLocation($id: ID!) {
             location(id: $id){
               organizations {
@@ -35,9 +35,11 @@ class MapView extends React.Component {
               }
             }
           }
-      `, {id: locationID}).then(result => {
+      `
 
-         this.setState({orgProfiles: result.location.organizations})
+    client.query({ query, variables: {id: locationID}}).then(({ data }) => {
+
+         this.setState({orgProfiles: data.location.organizations})
 
       }, (e) => {
 
@@ -68,29 +70,31 @@ class MapView extends React.Component {
   }
 
   getDataForBounds(bounds) {
-    return client.query(`
-	query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
-	  locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
-	    id
-	    lat
-	    lng
-	    address
-	    organizations {
-	      url
-	      name
-	      technologies:languages {
-		name
-	      }
-	    }
-	  }
-	}
-      `, bounds)
+    let query = gql`
+      query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
+        locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
+          id
+          lat
+          lng
+          address
+          organizations {
+            url
+            name
+            technologies:languages {
+        name
+            }
+          }
+        }
+      }
+    `
+
+    return client.query({ query, variables: bounds })
   }
 
   handleDataNeeded(currentBounds) {
     this.getDataForBounds(currentBounds)
-      .then((result) => {
-        this.setState({mapData: Convert.toGeojson(result.locations_within_bounds), bounds: currentBounds})
+      .then(({ data }) => {
+        this.setState({mapData: Convert.toGeojson(data.locations_within_bounds), bounds: currentBounds})
       }, (e) => {
         this.flashMessageOnMap(e.message.split(':')[1])
       })

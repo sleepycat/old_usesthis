@@ -68,7 +68,6 @@ var query = new GraphQLObjectType({
         },
       },
       resolve (source, args, { db },  ast) {
-
         // Check the incoming request bounds
         // If they are to big return an error.
         let feature = featureCollection([point([args.sw_lng, args.sw_lat]), point([args.ne_lng, args.ne_lat])])
