@@ -92,7 +92,7 @@
     "supertest": "^3.0.0",
     "transform-loader": "^0.2.4",
     "urijs": "^1.18.10",
-    "webpack": "^2.5.1",
+    "webpack": "^2.6.0",
     "webpack-dev-server": "^2.4.5",
     "webpack-hot-middleware": "^2.18.0",
     "webworkify": "^1.4.0",
