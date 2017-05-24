@@ -138,7 +138,13 @@ class MapView extends React.Component {
 
 
   summaryLabelClickHandler(nameOnLabel) {
-    this.props.router.push({pathname: this.props.location.pathname, query: {highlight: nameOnLabel}})
+    let params
+    if(this.props.router.location.query.highlight == nameOnLabel) {
+      params = {pathname: this.props.location.pathname, query: {highlight: ""}}
+    } else {
+      params = {pathname: this.props.location.pathname, query: {highlight: nameOnLabel}}
+    }
+    this.props.router.push(params)
   }
 
   dataWithinBounds(data, bounds) {
