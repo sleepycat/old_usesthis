@@ -163,7 +163,7 @@ class MapView extends React.Component {
           </section>
           <Map
             data={ this.state.mapData }
-            accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
+            accessToken={ USESTHIS_MAPBOX_ACCESS_TOKEN }
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
               zIndex: 0,
@@ -191,7 +191,7 @@ class MapView extends React.Component {
           </section>
           <Map
             data={ this.state.mapData }
-            accessToken='pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw'
+            accessToken={ USESTHIS_MAPBOX_ACCESS_TOKEN }
             styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
             style={{
               zIndex: 0,

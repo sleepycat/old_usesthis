@@ -28,7 +28,8 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env':{
         'NODE_ENV': JSON.stringify('production')
-      }
+      },
+      USESTHIS_MAPBOX_ACCESS_TOKEN: JSON.stringify(process.env.USESTHIS_MAPBOX_ACCESS_TOKEN)
     })
   ],
   module: {

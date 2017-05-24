@@ -14,7 +14,10 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      USESTHIS_MAPBOX_ACCESS_TOKEN: JSON.stringify(process.env.USESTHIS_MAPBOX_ACCESS_TOKEN)
+    })
   ],
   node: {
     console: true,
