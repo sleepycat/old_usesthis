@@ -51,8 +51,6 @@ class Map extends React.Component {
       onMoveEnd
     } = this.props;
 
-    console.log('props:', this.props)
-
     mapboxgl.accessToken = accessToken
     let map = new mapboxgl.Map({
       container: this.element,
