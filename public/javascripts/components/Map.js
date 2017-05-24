@@ -22,7 +22,14 @@ class Map extends React.Component {
 
   static propTypes = {
     accessToken: PropTypes.string.isRequired,
-    data: PropTypes.object
+    data: PropTypes.object.isRequired,
+    latitude: PropTypes.number.isRequired,
+    longitude: PropTypes.number.isRequired,
+    zoom: PropTypes.number.isRequired,
+    highlight: PropTypes.string,
+    onBoundsChange: PropTypes.func,
+    onDataNeeded: PropTypes.func,
+    onClick: PropTypes.func
   }
 
   makePolygons(currentBounds, previousBounds) {
@@ -36,19 +43,21 @@ class Map extends React.Component {
     const {
       styleURI,
       accessToken,
-      center,
+      latitude,
+      longitude,
       zoom,
       onClick,
       onLoad,
       onMoveEnd
     } = this.props;
 
+    console.log('props:', this.props)
 
     mapboxgl.accessToken = accessToken
     let map = new mapboxgl.Map({
       container: this.element,
       style: styleURI,
-      center: center,
+      center: [ longitude, latitude ],
       zoom: zoom,
       trackResize: true
     });
@@ -211,8 +220,8 @@ class Map extends React.Component {
     let center = this.map.getCenter()
     let currentZoom = this.map.getZoom()
     let nextZoom = parseFloat(nextProps.zoom)
-    let lat = parseFloat(nextProps.center[1])
-    let lng = parseFloat(nextProps.center[0])
+    let lat = parseFloat(nextProps.latitude)
+    let lng = parseFloat(nextProps.longitude)
     let currentHighlight = this.props.highlight
     //If the URL was set by this.props.router.push above
     //nextProps and the current map state would be the same

@@ -171,8 +171,9 @@ class MapView extends React.Component {
               width: '80vw'
             }}
             highlight={ highlight }
-            center= {[this.props.params.lng, this.props.params.lat]}
-            zoom={this.props.params.zoom}
+            latitude={ parseFloat(this.props.params.lat) }
+            longitude={ parseFloat(this.props.params.lng) }
+            zoom={ parseFloat(this.props.params.zoom) }
             onBoundsChange={ ::this.handleBoundsChange }
             onDataNeeded={ ::this.handleDataNeeded }
             onClick={ ::this.updateOrgProfile }
@@ -198,8 +199,9 @@ class MapView extends React.Component {
               width: '100%'
             }}
             highlight={ highlight }
-            center= {[this.props.params.lng, this.props.params.lat]}
-            zoom={this.props.params.zoom}
+            latitude={ parseFloat(this.props.params.lat) }
+            longitude={ parseFloat(this.props.params.lng) }
+            zoom={ parseFloat(this.props.params.zoom) }
             onBoundsChange={ ::this.handleBoundsChange }
             onDataNeeded={ ::this.handleDataNeeded }
             onClick={ ::this.updateOrgProfile }
