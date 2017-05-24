@@ -180,6 +180,7 @@ class MapView extends React.Component {
               width: '80vw'
             }}
             highlight={ highlight }
+            navigation='top-right'
             latitude={ parseFloat(this.props.params.lat) }
             longitude={ parseFloat(this.props.params.lng) }
             zoom={ parseFloat(this.props.params.zoom) }
@@ -208,6 +209,7 @@ class MapView extends React.Component {
               width: '100%'
             }}
             highlight={ highlight }
+            navigation='top-right'
             latitude={ parseFloat(this.props.params.lat) }
             longitude={ parseFloat(this.props.params.lng) }
             zoom={ parseFloat(this.props.params.zoom) }

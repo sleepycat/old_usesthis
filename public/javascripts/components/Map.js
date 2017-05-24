@@ -26,6 +26,7 @@ class Map extends React.Component {
     latitude: PropTypes.number.isRequired,
     longitude: PropTypes.number.isRequired,
     zoom: PropTypes.number.isRequired,
+    navigation: PropTypes.string,
     highlight: PropTypes.string,
     onBoundsChange: PropTypes.func,
     onDataNeeded: PropTypes.func,
@@ -71,11 +72,13 @@ class Map extends React.Component {
       document.getElementById('geocoder-container').appendChild(geocoder.onAdd(map))
     }
 
-
     map.addControl(new Flash());
+
     if(!isMobile.any){
-      var nav = new mapboxgl.NavigationControl();
-      map.addControl(nav, 'top-right');
+      if(this.props.navigation){
+      var nav = new mapboxgl.NavigationControl()
+        map.addControl(nav, this.props.navigation)
+      }
     }
 
     map.on("click", this.handleClick);
