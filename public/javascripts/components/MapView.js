@@ -18,6 +18,15 @@ const client = new ApolloClient()
 
 class MapView extends React.Component {
 
+  constructor(props) {
+    super(props)
+    this.setPosition = ::this.setPosition
+    this.handleBoundsChange = ::this.handleBoundsChange
+    this.handleDataNeeded = ::this.handleDataNeeded
+    this.updateOrgProfile = ::this.updateOrgProfile
+    this.summaryLabelClickHandler = ::this.summaryLabelClickHandler
+  }
+
   state = { mapData: {"type": "FeatureCollection", "features": []}, orgProfiles: []}
 
   updateOrgProfile(locationID) {
@@ -159,7 +168,7 @@ class MapView extends React.Component {
               Usesth.is
             </div>
             <div id="geocoder-container"></div>
-            <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } width={ 300 } highlight={ highlight }  data={ summaryData } />
+            <SummaryChart labelOnClick={ this.summaryLabelClickHandler } width={ 300 } highlight={ highlight }  data={ summaryData } />
           </section>
           <Map
             data={ this.state.mapData }
@@ -174,20 +183,20 @@ class MapView extends React.Component {
             latitude={ parseFloat(this.props.params.lat) }
             longitude={ parseFloat(this.props.params.lng) }
             zoom={ parseFloat(this.props.params.zoom) }
-            onBoundsChange={ ::this.handleBoundsChange }
-            onDataNeeded={ ::this.handleDataNeeded }
-            onClick={ ::this.updateOrgProfile }
+            onBoundsChange={ this.handleBoundsChange }
+            onDataNeeded={ this.handleDataNeeded }
+            onClick={ this.updateOrgProfile }
             ref={(map) => this.mapComponent = map}
           />
         </MediaQuery>
         <MediaQuery query='(max-width: 60em)'>
-          <MyPosition locate={ ::this.setPosition } />
+          <MyPosition locate={ this.setPosition } />
           <section id="sidebar">
             <div id='title'>
               Usesth.is
             </div>
             <div style={{fontSize: '0.8em', width: '33%'}} id="geocoder-container"></div>
-            <SummaryChart labelOnClick={ ::this.summaryLabelClickHandler } highlight={ highlight } width={ 200 } data={ summaryData } />
+            <SummaryChart labelOnClick={ this.summaryLabelClickHandler } highlight={ highlight } width={ 200 } data={ summaryData } />
           </section>
           <Map
             data={ this.state.mapData }
@@ -202,9 +211,9 @@ class MapView extends React.Component {
             latitude={ parseFloat(this.props.params.lat) }
             longitude={ parseFloat(this.props.params.lng) }
             zoom={ parseFloat(this.props.params.zoom) }
-            onBoundsChange={ ::this.handleBoundsChange }
-            onDataNeeded={ ::this.handleDataNeeded }
-            onClick={ ::this.updateOrgProfile }
+            onBoundsChange={ this.handleBoundsChange }
+            onDataNeeded={ this.handleDataNeeded }
+            onClick={ this.updateOrgProfile }
             ref={(map) => this.mapComponent = map}
           />
         </MediaQuery>
