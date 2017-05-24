@@ -27,6 +27,7 @@ class Map extends React.Component {
     longitude: PropTypes.number.isRequired,
     zoom: PropTypes.number.isRequired,
     navigation: PropTypes.string,
+    marker: PropTypes.string,
     highlight: PropTypes.string,
     onBoundsChange: PropTypes.func,
     onDataNeeded: PropTypes.func,
@@ -173,23 +174,19 @@ class Map extends React.Component {
         "data": data
       });
 
-
       this.map.addLayer({
         "id": "markers",
         "type": "symbol",
         "interactive": true,
         "source": "markers",
-        "paint": {
-        },
         "layout": {
-          "icon-image": "marker-stroked-24",
+          "icon-image": this.props.marker || "marker-24",
           "text-field": "{title}",
           "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
           "text-offset": [0, 0.6],
           "text-anchor": "top"
         }
-      });
-
+      })
 
       this.map.addLayer({
         "id": "selected",
@@ -197,9 +194,6 @@ class Map extends React.Component {
         "interactive": true,
         "source": "markers",
         "filter": ["==", this.props.highlight, true],
-        "paint": {
-          "icon-color": "#0000ff" //XXX: why does this not work?
-        },
         "layout": {
           "icon-image": "{marker-symbol}-24",
           "text-field": "{title}",
@@ -207,8 +201,7 @@ class Map extends React.Component {
           "text-offset": [0, 0.6],
           "text-anchor": "top"
         }
-      });
-
+      })
 
     }
   }
@@ -260,7 +253,6 @@ class Map extends React.Component {
   }
 
   render() {
-
     return (
       <div ref={(el) => this.element = el} style={ this.props.style }></div>
     )
@@ -268,4 +260,4 @@ class Map extends React.Component {
 }
 
 
-export default Map;
+export default Map

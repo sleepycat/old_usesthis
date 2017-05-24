@@ -181,6 +181,7 @@ class MapView extends React.Component {
             }}
             highlight={ highlight }
             navigation='top-right'
+            marker="marker-stroked-24"
             latitude={ parseFloat(this.props.params.lat) }
             longitude={ parseFloat(this.props.params.lng) }
             zoom={ parseFloat(this.props.params.zoom) }
@@ -210,6 +211,7 @@ class MapView extends React.Component {
             }}
             highlight={ highlight }
             navigation='top-right'
+            marker="marker-stroked-24"
             latitude={ parseFloat(this.props.params.lat) }
             longitude={ parseFloat(this.props.params.lng) }
             zoom={ parseFloat(this.props.params.zoom) }
