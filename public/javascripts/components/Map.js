@@ -28,6 +28,7 @@ class Map extends React.Component {
     zoom: PropTypes.number.isRequired,
     navigation: PropTypes.string,
     marker: PropTypes.string,
+    selected: PropTypes.string,
     highlight: PropTypes.string,
     onBoundsChange: PropTypes.func,
     onDataNeeded: PropTypes.func,
@@ -195,7 +196,7 @@ class Map extends React.Component {
         "source": "markers",
         "filter": ["==", this.props.highlight, true],
         "layout": {
-          "icon-image": "{marker-symbol}-24",
+          "icon-image": this.props.selected || "marker-stroked-24",
           "text-field": "{title}",
           "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
           "text-offset": [0, 0.6],
