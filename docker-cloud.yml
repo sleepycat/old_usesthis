@@ -1,0 +1,41 @@
+proxy:
+  image: traefik:1.6
+  command: --docker --logLevel=DEBUG --retry --acme --acme.onhostrule --acme.entrypoint=https --acme.domains="www.usesth.is" --acme.email="mike@korora.ca" --acme.storage="/certs/acme.json" --acme.httpchallenge --acme.httpchallenge.entrypoint=http --entrypoints="Name:http Address::80 Redirect.EntryPoint:https" --entrypoints="Name:https Address::443 TLS"
+  ports:
+    - "80:80"
+    - "443:443"
+  restart: always
+  volumes:
+    - /certs:/certs
+    - /var/run/docker.sock:/var/run/docker.sock
+arangodb:
+  environment:
+    - ARANGO_ROOT_PASSWORD
+  image: 'arangodb/arangodb:3.1.21'
+  restart: always
+  ports:
+    - "8529"
+  volumes:
+    - /var/lib/arangodb3
+  labels:
+    traefik.backend: arango
+    traefik.port: '8529'
+web:
+  environment:
+    - NODE_ENV=production
+    - PORT=3000
+    - USESTHIS_MAPBOX_ACCESS_TOKEN
+    - USESTHIS_PRODUCTION_DB_NAME
+    - 'USESTHIS_PRODUCTION_DB_URL
+  image: 'mikewilliamson/usesthis:latest'
+  links:
+    - arangodb
+  ports:
+    - '3000'
+  restart: on-failure
+  labels:
+    traefik.backend: web
+    traefik.frontend.entryPoints: http,https
+    traefik.frontend.rule: 'PathPrefix:/'
+    traefik.port: '3000'
+
