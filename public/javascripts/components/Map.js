@@ -237,6 +237,12 @@ class Map extends React.Component {
     return false
   }
 
+  componentWillUnmount() {
+    if(this.map) {
+      this.map.remove()
+    }
+  }
+
 
   handleClick(e) {
     let map = e.target
