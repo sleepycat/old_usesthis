@@ -82,6 +82,7 @@
     "lodash.sortby": "^4.7.0",
     "mapbox-gl": "^0.37.0",
     "mapbox-gl-flash": "^2.0.0",
+    "prettier": "^1.12.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-faux-dom": "^3.1.0",
