@@ -2,18 +2,18 @@ import {
   GraphQLInputObjectType,
   GraphQLString,
   GraphQLFloat,
-  GraphQLNonNull
-} from 'graphql';
-import LatitudeType from '../latitudeType'
-import LongitudeType from '../longitudeType'
+  GraphQLNonNull,
+} from 'graphql'
+import Latitude from './Latitude'
+import Longitude from './Longitude'
 
 let LocationInput = new GraphQLInputObjectType({
   name: 'location',
   fields: {
-    lat: { type: new GraphQLNonNull(LatitudeType) },
-    lng: { type: new GraphQLNonNull(LongitudeType) },
-    address: { type: new GraphQLNonNull(GraphQLString) }
-  }
-});
+    lat: { type: new GraphQLNonNull(Latitude) },
+    lng: { type: new GraphQLNonNull(Longitude) },
+    address: { type: new GraphQLNonNull(GraphQLString) },
+  },
+})
 
 export default LocationInput
