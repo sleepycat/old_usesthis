@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:7.10
+FROM node:9-alpine
 MAINTAINER Mike Williamson <mike@korora.ca>
 
 ENV NODE_ENV production
