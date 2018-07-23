@@ -6,7 +6,7 @@ This is a rewrite of usesth.is aimed at building on graphql and react.
 
 ### Database assumptions
 
-There are a few assumptions that are currently made about the state of the database. First it assumes that [ArangoDB](https://www.arangodb.com/download/) is installed on your system. Currently the required version is 2.8.9.
+There are a few assumptions that are currently made about the state of the database. First it assumes that [ArangoDB](https://www.arangodb.com/download/) is installed on your system. It works with the current version of Arangodb.
 
  * The following databases exist:
     * usesthis_production
