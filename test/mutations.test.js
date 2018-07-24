@@ -7,7 +7,6 @@ const db = new Database(dbConfig)
 let app, vertex_data, edge_data
 
 describe('Mutations', () => {
-
   beforeAll(async () => {
     app = await App(db)
     vertex_data = require('./data/vertices').vertices
@@ -25,7 +24,7 @@ describe('Mutations', () => {
     await db.truncate()
   })
 
-  it('creates a new organization without duplicating the location', (done) => {
+  it('creates a new organization without duplicating the location', async () => {
     let graphql = `
       mutation {
         location:createOrganization(
@@ -40,15 +39,16 @@ describe('Mutations', () => {
       }
     `
 
-    request(app)
-    .post('/graphql')
-    .set('Content-Type', 'application/json; charset=utf-8')
-    .send(`{"query": ${JSON.stringify(graphql)}}`)
-    .expect({data: {location: {founding_year: 1997}}})
-    .end(done);
+    let response = await request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/json; charset=utf-8')
+      .send(`{"query": ${JSON.stringify(graphql)}}`)
+
+    let { location } = response.body.data
+    expect(location.founding_year).toEqual(1997)
   })
 
-  it('creates an organizations with multiple locations', (done) => {
+  it('creates an organizations with multiple locations', async () => {
     let graphql = `
       mutation { createOrganization(
         name: "QlikTech International AB"
@@ -78,13 +78,12 @@ describe('Mutations', () => {
       }}
     `
 
-    request(app)
-    .post('/graphql')
-    .set('Content-Type', 'application/json; charset=utf-8')
-    .send(`{"query": ${JSON.stringify(graphql)}}`)
-    .end(() => {
+    let insertionResponse = await request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/json; charset=utf-8')
+      .send(`{"query": ${JSON.stringify(graphql)}}`)
 
-     let locationsAroundReykjavík = `
+    let locationsAroundReykjavík = `
         query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
           locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
             id
@@ -101,28 +100,30 @@ describe('Mutations', () => {
         }
       `
 
-      let variables = {
-        "neLat":64.19786068472125,
-        "neLng":-21.709671020507812,
-        "swLat":64.08390599654476,
-        "swLng":-22.164573669433594
-      }
+    let variables = {
+      neLat: 64.19786068472125,
+      neLng: -21.709671020507812,
+      swLat: 64.08390599654476,
+      swLng: -22.164573669433594,
+    }
 
-      request(app)
+    let response = await request(app)
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
-      .send(JSON.stringify({query: locationsAroundReykjavík, variables: variables }))
-      .expect((res) => {
-        let organizations = res.body.data.locations_within_bounds[0].organizations
-        if (!(organizations.length === 1)) throw new Error(`Expected one organization to be found. Recieved ${organizations}`)
-      })
-      .end(done);
+      .send(
+        JSON.stringify({
+          query: locationsAroundReykjavík,
+          variables: variables,
+        }),
+      )
 
-    })
+    let { data } = response.body
+    let [locations] = data.locations_within_bounds
+
+    expect(locations.organizations).toHaveLength(1)
   })
 
-
-  it('rejects malformed urls', (done) => {
+  it('rejects malformed urls', async () => {
     let graphql = `
       mutation {
         location:createOrganization(
@@ -139,19 +140,16 @@ describe('Mutations', () => {
       }
     `
 
-    request(app)
-    .post('/graphql')
-    .set('Content-Type', 'application/graphql; charset=utf-8')
-    .send(graphql)
-    .expect((response) => {
-      if (!(response.body.errors)) throw new Error(`Expected invalid URL to raise an error. Got ${JSON.stringify(response.body)}`)
-      var error = response.body.errors[0]
-      if (!( error.message == "Query error: Not a valid URL")) throw new Error(`Expected invalid URL to raise an error. Got ${JSON.stringify(response.body)}`)
-    })
-    .end(done);
+    let response = await request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(graphql)
+
+    let [err] = response.body.errors
+    expect(err.message).toMatch(/Not a valid URL/)
   })
 
-  it('rejects bad years', (done) => {
+  it('rejects bad years', async () => {
     let graphql = `
       mutation {
         location:createOrganization(
@@ -168,19 +166,18 @@ describe('Mutations', () => {
       }
     `
 
-    request(app)
-    .post('/graphql')
-    .set('Content-Type', 'application/graphql; charset=utf-8')
-    .send(graphql)
-    .expect((response) => {
-      let error = response.body.errors[0]
-      if (!(error)) throw new Error(`Expected invalid year to raise an error. Got ${JSON.stringify(response.body)}`)
-      if (!( error.message.includes("between 1600 and the current year"))) throw new Error(`Expected invalid year to raise an error. Got ${JSON.stringify(response.body)}`)
-    })
-    .end(done);
+    let response = await request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/graphql; charset=utf-8')
+      .send(graphql)
+
+    let [err] = response.body.errors
+    expect(err.message).toMatch(
+      /Year should be somewhere between 1600 and the current year/,
+    )
   })
 
-  it('accepts a url for public code repo', (done) => {
+  it('accepts a url for public code repo', async () => {
     let graphql = `
       mutation {
         location:createOrganization(
@@ -188,7 +185,7 @@ describe('Mutations', () => {
           founding_year: 1997
           url: "http://kivuto.com/"
           code: "https://github.com/kivuto"
-    locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
+          locations: [{ address: "126 York Street, Ottawa, ON K1N, Canada", lat: 45.4292652, lng: -75.6900505 }],
           technologies: [{name: "asp.net", category:LANGUAGES}, {name: "sql-server", category: STORAGE}]
         ){
           code
@@ -196,13 +193,12 @@ describe('Mutations', () => {
       }
     `
 
-    request(app)
-    .post('/graphql')
-    .set('Content-Type', 'application/json; charset=utf-8')
-    .send(`{"query": ${JSON.stringify(graphql)}}`)
-    .expect({data: {location: {code: "https://github.com/kivuto"}}})
-    .end(done);
+    let response = await request(app)
+      .post('/graphql')
+      .set('Content-Type', 'application/json; charset=utf-8')
+      .send(`{"query": ${JSON.stringify(graphql)}}`)
+
+    let { location } = response.body.data
+    expect(location.code).toEqual('https://github.com/kivuto')
   })
-
 })
-
