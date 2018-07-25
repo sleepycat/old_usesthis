@@ -4,34 +4,35 @@ import OrganizationProfileList from './OrganizationProfileList'
 import DrawerHandle from './DrawerHandle'
 
 class Drawer extends React.Component {
-
   state = {
     x: 0,
     highlight: false,
-    previousContentName: ""
+    previousContentName: '',
   }
 
   handleHandleMove(e) {
     let x = e.touches[0].pageX
-    if(x > 0 && x < window.screen.width){
-      this.setState({x: x - window.screen.width})
+    if (x > 0 && x < window.screen.width) {
+      this.setState({ x: x - window.screen.width })
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.contents.length > 0) {
-      if(nextProps.contents[0].name !== this.state.previousContentName) {
-        this.setState({highlight: true, previousContentName: nextProps.contents[0].name}, ()=>{
-          setTimeout(() => {
-            this.setState({highlight: false})
-          }, 300)
-        })
+    if (nextProps.contents.length > 0) {
+      if (nextProps.contents[0].name !== this.state.previousContentName) {
+        this.setState(
+          { highlight: true, previousContentName: nextProps.contents[0].name },
+          () => {
+            setTimeout(() => {
+              this.setState({ highlight: false })
+            }, 300)
+          },
+        )
       }
     }
   }
 
   render() {
-
     let baseStyles = {
       height: '100vh',
       borderLeft: '0.3em solid #4682B4',
@@ -40,15 +41,15 @@ class Drawer extends React.Component {
       margin: 0,
       position: 'absolute',
       display: 'block',
-      transform: `translateX(${this.state.x}px)`
+      transform: `translateX(${this.state.x}px)`,
     }
 
-    if(isMobile.any){
+    if (isMobile.any) {
       // Mobile styles
       var additional = {
         zIndex: 2,
         right: '-100vw',
-        width: '100vw'
+        width: '100vw',
       }
     } else {
       // Desktop styles
@@ -67,19 +68,19 @@ class Drawer extends React.Component {
 
     let styles = Object.assign({}, baseStyles, additional)
 
-    return(
-      <div ref={ (el) => this.element = el } style={ styles }>
+    return (
+      <div ref={el => (this.element = el)} style={styles}>
         <DrawerHandle
-          highlight={ this.state.highlight }
-          ref={ (el)=> this.handle = el }
-          onMove={ ::this.handleHandleMove }  />
-        <div id='detail'>
-          <OrganizationProfileList profiles={ this.props.contents } />
+          highlight={this.state.highlight}
+          ref={el => (this.handle = el)}
+          onMove={::this.handleHandleMove}
+        />
+        <div id="detail">
+          <OrganizationProfileList profiles={this.props.contents} />
         </div>
       </div>
     )
   }
-
 }
 
 export default Drawer

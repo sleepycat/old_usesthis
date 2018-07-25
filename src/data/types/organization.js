@@ -5,8 +5,8 @@ import {
   GraphQLID,
   GraphQLFloat,
   GraphQLInt,
-  GraphQLNonNull
-} from 'graphql';
+  GraphQLNonNull,
+} from 'graphql'
 
 import Technology from './technology'
 
@@ -18,7 +18,9 @@ var Organization = new GraphQLObjectType({
     id: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The unique identifier of the organization.',
-      resolve: (organization) => { return organization._key }
+      resolve: organization => {
+        return organization._key
+      },
     },
     founding_year: {
       type: GraphQLInt,
@@ -34,7 +36,8 @@ var Organization = new GraphQLObjectType({
     },
     code: {
       type: GraphQLString,
-      description: 'A URL pointing to the organization public code repository (github, bitbucket, gitlab, etc.).',
+      description:
+        'A URL pointing to the organization public code repository (github, bitbucket, gitlab, etc.).',
     },
     technologies: {
       type: new GraphQLList(Technology),
@@ -42,21 +45,22 @@ var Organization = new GraphQLObjectType({
       resolve: (source, args, { db }) => {
         // Technologies may have been added in a single query in the
         // resolve function under location.organizations.
-        if(typeof source.technologies === 'undefined'){
+        if (typeof source.technologies === 'undefined') {
           return db.technologiesForOrganization(source._id)
         } else {
           return source.technologies
         }
-      }
+      },
     },
     languages: {
       type: new GraphQLList(Technology),
-      description: 'An array of the programming languages in use by this organization.',
+      description:
+        'An array of the programming languages in use by this organization.',
       resolve: (source, args, { db }) => {
         return db.languagesForOrganization(source._id)
-      }
-    }
+      },
+    },
   }),
-});
+})
 
 export default Organization

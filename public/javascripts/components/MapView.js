@@ -14,10 +14,7 @@ import gql from 'graphql-tag'
 
 const client = new ApolloClient()
 
-
-
 class MapView extends React.Component {
-
   constructor(props) {
     super(props)
     this.setPosition = ::this.setPosition
@@ -27,44 +24,47 @@ class MapView extends React.Component {
     this.summaryLabelClickHandler = ::this.summaryLabelClickHandler
   }
 
-  state = { mapData: {"type": "FeatureCollection", "features": []}, orgProfiles: []}
+  state = {
+    mapData: { type: 'FeatureCollection', features: [] },
+    orgProfiles: [],
+  }
 
   updateOrgProfile(locationID) {
-
     let query = gql`
-          query getLocation($id: ID!) {
-            location(id: $id){
-              organizations {
-                url
-                name
-                code
-                technologies {
-                  name
-                }
-              }
+      query getLocation($id: ID!) {
+        location(id: $id) {
+          organizations {
+            url
+            name
+            code
+            technologies {
+              name
             }
           }
-      `
+        }
+      }
+    `
 
-    client.query({ query, variables: {id: locationID}}).then(({ data }) => {
-
-         this.setState({orgProfiles: data.location.organizations})
-
-      }, (e) => {
-
+    client.query({ query, variables: { id: locationID } }).then(
+      ({ data }) => {
+        this.setState({ orgProfiles: data.location.organizations })
+      },
+      e => {
         let opts = {
           message: e.message.split(':')[1],
           info: true,
-          fadeout: 3
+          fadeout: 3,
         }
 
         this.component.dispatchEvent('mapbox.setflash', opts)
-
-      });
+      },
+    )
   }
 
   listTechnologies(summaryData) {
-    return summaryData.summary.reduce((prev, curr) => { return prev.concat(curr.name) }, [])
+    return summaryData.summary.reduce((prev, curr) => {
+      return prev.concat(curr.name)
+    }, [])
   }
 
   dispatchEvent(eventName, data) {
@@ -73,15 +73,24 @@ class MapView extends React.Component {
     document.dispatchEvent(event)
   }
 
-
   flashMessageOnMap(message) {
-    this.dispatchEvent('mapbox.setflash', {message, info: true, fadeout: 3})
+    this.dispatchEvent('mapbox.setflash', { message, info: true, fadeout: 3 })
   }
 
   getDataForBounds(bounds) {
     let query = gql`
-      query getLocations($neLat: Float, $neLng: Float, $swLat: Float, $swLng: Float) {
-        locations_within_bounds(ne_lat: $neLat, ne_lng: $neLng, sw_lat: $swLat, sw_lng: $swLng){
+      query getLocations(
+        $neLat: Float
+        $neLng: Float
+        $swLat: Float
+        $swLng: Float
+      ) {
+        locations_within_bounds(
+          ne_lat: $neLat
+          ne_lng: $neLng
+          sw_lat: $swLat
+          sw_lng: $swLng
+        ) {
           id
           lat
           lng
@@ -89,8 +98,8 @@ class MapView extends React.Component {
           organizations {
             url
             name
-            technologies:languages {
-        name
+            technologies: languages {
+              name
             }
           }
         }
@@ -101,23 +110,33 @@ class MapView extends React.Component {
   }
 
   handleDataNeeded(currentBounds) {
-    this.getDataForBounds(currentBounds)
-      .then(({ data }) => {
-        this.setState({mapData: Convert.toGeojson(data.locations_within_bounds), bounds: currentBounds})
-      }, (e) => {
+    this.getDataForBounds(currentBounds).then(
+      ({ data }) => {
+        this.setState({
+          mapData: Convert.toGeojson(data.locations_within_bounds),
+          bounds: currentBounds,
+        })
+      },
+      e => {
         this.flashMessageOnMap(e.message.split(':')[1])
-      })
+      },
+    )
   }
 
   handleBoundsChange(currentBounds) {
-    this.updateRoute(currentBounds.zoom, currentBounds.center.lat, currentBounds.center.lng, this.props.location.query.highlight)
-    this.setState({bounds: currentBounds})
+    this.updateRoute(
+      currentBounds.zoom,
+      currentBounds.center.lat,
+      currentBounds.center.lng,
+      this.props.location.query.highlight,
+    )
+    this.setState({ bounds: currentBounds })
   }
 
   updateRoute(zoom, lat, lng, highlight = '') {
     let opts = {
-      pathname:`/map=${zoom}/${lat}/${lng}`,
-      query: {highlight}
+      pathname: `/map=${zoom}/${lat}/${lng}`,
+      query: { highlight },
     }
     this.props.router.push(opts)
   }
@@ -127,7 +146,7 @@ class MapView extends React.Component {
     //we've only been operating with
     //bounds. Now we get only a lat/lng point and then it causes a
     //hot mess...
-    window.navigator.geolocation.getCurrentPosition((position) => {
+    window.navigator.geolocation.getCurrentPosition(position => {
       let { latitude, longitude } = position.coords
       this.mapComponent.setCenter(latitude, longitude, this.props.params.zoom)
       let bounds = this.mapComponent.getBounds()
@@ -136,13 +155,18 @@ class MapView extends React.Component {
     })
   }
 
-
   summaryLabelClickHandler(nameOnLabel) {
     let params
-    if(this.props.router.location.query.highlight == nameOnLabel) {
-      params = {pathname: this.props.location.pathname, query: {highlight: ""}}
+    if (this.props.router.location.query.highlight == nameOnLabel) {
+      params = {
+        pathname: this.props.location.pathname,
+        query: { highlight: '' },
+      }
     } else {
-      params = {pathname: this.props.location.pathname, query: {highlight: nameOnLabel}}
+      params = {
+        pathname: this.props.location.pathname,
+        query: { highlight: nameOnLabel },
+      }
     }
     this.props.router.push(params)
   }
@@ -155,82 +179,90 @@ class MapView extends React.Component {
   }
 
   render() {
-
-    if(this.state.bounds){
+    if (this.state.bounds) {
       let points = this.dataWithinBounds(this.state.mapData, this.state.bounds)
       var summaryData = summary(points)
     } else {
       var summaryData = summary(this.state.mapData)
     }
 
-    let highlight = this.props.location.query.highlight || ""
+    let highlight = this.props.location.query.highlight || ''
 
     return (
       <div>
-        <Drawer contents={ this.state.orgProfiles } />
-        <MediaQuery query='(min-width: 60em)'>
+        <Drawer contents={this.state.orgProfiles} />
+        <MediaQuery query="(min-width: 60em)">
           <section id="sidebar">
-            <div id='title'>
-              Usesth.is
-            </div>
-            <div id="geocoder-container"></div>
-            <SummaryChart labelOnClick={ this.summaryLabelClickHandler } width={ 300 } highlight={ highlight }  data={ summaryData } />
+            <div id="title">Usesth.is</div>
+            <div id="geocoder-container" />
+            <SummaryChart
+              labelOnClick={this.summaryLabelClickHandler}
+              width={300}
+              highlight={highlight}
+              data={summaryData}
+            />
           </section>
           <Map
-            data={ this.state.mapData }
-            accessToken={ USESTHIS_MAPBOX_ACCESS_TOKEN }
-            styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
+            data={this.state.mapData}
+            accessToken={USESTHIS_MAPBOX_ACCESS_TOKEN}
+            styleURI="mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu"
             style={{
               zIndex: 0,
               height: '100vh',
-              width: '80vw'
+              width: '80vw',
             }}
-            highlight={ highlight }
-            navigation='top-right'
+            highlight={highlight}
+            navigation="top-right"
             marker="marker-stroked-24"
             selected="marker-24"
-            latitude={ parseFloat(this.props.params.lat) }
-            longitude={ parseFloat(this.props.params.lng) }
-            zoom={ parseFloat(this.props.params.zoom) }
-            onBoundsChange={ this.handleBoundsChange }
-            onDataNeeded={ this.handleDataNeeded }
-            onClick={ this.updateOrgProfile }
-            ref={(map) => this.mapComponent = map}
+            latitude={parseFloat(this.props.params.lat)}
+            longitude={parseFloat(this.props.params.lng)}
+            zoom={parseFloat(this.props.params.zoom)}
+            onBoundsChange={this.handleBoundsChange}
+            onDataNeeded={this.handleDataNeeded}
+            onClick={this.updateOrgProfile}
+            ref={map => (this.mapComponent = map)}
           />
         </MediaQuery>
-        <MediaQuery query='(max-width: 60em)'>
-          <MyPosition locate={ this.setPosition } />
+        <MediaQuery query="(max-width: 60em)">
+          <MyPosition locate={this.setPosition} />
           <section id="sidebar">
-            <div id='title'>
-              Usesth.is
-            </div>
-            <div style={{fontSize: '0.8em', width: '33%'}} id="geocoder-container"></div>
-            <SummaryChart labelOnClick={ this.summaryLabelClickHandler } highlight={ highlight } width={ 200 } data={ summaryData } />
+            <div id="title">Usesth.is</div>
+            <div
+              style={{ fontSize: '0.8em', width: '33%' }}
+              id="geocoder-container"
+            />
+            <SummaryChart
+              labelOnClick={this.summaryLabelClickHandler}
+              highlight={highlight}
+              width={200}
+              data={summaryData}
+            />
           </section>
           <Map
-            data={ this.state.mapData }
-            accessToken={ USESTHIS_MAPBOX_ACCESS_TOKEN }
-            styleURI='mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu'
+            data={this.state.mapData}
+            accessToken={USESTHIS_MAPBOX_ACCESS_TOKEN}
+            styleURI="mapbox://styles/mikewilliamson/cil16fkvv008oavm1zj3f4zyu"
             style={{
               zIndex: 0,
               height: '100vh',
-              width: '100%'
+              width: '100%',
             }}
-            highlight={ highlight }
-            navigation='top-right'
+            highlight={highlight}
+            navigation="top-right"
             marker="marker-stroked-24"
             selected="marker-24"
-            latitude={ parseFloat(this.props.params.lat) }
-            longitude={ parseFloat(this.props.params.lng) }
-            zoom={ parseFloat(this.props.params.zoom) }
-            onBoundsChange={ this.handleBoundsChange }
-            onDataNeeded={ this.handleDataNeeded }
-            onClick={ this.updateOrgProfile }
-            ref={(map) => this.mapComponent = map}
+            latitude={parseFloat(this.props.params.lat)}
+            longitude={parseFloat(this.props.params.lng)}
+            zoom={parseFloat(this.props.params.zoom)}
+            onBoundsChange={this.handleBoundsChange}
+            onDataNeeded={this.handleDataNeeded}
+            onClick={this.updateOrgProfile}
+            ref={map => (this.mapComponent = map)}
           />
         </MediaQuery>
       </div>
-    );
+    )
   }
 }
 

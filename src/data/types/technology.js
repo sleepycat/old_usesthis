@@ -1,18 +1,14 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString } from 'graphql'
 
 let Technology = new GraphQLObjectType({
   name: 'Technology',
   description: 'A technology of some kind: A database, a library, a tool.',
   fields: () => ({
     name: {
-    type: GraphQLString,
-    description: 'The name by which the technology is commonly known.',
-    }
-  })
-
-});
+      type: GraphQLString,
+      description: 'The name by which the technology is commonly known.',
+    },
+  }),
+})
 
 export default Technology

@@ -17,8 +17,8 @@ import {
   GraphQLID,
   GraphQLFloat,
   GraphQLInt,
-  GraphQLNonNull
-} from 'graphql';
+  GraphQLNonNull,
+} from 'graphql'
 
 var query = new GraphQLObjectType({
   name: 'Root',
@@ -28,8 +28,8 @@ var query = new GraphQLObjectType({
       args: {
         id: {
           description: 'id of the location',
-          type: new GraphQLNonNull(GraphQLID)
-        }
+          type: new GraphQLNonNull(GraphQLID),
+        },
       },
       resolve: (source, args, { db }, ast) => {
         return db.locationByID(args.id)
@@ -40,52 +40,63 @@ var query = new GraphQLObjectType({
       args: {
         name: {
           description: 'the name of the organization',
-          type: new GraphQLNonNull(GraphQLString)
-        }
+          type: new GraphQLNonNull(GraphQLString),
+        },
       },
       resolve: async (source, args, { db }, ast) => {
         return db.organizationByName(args.name)
-      }
+      },
     },
     locations_within_bounds: {
       type: new GraphQLList(Location),
       args: {
         sw_lat: {
           type: GraphQLFloat,
-          description: 'The latitude of the southwest corner of the bounding box.',
+          description:
+            'The latitude of the southwest corner of the bounding box.',
         },
         sw_lng: {
           type: GraphQLFloat,
-          description: 'The longitude of the southwest corner of the bounding box.',
+          description:
+            'The longitude of the southwest corner of the bounding box.',
         },
         ne_lat: {
           type: GraphQLFloat,
-          description: 'The latitude of the northeast corner of the bounding box.',
+          description:
+            'The latitude of the northeast corner of the bounding box.',
         },
         ne_lng: {
           type: GraphQLFloat,
-          description: 'The longitude of the northeast corner of the bounding box.',
+          description:
+            'The longitude of the northeast corner of the bounding box.',
         },
       },
-      resolve (source, args, { db },  ast) {
+      resolve(source, args, { db }, ast) {
         // Check the incoming request bounds
         // If they are to big return an error.
-        let feature = featureCollection([point([args.sw_lng, args.sw_lat]), point([args.ne_lng, args.ne_lat])])
+        let feature = featureCollection([
+          point([args.sw_lng, args.sw_lat]),
+          point([args.ne_lng, args.ne_lat]),
+        ])
         var requestedArea = area(bboxPolygon(bbox(feature)))
 
-        if(requestedArea > 12427311001.261375) throw new Error(`The requested area is too large.`)
+        if (requestedArea > 12427311001.261375)
+          throw new Error(`The requested area is too large.`)
 
-        return db.locationsWithinBounds(args.sw_lat, args.sw_lng, args.ne_lat, args.ne_lng)
-      }
-    }
-  }
+        return db.locationsWithinBounds(
+          args.sw_lat,
+          args.sw_lng,
+          args.ne_lat,
+          args.ne_lng,
+        )
+      },
+    },
+  },
 })
 
-
-
 const mutation = new GraphQLObjectType({
-  name: "AddOrganization",
-  description: "Add an organization",
+  name: 'AddOrganization',
+  description: 'Add an organization',
   fields: () => ({
     createOrganization: {
       type: Organization,
@@ -95,28 +106,32 @@ const mutation = new GraphQLObjectType({
         url: { type: new GraphQLNonNull(UrlType) },
         code: { type: UrlType },
         locations: { type: new GraphQLList(LocationInput) },
-        technologies: { type: new GraphQLList(TechnologyInput) }
+        technologies: { type: new GraphQLList(TechnologyInput) },
       },
       resolve(source, args, { db }) {
-        if(args.technologies.length === 0){
-          throw new Error('You must supply at least 1 technology.');
+        if (args.technologies.length === 0) {
+          throw new Error('You must supply at least 1 technology.')
         }
-        if(args.locations.length === 0){
-          throw new Error('You must supply at least 1 location.');
+        if (args.locations.length === 0) {
+          throw new Error('You must supply at least 1 location.')
         }
 
-        if(typeof args.founding_year !== 'undefined'){
+        if (typeof args.founding_year !== 'undefined') {
           // 1600 till today is a reasonable range.
           let currentYear = new Date(Date.now()).getFullYear()
-          if(!(args.founding_year > 1600 && args.founding_year <= currentYear)) {
-            throw new Error(`Year should be somewhere between 1600 and the current year.`);
+          if (
+            !(args.founding_year > 1600 && args.founding_year <= currentYear)
+          ) {
+            throw new Error(
+              `Year should be somewhere between 1600 and the current year.`,
+            )
           }
         }
 
         return db.addOrganization(args)
-      }
-    }
-  })
-});
+      },
+    },
+  }),
+})
 
-module.exports.schema = new GraphQLSchema({ query, mutation});
+module.exports.schema = new GraphQLSchema({ query, mutation })
