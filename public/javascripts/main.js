@@ -13,24 +13,19 @@ import {
 } from 'react-router'
 
 class App extends React.Component {
-
   render() {
-    return (
-      <main>
-        {this.props.children}
-      </main>
-    );
+    return <main>{this.props.children}</main>
   }
-
 }
 
 ReactDOM.render(
   <StyleRoot>
-  <Router history={hashHistory}>
-    <Route path="/" component={App} >
-      <IndexRedirect to="map=10/37.66552780572411/-122.27593323274039" />
-      <Route path="map=:zoom/:lat/:lng" component={ withRouter(MapView) } />
-    </Route>
-  </Router>
-  </StyleRoot>
-  , document.getElementById('app'))
+    <Router history={hashHistory}>
+      <Route path="/" component={App}>
+        <IndexRedirect to="map=10/37.66552780572411/-122.27593323274039" />
+        <Route path="map=:zoom/:lat/:lng" component={withRouter(MapView)} />
+      </Route>
+    </Router>
+  </StyleRoot>,
+  document.getElementById('app'),
+)

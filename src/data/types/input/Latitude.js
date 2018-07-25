@@ -46,4 +46,3 @@ const Latitude = new GraphQLScalarType({
 })
 
 export default Latitude
-
