@@ -161,6 +161,7 @@ export default async function dbinit(db) {
             var orgOfficeEdgeQuery = `
         INSERT {_to: @office_id, _from: @organization_id, type: "works_in"} IN edges RETURN NEW
         `
+            // eslint-disable-next-line no-unused-vars
             var orgOfficeEdge = db
               ._query(orgOfficeEdgeQuery, {
                 office_id: office._id,
@@ -172,6 +173,7 @@ export default async function dbinit(db) {
             var locOfficeEdgeQuery = `
         INSERT {_to: @location_id, _from: @office_id, type: "located_at"} IN edges RETURN NEW
         `
+            // eslint-disable-next-line no-unused-vars
             var locOfficeEdge = db
               ._query(locOfficeEdgeQuery, {
                 location_id: location._id,
@@ -191,6 +193,7 @@ export default async function dbinit(db) {
             var technologyEdgeQuery = `
         INSERT {_to: @technology_id, _from: @office_id, type: "uses"} IN edges RETURN NEW
         `
+            // eslint-disable-next-line no-unused-vars
             var technologyEdge = db
               ._query(technologyEdgeQuery, {
                 technology_id: technology._id,

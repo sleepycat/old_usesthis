@@ -1,17 +1,12 @@
 import { stringify } from 'querystring'
-import {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-} from 'graphql'
-var express = require('express'),
-  request = require('supertest'),
-  app = express(),
-  graphqlHTTP = require('express-graphql')
+import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql'
+import express from 'express'
+import request from 'supertest'
+import graphqlHTTP from 'express-graphql'
 
-function urlString(urlParams?: ?Object) {
+const app = express()
+
+function urlString(urlParams) {
   var string = '/graphql'
   if (urlParams) {
     string += '?' + stringify(urlParams)

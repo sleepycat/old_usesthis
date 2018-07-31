@@ -1,6 +1,5 @@
-import { Database, aql } from 'arangojs'
+import { aql } from 'arangojs'
 import dbinit from '../src/data/database'
-import App from '../src/app'
 
 const { db } = require('../src/db')
 let fn, vertex_data, edge_data, _126_york, shopify
