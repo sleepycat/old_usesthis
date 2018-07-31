@@ -15,17 +15,6 @@
     "bugs": "grep --color -rin --exclude-dir=node_modules --exclude={bundle.js,*.map} XXX public/",
     "build:server": "babel --copy-files --out-dir dist/ src/"
   },
-  "babel": {
-    "presets": [
-      "stage-0",
-      "es2015",
-      "react"
-    ],
-    "plugins": [
-      "transform-runtime",
-      "react-hot-loader/babel"
-    ]
-  },
   "dependencies": {
     "@turf/area": "^4.3.0",
     "@turf/bbox": "^4.3.0",
@@ -36,13 +25,7 @@
     "@turf/within": "^4.3.0",
     "apollo-client": "^1.2.2",
     "arangojs": "^6.4.0",
-    "babel-cli": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-eslint": "^8.2.3",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "babel-register": "^6.24.1",
-    "babel-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
     "body-parser": "~1.17.2",
     "color": "^1.0.3",
     "cookie-parser": "~1.4.3",
@@ -63,8 +46,15 @@
   },
   "devDependencies": {
     "@mapbox/mapbox-gl-geocoder": "^2.1.0",
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^8.2.3",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "babel-runtime": "^6.23.0",
     "d3": "^4.9.1",
     "d3-array": "^1.2.0",
     "d3-axis": "^1.0.7",
