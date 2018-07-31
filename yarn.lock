@@ -266,17 +266,15 @@ aproba@^1.0.3:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.1.1.tgz#95d3600f07710aa0e9298c726ad5ecf2eacbabab"
 
-arangojs@^5.6.1:
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/arangojs/-/arangojs-5.6.1.tgz#c51ca877f9d24e0796877528ca82cbecdb279c42"
+arangojs@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/arangojs/-/arangojs-6.4.0.tgz#6845df170f6adf0e5dd054564942674defdc7420"
   dependencies:
     es6-error "^4.0.1"
-    http-errors "^1.6.1"
     linkedlist "^1.0.1"
     multi-part "^2.0.0"
-    retry "^0.10.0"
     utf8-length "^0.0.1"
-    xhr "^2.3.1"
+    xhr "^2.4.1"
 
 are-we-there-yet@~1.1.2:
   version "1.1.4"
@@ -3218,7 +3216,7 @@ http-deceiver@^1.2.4:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/http-deceiver/-/http-deceiver-1.2.7.tgz#fa7168944ab9a519d337cb0bec7284dc3e723d87"
 
-http-errors@^1.3.0, http-errors@^1.6.1, http-errors@~1.6.1:
+http-errors@^1.3.0, http-errors@~1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.6.1.tgz#5f8b8ed98aca545656bf572997387f904a722257"
   dependencies:
@@ -5538,10 +5536,6 @@ ret@~0.1.10:
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
 
-retry@^0.10.0:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/retry/-/retry-0.10.1.tgz#e76388d217992c252750241d3d3956fed98d8ff4"
-
 right-align@^0.1.1:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/right-align/-/right-align-0.1.3.tgz#61339b722fe6a3515689210d24e14c96148613ef"
@@ -6751,9 +6745,9 @@ ws@^4.0.0:
     async-limiter "~1.0.0"
     safe-buffer "~5.1.0"
 
-xhr@^2.3.1:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/xhr/-/xhr-2.4.0.tgz#e16e66a45f869861eeefab416d5eff722dc40993"
+xhr@^2.4.1:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/xhr/-/xhr-2.5.0.tgz#bed8d1676d5ca36108667692b74b316c496e49dd"
   dependencies:
     global "~4.3.0"
     is-function "^1.0.1"

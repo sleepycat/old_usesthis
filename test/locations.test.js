@@ -1,9 +1,7 @@
 import request from 'supertest'
-import { Database } from 'arangojs'
 import App from '../src/app'
 
-const dbconfig = require('../arangodb_config')['test']
-const db = new Database(dbconfig)
+const {db} = require('../src/db')
 let app, vertex_data, edge_data
 
 describe('location queries', () => {
