@@ -2,7 +2,6 @@ import validUrl from 'valid-url'
 import { GraphQLScalarType } from 'graphql'
 
 import { GraphQLError } from 'graphql/error'
-import { Kind } from 'graphql/language'
 
 var UrlType = new GraphQLScalarType({
   name: 'URL',

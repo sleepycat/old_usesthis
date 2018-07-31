@@ -76,7 +76,7 @@ describe('Mutations', () => {
       }}
     `
 
-    let insertionResponse = await request(app)
+    await request(app)
       .post('/graphql')
       .set('Content-Type', 'application/json; charset=utf-8')
       .send(`{"query": ${JSON.stringify(graphql)}}`)

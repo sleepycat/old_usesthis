@@ -1,9 +1,4 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLFloat,
-  GraphQLNonNull,
-} from 'graphql'
+import { GraphQLInputObjectType, GraphQLString, GraphQLNonNull } from 'graphql'
 import Latitude from './Latitude'
 import Longitude from './Longitude'
 

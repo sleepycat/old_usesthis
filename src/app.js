@@ -1,18 +1,16 @@
 import express from 'express'
 import path from 'path'
-import favicon from 'serve-favicon'
 import logger from 'morgan'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import exphbs from 'express-handlebars'
 import graphqlHTTP from 'express-graphql'
 import routes from './routes/index'
-import { schema } from './schema'
-import { Database } from 'arangojs'
+import { schema } from './schema' // eslint-disable-line
 import dbinit from './data/database'
 
 const env = process.env.NODE_ENV || 'development'
-const dbConfig = require('../arangodb_config')[env]
+const dbConfig = require('../arangodb_config')[env] //eslint-disable-line
 
 export default async function App(db) {
   let dbfunctions = await dbinit(db)
@@ -36,7 +34,7 @@ export default async function App(db) {
 
     app.use(
       webpackHotMiddleware(compiler, {
-        log: console.log,
+        log: console.log, //eslint-disable-line
       }),
     )
   }
@@ -84,13 +82,11 @@ export default async function App(db) {
       if (result) {
         res.send('yes')
       } else {
-        res
-          .status(500)
-          .json({
-            error: `Database check failed. Graph ${
-              dbConfig.graph
-            } does not exist.`,
-          })
+        res.status(500).json({
+          error: `Database check failed. Graph ${
+            dbConfig.graph
+          } does not exist.`,
+        })
       }
     } catch (error) {
       res.status(500).json({ error: error.toString() })
@@ -112,7 +108,7 @@ export default async function App(db) {
   // will print stacktrace
   if (app.get('env') === 'development' || app.get('env') === 'test') {
     app.use(function(err, req, res, next) {
-      console.log(` XXX: ${err.message}`)
+      console.log(` XXX: ${err.message}`) //eslint-disable-line
       res.status(err.status || 500)
       res.render('error', {
         message: err.message,
