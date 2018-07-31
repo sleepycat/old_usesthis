@@ -6,6 +6,6 @@ const { USESTHIS_DB_USER, USESTHIS_DB_PASSWORD } = process.env
 
 const db = new Database()
 db.useDatabase(databaseName)
-db.useBasicAuth('root', 'kur4sh')
+db.useBasicAuth(USESTHIS_DB_USER, USESTHIS_DB_PASSWORD)
 
 module.exports.db = db
