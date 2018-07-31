@@ -1,28 +1,18 @@
 import request from 'supertest'
-import { Database } from 'arangojs'
 import App from '../src/app'
-
-const dbConfig = require('../arangodb_config')['test']
-const db = new Database(dbConfig)
+import { db } from '../src/db'
 
 let app
 
 describe('App', () => {
-
+  beforeAll(async () => {
+    app = await App(db)
+  })
   describe('GET /', () => {
+    it('serves the root route', async () => {
+      let response = await request(app).get('/')
 
-    beforeAll(async () => {
-      app = await App(db)
+      expect(response.text).toMatch(/Usesth.is/)
     })
-
-    it('serves the root route', (done) => {
-      request(app)
-      .get('/')
-      .expect(/Usesth.is/)
-      .end(done);
-    })
-
-  });
-
-
-});
+  })
+})

@@ -4,9 +4,7 @@ const App = require('../dist/app').default
 const { Database } = require('arangojs')
 const debug = require('debug')('usesthis:server')
 const http = require('http')
-const env = process.env.NODE_ENV || "development"
-const dbConfig = require('../arangodb_config')[env]
-const db = new Database(dbConfig)
+const { db } = require('../src/db')
 const port = normalizePort(process.env.PORT || '3000')
 const server = new http.Server()
 
@@ -39,9 +37,7 @@ function onError(error) {
     throw error
   }
 
-  let bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port
+  let bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -60,8 +56,6 @@ function onError(error) {
 
 function onListening() {
   let addr = server.address()
-  let bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port
+  let bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
   debug('Listening on ' + bind)
 }

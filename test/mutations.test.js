@@ -1,9 +1,7 @@
 import request from 'supertest'
-import { Database } from 'arangojs'
 import App from '../src/app'
 
-const dbConfig = require('../arangodb_config')['test']
-const db = new Database(dbConfig)
+const { db } = require('../src/db')
 let app, vertex_data, edge_data
 
 describe('Mutations', () => {

@@ -1,27 +1,25 @@
-import { stringify } from 'querystring';
+import { stringify } from 'querystring'
 import {
   graphql,
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLNonNull
-} from 'graphql';
-var express = require('express')
-  , request = require('supertest')
-  , app = express()
-  , graphqlHTTP = require('express-graphql');
+  GraphQLNonNull,
+} from 'graphql'
+var express = require('express'),
+  request = require('supertest'),
+  app = express(),
+  graphqlHTTP = require('express-graphql')
 
 function urlString(urlParams?: ?Object) {
-  var string = '/graphql';
+  var string = '/graphql'
   if (urlParams) {
-    string += ('?' + stringify(urlParams));
+    string += '?' + stringify(urlParams)
   }
-  return string;
+  return string
 }
 
-
 describe('Using graphql middleware', () => {
-
   beforeEach(() => {
     var testSchema = new GraphQLSchema({
       query: new GraphQLObjectType({
@@ -31,29 +29,26 @@ describe('Using graphql middleware', () => {
             type: GraphQLString,
             resolve: (source, args, root, ast) => {
               return 'Hello World'
-            }
-          }
-        }
-      })
-    });
+            },
+          },
+        },
+      }),
+    })
 
-    app.use('/graphql', graphqlHTTP({"schema": testSchema}))
-  });
-
+    app.use('/graphql', graphqlHTTP({ schema: testSchema }))
+  })
 
   it('can hit the graphql endpoint', done => {
     request(app)
       .get(urlString({ query: '{test}' }))
       .expect(200)
-      .end(done);
+      .end(done)
   })
 
   it('it responds to nonsense with a 400', done => {
     request(app)
       .get(urlString({ query: '{asdf}' }))
       .expect(400)
-      .end(done);
+      .end(done)
   })
-
 })
-

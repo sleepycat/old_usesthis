@@ -1,13 +1,10 @@
 import request from 'supertest'
-import { Database } from 'arangojs'
 import App from '../src/app'
 
-const dbConfig = require('../arangodb_config')['test']
-const db = new Database(dbConfig)
+const { db } = require('../src/db')
 let app, vertex_data, edge_data
 
 describe('organization queries', () => {
-
   beforeAll(async () => {
     app = await App(db)
     vertex_data = require('./data/vertices').vertices
@@ -16,7 +13,7 @@ describe('organization queries', () => {
 
   beforeEach(async () => {
     await db.truncate()
-    let vertices =  db.collection('vertices')
+    let vertices = db.collection('vertices')
     await vertices.import(vertex_data)
     let edges = db.collection('edges')
     await edges.import(edge_data)
@@ -25,8 +22,7 @@ describe('organization queries', () => {
   it('serves an organization by name', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/graphql; charset=utf-8')
-      .send(`query {
+      .set('Content-Type', 'application/graphql; charset=utf-8').send(`query {
       organization(
         name: "Shopify"
       ){
@@ -41,8 +37,7 @@ describe('organization queries', () => {
   it('finds technologies for the named organization', async () => {
     let { body } = await request(app)
       .post('/graphql')
-      .set('Content-Type', 'application/graphql; charset=utf-8')
-      .send(`query {
+      .set('Content-Type', 'application/graphql; charset=utf-8').send(`query {
       organization(
         name: "Shopify"
       ){
@@ -53,7 +48,6 @@ describe('organization queries', () => {
     }`)
 
     let shopify = body.data.organization
-    expect(shopify.technologies).toContainEqual({name: 'ruby'})
+    expect(shopify.technologies).toContainEqual({ name: 'ruby' })
   })
-
 })

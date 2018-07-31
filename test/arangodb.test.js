@@ -1,8 +1,8 @@
 import request from 'supertest'
-import { Database, aql } from 'arangojs'
+import { aql } from 'arangojs'
 
 const dbconfig = require('../arangodb_config')['test']
-const db = new Database(dbconfig)
+import { db } from '../src/db'
 let vertex_data, edge_data
 
 let vertices = db.collection('vertices')
