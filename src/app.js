@@ -73,6 +73,30 @@ export default async function App(db) {
   app.use(cookieParser())
   app.use(express.static(path.join(__dirname, '../public')))
 
+  app.get('/alive', (req, res, next) => {
+    res.send('yes')
+  })
+
+  app.get('/ready', async (req, res, next) => {
+    try {
+      const graph = db.graph(dbConfig.graph)
+      const result = await graph.exists()
+      if (result) {
+        res.send('yes')
+      } else {
+        res
+          .status(500)
+          .json({
+            error: `Database check failed. Graph ${
+              dbConfig.graph
+            } does not exist.`,
+          })
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.toString() })
+    }
+  })
+
   app.use('/', routes)
 
   // error handlers
