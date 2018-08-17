@@ -1,0 +1,66 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+        io.kompose.service: web
+    spec:
+      containers:
+      - env:
+        - name: NODE_ENV
+          value: production
+        - name: PORT
+          valueFrom:
+            secretKeyRef:
+              key: PORT
+              name: usesthis-secrets
+        - name: USESTHIS_MAPBOX_ACCESS_TOKEN
+          value: pk.eyJ1IjoibWlrZXdpbGxpYW1zb24iLCJhIjoibzRCYUlGSSJ9.QGvlt6Opm5futGhE5i-1kw
+        - name: USESTHIS_PRODUCTION_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              key: USESTHIS_PRODUCTION_DB_NAME
+              name: usesthis-secrets
+        - name: USESTHIS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: USESTHIS_DB_USER
+              name: usesthis-secrets
+        - name: USESTHIS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: USESTHIS_DB_PASSWORD
+              name: usesthis-secrets
+        - name: USESTHIS_PRODUCTION_DB_URL
+          valueFrom:
+            secretKeyRef:
+              key: USESTHIS_PRODUCTION_DB_URL
+              name: usesthis-secrets
+        image: mikewilliamson/usesthis:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 3000
+          initialDelaySeconds: 1
+          periodSeconds: 5
+        name: web
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources: {}
+      restartPolicy: Always
+status: {}
+

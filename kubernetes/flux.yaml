@@ -1,0 +1,154 @@
+---
+# The service account, cluster roles, and cluster role binding are
+# only needed for Kubernetes with role-based access control (RBAC).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    name: flux
+  name: flux
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    name: flux
+  name: flux
+rules:
+  - apiGroups: ['*']
+    resources: ['*']
+    verbs: ['*']
+  - nonResourceURLs: ['*']
+    verbs: ['*']
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    name: flux
+  name: flux
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: flux
+subjects:
+  - kind: ServiceAccount
+    name: flux
+    namespace: default
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: flux
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: flux
+    spec:
+      serviceAccount: flux
+      volumes:
+      - name: git-key
+        secret:
+          secretName: flux-git-deploy
+          defaultMode: 0400 # when mounted read-only, we won't be able to chmod
+
+      # This is a tmpfs used for generating SSH keys. In K8s >= 1.10,
+      # mounted secrets are read-only, so we need a separate volume we
+      # can write to.
+      - name: git-keygen
+        emptyDir:
+          medium: Memory
+
+      # The following volume is for using a customised known_hosts
+      # file file, which you will need to do if you host your own git
+      # repo rather than using github or the like. You'll also need to
+      # mount it into the container, below.
+
+      # - name: ssh-config
+      #   configMap: flux-ssh-config
+
+      containers:
+      - name: flux
+        # There are no ":latest" images for flux. Find the most recent
+        # release or image version at https://quay.io/weaveworks/flux
+        # and replace the tag here.
+        image: quay.io/weaveworks/flux:1.4.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3030 # informational
+        volumeMounts:
+        - name: git-key
+          mountPath: /etc/fluxd/ssh # to match location given in image's /etc/ssh/config
+          readOnly: true # this will be the case perforce in K8s >=1.10
+        - name: git-keygen
+          mountPath: /var/fluxd/keygen # to match location given in image's /etc/ssh/config
+
+        # Include this if you need to mount a customised known_hosts
+        # file; you'll also need the volume declared above.
+        # - name: ssh-config
+        #   mountPath: /root/.ssh
+
+        args:
+
+        # if you deployed memcached in a different namespace to flux,
+        # or with a different service name, you can supply these
+        # following two arguments to tell fluxd how to connect to it.
+        # - --memcached-hostname=memcached.default.svc.cluster.local
+        # - --memcached-service=memcached
+
+        # this must be supplied, and be in the tmpfs (emptyDir)
+        # mounted above, for K8s >= 1.10
+        - --ssh-keygen-dir=/var/fluxd/keygen
+
+        # replace or remove the following URL
+        - --git-url=git@gitlab.com:sleepycat/usesthis
+        - --git-branch=master
+        - --git-path=kubernetes
+
+        # include these next two to connect to an "upstream" service
+        # (e.g., Weave Cloud). The token is particular to the service.
+        # - --connect=wss://cloud.weave.works/api/flux
+        # - --token=abc123abc123abc123abc123
+---
+# You can optionally deploy memcache, for the Flux daemon to cache
+# container image metadata.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: memcached
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: memcached
+    spec:
+      containers:
+      - name: memcached
+        image: memcached:1.4.25
+        imagePullPolicy: IfNotPresent
+        args:
+        - -m 64    # Maximum memory to use, in megabytes. 64MB is default.
+        - -p 11211    # Default port, but being explicit is nice.
+        - -vv    # This gets us to the level of request logs.
+        ports:
+        - name: clients
+          containerPort: 11211
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached
+spec:
+  # The memcache client uses DNS to get a list of memcached servers and then
+  # uses a consistent hash of the key to determine which server to pick.
+  clusterIP: None
+  ports:
+    - name: memcached
+      port: 11211
+  selector:
+    name: memcached
