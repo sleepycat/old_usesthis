@@ -1,5 +1,9 @@
 image: mikewilliamson/usesthis-ci
 
+cache:
+  paths:
+    - node_modules
+
 stages:
   - test
   - build
@@ -13,4 +17,18 @@ test:
     - name: mikewilliamson/arango-ci
       alias: arangodb
   script:
-    - USESTHIS_TEST_DB_URL="http://arangodb:8529" USESTHIS_DB_PASSWORD=test npm test
+    - npm test
+
+build:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    IMAGE_TAG: mikewilliamson/usesthis:$CI_COMMIT_SHA
+  before_script:
+    - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USER --password-stdin
+  script:
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
