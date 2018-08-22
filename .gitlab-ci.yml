@@ -1,21 +1,8 @@
-image: node-alpine
+image: mikewilliamson/usesthis-ci
 
 stages:
-  - setup
   - test
-
-seed:
-  stage: setup
-  image: mikewilliamson/usesthis-test-init
-  services:
-    - arangodb
-
-services:
-  - name: arangodb:3.1.21
-    alias: arangodb
-    entrypoint: ["/bin/bash"]
-    command: ["-c", "ARANGO_ROOT_PASSWORD=test /entrypoint.sh"]
-
+  - build
 
 before_script:
   - yarn
@@ -23,7 +10,7 @@ before_script:
 test:
   stage: test
   services:
-    - arangodb
+    - name: mikewilliamson/arango-ci
+      alias: arangodb
   script:
-    - yarn test
-
+    - USESTHIS_TEST_DB_URL="http://arangodb:8529" USESTHIS_DB_PASSWORD=test npm test
