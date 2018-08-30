@@ -6,7 +6,7 @@
   "author": "Mike Williamson <mike@korora.ca>",
   "license": "MIT",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "lint": "eslint src test",
     "dockerize": "docker build -t mikewilliamson/usesthis-api .",
     "start": "node index.js"
@@ -25,14 +25,25 @@
     "supertest": "^3.1.0"
   },
   "dependencies": {
+    "@turf/area": "^4.3.0",
+    "@turf/bbox": "^4.3.0",
+    "@turf/bbox-polygon": "^4.3.0",
+    "@turf/explode": "^4.3.0",
+    "@turf/helpers": "^4.3.0",
+    "@turf/inside": "^4.3.0",
+    "@turf/within": "^4.3.0",
+    "apollo-client": "^1.2.2",
     "apollo-server": "^2.0.5",
+    "arangojs": "^6.4.0",
     "body-parser": "^1.18.3",
+    "dotenv-safe": "^6.0.0",
     "express": "^4.16.3",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2"
   },
   "jest": {
     "verbose": true,
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupTestFrameworkScriptFile": "<rootDir>/test/setupTests.js"
   }
 }

@@ -3,7 +3,7 @@ const Server = require('../src/server').default
 
 describe('Queries', () => {
   describe('hello', () => {
-    it('returns world', async () => {
+    xit('returns world', async () => {
       let app = Server()
 
       let response = await request(app)
