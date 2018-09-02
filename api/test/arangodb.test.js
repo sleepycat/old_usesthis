@@ -1,5 +1,5 @@
-import { aql } from 'arangojs'
-import { db } from '../src/db'
+const { aql } = require('arangojs')
+const { db } = require('../src/db')
 let vertexData, edgeData
 
 let vertices = db.collection('vertices')

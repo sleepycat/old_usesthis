@@ -3,4 +3,5 @@ node_modules
 documentation
 /data
 *.swp
-.env*
+.env
+.env.test

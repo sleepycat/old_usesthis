@@ -9,26 +9,52 @@ stages:
   - build
 
 before_script:
-  - yarn
+  - for dir in web api; do $(cd "$dir" && npm i --no-audit --silent >/dev/null 2>&1); done
 
-test:
+test_api:
   stage: test
   services:
     - name: mikewilliamson/arango-ci
       alias: arangodb
   script:
+    - cd api
     - npm test
 
-build:
+test_web:
+  stage: test
+  services:
+    - name: mikewilliamson/arango-ci
+      alias: arangodb
+  script:
+    - cd web
+    - npm test
+
+build_api:
   stage: build
   image: docker:stable
   services:
     - docker:dind
   variables:
     DOCKER_DRIVER: overlay2
-    IMAGE_TAG: mikewilliamson/usesthis:$CI_COMMIT_SHA
+    IMAGE_TAG: mikewilliamson/usesthis-api:$CI_COMMIT_SHA
   before_script:
     - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USER --password-stdin
   script:
+    - cd api
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+
+build_web:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    IMAGE_TAG: mikewilliamson/usesthis-web:$CI_COMMIT_SHA
+  before_script:
+    - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USER --password-stdin
+  script:
+    - cd web
     - docker build -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
