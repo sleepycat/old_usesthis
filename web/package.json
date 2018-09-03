@@ -104,6 +104,9 @@
   "jest": {
     "testEnvironment": "node",
     "verbose": true,
-    "testPathIgnorePatterns": ["/node_modules/", "api"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "api"
+    ]
   }
 }
