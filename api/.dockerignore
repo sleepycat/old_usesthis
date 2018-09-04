@@ -1,6 +1,7 @@
-test
-Dockerfile
-LICENSE
-README.md
-test
-.env*
+**
+!src/
+!.env.example
+!index.js
+!package.json
+!package-lock.json
+!node_modules
