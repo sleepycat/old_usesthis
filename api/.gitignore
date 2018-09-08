@@ -4,4 +4,3 @@ documentation
 /data
 *.swp
 .env
-.env.test
