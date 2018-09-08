@@ -26,4 +26,4 @@ steps:
   args:
   - '-c'
   - |
-    if [[ "$BRANCH_NAME" == "master" ]]; then docker build -t mikewilliamson/usesthis-api:$SHORT_SHA . && docker push mikewilliamson/usesthis-api; else exit 0; fi
+    if [[ "$BRANCH_NAME" == "master" ]]; then docker build -t gcr.io/$PROJECT_ID/usesthis-api:$SHORT_SHA . && docker push gcr.io/$PROJECT_ID/usesthis-api; else exit 0; fi

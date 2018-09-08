@@ -30,4 +30,4 @@ steps:
   args:
   - '-c'
   - |
-    if [[ "$BRANCH_NAME" == "master" ]]; then docker build -t mikewilliamson/usesthis-web:$SHORT_SHA . && docker push mikewilliamson/usesthis-web; else exit 0; fi
+    if [[ "$BRANCH_NAME" == "master" ]]; then docker build -t gcr.io/$PROJECT_ID/usesthis-web:$SHORT_SHA . && docker push gcr.io/$PROJECT_ID/usesthis-web; else exit 0; fi
