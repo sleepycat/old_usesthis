@@ -9,8 +9,14 @@ steps:
   " ]
 
 - name: "gcr.io/cloud-builders/npm"
+  id: web_install_deps
   dir: web
   args: ["install"]
+
+- name: "gcr.io/cloud-builders/npm"
+  id: web_lint
+  dir: web
+  args: ["run", "lint"]
 
 - name: "mikewilliamson/usesthis-ci"
   id: test_web
@@ -24,10 +30,17 @@ steps:
   args: [ "-c", "npm t" ]
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: build_api
-  dir: api
+  id: build_web
+  dir: web
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    if [[ "$BRANCH_NAME" == "master" ]]; then docker build -t gcr.io/$PROJECT_ID/usesthis-web:$SHORT_SHA . && docker push gcr.io/$PROJECT_ID/usesthis-web; else exit 0; fi
+    if [[ "$BRANCH_NAME" == "master" ]]; then \
+    npm run build:server && \
+    NODE_ENV=production npm run bundle && \
+    docker build -t gcr.io/$PROJECT_ID/usesthis-web:$SHORT_SHA . \
+    && docker push gcr.io/$PROJECT_ID/usesthis-web; \
+    else \
+    exit 0; \
+    fi
