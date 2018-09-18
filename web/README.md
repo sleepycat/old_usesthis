@@ -1,6 +1,6 @@
-# Usesthis
+# Usesthis Web
 
-This is a rewrite of usesth.is aimed at building on graphql and react.
+This is the web service for Usesthis. It's responsible for displaying data fetched from the API.
 
 ## Getting set up
 
