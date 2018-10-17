@@ -71,8 +71,9 @@ describe('The CategoryType', () => {
     `
 
     let result = await graphql(schema, query)
-    //Year gets stringifed on the way out.
-    expect(result.errors).toBeTruthy()
-    expect(result.errors[0].message).toContain('has invalid value')
+    expect(result.errors).toBeDefined()
+
+    let [err] = result.errors
+    expect(err.message).toContain('Expected type category, found ASDF.')
   })
 })
